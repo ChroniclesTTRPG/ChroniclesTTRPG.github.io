@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aeonfall - Handmade Journal of Vocations</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Roboto+Slab:wght@300;400;700&family=Special+Elite&family=MedievalSharp&family=Homemade+Apple&family=Pirata+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Roboto+Slab:wght@300;400;700&family=Special+Elite&family=MedievalSharp&family=Homemade+Apple&family=Pirata+One&family=Architects+Daughter&display=swap" rel="stylesheet">
     <style>
         /* BASE & TEXTURES */
         body { 
@@ -103,7 +103,7 @@
         .view-hidden { opacity: 0; pointer-events: none; position: absolute; transform: translateY(15px); width: calc(100% - 120px); }
         .view-active { opacity: 1; pointer-events: auto; position: relative; transform: translateY(0); }
 
-        /* 3D BOOK SYSTEM - GRID STACK METHOD (Responsive & Dynamic Height) */
+        /* 3D BOOK SYSTEM */
         .dossier-stack { display: grid; width: 100%; perspective: 3000px; transform-style: preserve-3d; }
         .dossier-leaf { 
             grid-area: 1 / 1; 
@@ -136,6 +136,29 @@
         .finding-stamp { margin-bottom: 50px; padding-left: 35px; border-left: 4px solid #b8860b; background: linear-gradient(90deg, rgba(184, 134, 11, 0.03) 0%, transparent 100%); padding-top: 20px; padding-bottom: 20px; position: relative; }
         .finding-header { font-family: 'Special Elite', cursive; font-size: 14px; font-weight: 900; color: #fdfaf3; background: #3e2723 !important; display: inline-block; padding: 8px 22px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; border-radius: 2px; box-shadow: 4px 4px 0 #b8860b; }
 
+        /* SCRIPT MODULE STYLING (Hand-Printed Update) */
+        .script-module-container { padding: 40px 0; border-bottom: 1px solid rgba(141, 110, 99, 0.15); }
+        .script-module-header {
+            font-family: 'Architects Daughter', cursive;
+            font-weight: 400;
+            font-size: clamp(24px, 5vw, 32px);
+            color: #2c1810; /* Dark Ink Brown */
+            border-bottom: 2px solid rgba(141, 110, 99, 0.3); /* Subtle hand-drawn underline look */
+            padding-bottom: 5px;
+            margin-bottom: 25px;
+            display: inline-block;
+            text-transform: none;
+        }
+        .script-list-area { 
+            font-family: 'Roboto Slab', serif; 
+            font-weight: 400; 
+            font-size: 17px; 
+            color: #1a0f0a;
+            line-height: 1.6;
+        }
+        .script-list-area ul { list-style-type: disc; padding-left: 20px; }
+        .script-list-area li { margin-bottom: 6px; font-weight: 700; color: #1a0f0a; }
+
         .leather-tile { background: #5d4037; background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png'); color: #fdfaf3; padding: 22px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); border-top: 4px solid #b8860b; box-shadow: 0 8px 20px rgba(0,0,0,0.25); margin-bottom: 15px; }
         .leather-tile-label { font-family: 'Cinzel', serif; font-size: 10px; color: #dcc89f; display: block; margin-bottom: 10px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid rgba(184, 134, 11, 0.3); padding-bottom: 6px; }
         .leather-tile-value { font-family: 'Special Elite', cursive; font-size: 14px; opacity: 0.95; }
@@ -147,8 +170,6 @@
         .prog-table tr:nth-child(even) td { background-color: rgba(141, 110, 99, 0.03); }
         .prog-table th:last-child, .prog-table td:last-child { border-right: none; }
         .prog-table tr:last-child td { border-bottom: none; }
-
-        .scripts-log-box { font-family: 'Special Elite', cursive; font-size: 15px; line-height: 1.8; color: #2c1810; padding: 95px 45px 45px; border: 2px double #8d6e63; background: #fff; margin: 50px 0 30px; position: relative; box-shadow: 8px 8px 25px rgba(62, 39, 35, 0.06); border-radius: 4px; }
 
         /* UI ELEMENTS */
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #3e2723; color: #fdfaf3; padding: 14px 40px; border-radius: 4px; z-index: 10000; opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-family: 'Cinzel'; font-size: 13px; font-weight: 900; border: 1px solid #b8860b; box-shadow: 0 15px 35px rgba(0,0,0,0.4); pointer-events: none; width: max-content; max-width: 90%; text-align: center; }
@@ -175,7 +196,7 @@
         .dm-active-edit .dm-editable:focus { background: rgba(253, 250, 243, 0.9); outline: 2px solid #8d6e63; box-shadow: 0 4px 15px rgba(93, 64, 55, 0.1); }
         .dm-active-edit [contenteditable="true"]:empty::before { content: "Click to add entry..."; color: #bcaaa4; font-style: italic; pointer-events: none; display: block; }
         
-        .purge-mode-active { border: 2px solid #7a1d1d; shadow-[0_0_15px_rgba(127,29,29,0.2)]; }
+        .purge-mode-active { border: 2px solid #7a1d1d; }
         .purge-btn-overlay { background: #7a1d1d; color: white; font-family: 'Cinzel', serif; font-weight: 900; font-size: 11px; text-transform: uppercase; padding: 14px; border-radius: 4px; text-align: center; width: 100%; margin-top: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.2s; }
         .purge-btn-overlay:hover { background: #4a0000; }
         .lightbox-open { overflow: hidden; }
@@ -200,9 +221,8 @@
             .card-art { width: 45%; }
             .reorder-controls { padding: 4px 2px; }
             .reorder-btn { width: 25px; height: 30px; font-size: 18px; }
-            .leaf-side { padding: 25px 15px; } /* Reduce heavy paddings on book pages */
-            .discovery-log-box, .scripts-log-box { padding: 25px 20px; font-size: 14px; margin: 25px 0; }
-            .scripts-log-box { padding-top: 60px; } /* Room for absolute header */
+            .leaf-side { padding: 25px 15px; }
+            .discovery-log-box { padding: 25px 20px; font-size: 14px; margin: 25px 0; }
             .finding-stamp { padding-left: 20px; border-left-width: 3px; }
             .drop-cap { font-size: 60px; line-height: 50px; padding-right: 10px; }
             .prog-table { font-size: 11px; }
@@ -289,7 +309,7 @@
                     <button onclick="window.addFeatureBlock()" class="arch-btn arch-btn-add w-full sm:w-auto">Add Feature Module</button>
                     <button onclick="window.addArchetype()" class="arch-btn arch-btn-add w-full sm:w-auto">Register Archetype</button>
                     <button onclick="window.addTable()" class="arch-btn arch-btn-add w-full sm:w-auto">+ Add Global Table</button>
-                    <button onclick="window.addScriptTier()" class="arch-btn arch-btn-add w-full sm:w-auto">Add Script Module</button>
+                    <button onclick="window.addScriptTier()" class="arch-btn arch-btn-add w-full sm:w-auto">+ Add Script Tier</button>
                     <button onclick="window.triggerDel()" class="arch-btn arch-btn-del w-full sm:w-auto mt-4 sm:mt-0 sm:ml-auto">Purge Dossier</button>
                 </div>
             </div>
@@ -387,6 +407,11 @@
             html = html.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
             html = html.replace(/\*(.*?)\*/g, '<i>$1</i>');
             html = html.replace(/__(.*?)__/g, '<u>$1</u>');
+            
+            // Bullet Point Support (Typing - or * creates bullets)
+            html = html.replace(/^[\s]*[-*•]\s+(.+)/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>(\n)?)+/g, (match) => `<ul class="my-4 space-y-1">${match}</ul>`);
+            
             return html;
         };
 
@@ -455,7 +480,6 @@
             activeVocId = id; 
             currentPage = 0;
             
-            // Reset Page flips
             [0, 1, 2, 3].forEach(i => {
                 const leaf = document.getElementById(`leaf-${i}`);
                 if(leaf) {
@@ -514,7 +538,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
-        // Database Mutators with Debounce
+        // Database Mutators
         const debounce = (func, wait) => {
             let timeout;
             return (...args) => {
@@ -708,27 +732,26 @@
                 </div>
             `;
 
-            // LEAF 3 - Scripts
+            // LEAF 3 - Scripts (Refined Hand-Printed Title)
             const scriptTiers = JSON.parse(v.scriptTiers || '[]');
             document.getElementById('content-scripts').innerHTML = `
                 <h2 class="record-title-culture dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'headerScripts', this.innerText)">${v.headerScripts || 'Terminal Scripts'}</h2>
-                <div class="space-y-12 md:space-y-16 mt-6 md:mt-8">
+                <div class="mt-6 md:mt-8 space-y-12">
                     ${scriptTiers.map((tier, idx) => `
-                        <div class="scripts-log-box relative">
-                            <div class="absolute -top-5 left-4 md:left-6 z-20">
-                                <h3 class="finding-header dm-editable break-words shadow-lg" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'scriptTiers', 'title', this.innerText)">
-                                    ${tier.title || 'NEW SCRIPT MODULE'}
-                                </h3>
+                        <div class="script-module-container relative group">
+                            <div class="script-module-header dm-editable break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'scriptTiers', 'title', this.innerText)">
+                                ${tier.title || 'NEW SCRIPT TIER'}
                             </div>
-                            <div class="dm-editable text-[13px] md:text-[15px] leading-relaxed break-words min-h-[60px]" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'scriptTiers', 'list', this.innerText)">
+                            <div class="script-list-area dm-editable min-h-[60px] break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'scriptTiers', 'list', this.innerText)">
                                 ${isDM ? (tier.list || '') : window.parseAeonfallContent(tier.list, false)}
                             </div>
                             ${isDM ? `
-                                <div class="absolute top-4 right-4 flex gap-2 z-20">
-                                    <button onclick="window.removeCollectionItem(${idx}, 'scriptTiers')" class="text-red-900 bg-red-900/5 hover:bg-red-900/20 px-3 py-1.5 rounded-sm text-[9px] md:text-[10px] uppercase font-black transition-colors border border-red-900/20">Shred Module</button>
+                                <div class="mt-4 flex gap-2">
+                                    <button onclick="window.removeCollectionItem(${idx}, 'scriptTiers')" class="text-red-900 bg-red-900/5 hover:bg-red-900/20 px-3 py-1.5 rounded-sm text-[9px] font-black uppercase border border-red-900/20">Shred Module</button>
                                 </div>` : ''}
                         </div>
                     `).join('')}
+                    ${scriptTiers.length === 0 ? '<div class="italic text-[#8d6e63] py-12 text-center opacity-50">No scripts registered for this vocation.</div>' : ''}
                 </div>
             `;
         };
@@ -754,7 +777,6 @@
             }
         };
 
-        // Table Manipulations (Force re-renders for structure changes)
         window.addTable = () => {
             const v = vocations.find(x => x.id === activeVocId);
             const tbs = JSON.parse(v.tables || '[]');
@@ -856,7 +878,6 @@
             }
         };
 
-        // Item Add/Remove logic
         window.addLoreBlock = () => {
             const v = vocations.find(x => x.id === activeVocId);
             const items = JSON.parse(v.loreBlocks || '[]');
@@ -884,7 +905,7 @@
         window.addScriptTier = () => {
             const v = vocations.find(x => x.id === activeVocId);
             const items = JSON.parse(v.scriptTiers || '[]');
-            items.push({ title: "NEW SCRIPT MODULE", list: "" });
+            items.push({ title: "1ST TIER SCRIPTS", list: "- New Script" });
             performUpdate(activeVocId, { scriptTiers: JSON.stringify(items) });
             setTimeout(renderDetails, 100);
         };

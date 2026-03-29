@@ -136,7 +136,7 @@
         .finding-stamp { margin-bottom: 50px; padding-left: 35px; border-left: 4px solid #b8860b; background: linear-gradient(90deg, rgba(184, 134, 11, 0.03) 0%, transparent 100%); padding-top: 20px; padding-bottom: 20px; position: relative; }
         .finding-header { font-family: 'Special Elite', cursive; font-size: 14px; font-weight: 900; color: #fdfaf3; background: #3e2723 !important; display: inline-block; padding: 8px 22px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; border-radius: 2px; box-shadow: 4px 4px 0 #b8860b; }
 
-        /* SCRIPT MODULE STYLING (Hand-Printed Update) */
+        /* SCRIPT MODULE STYLING */
         .script-module-container { padding: 40px 0; border-bottom: 1px solid rgba(141, 110, 99, 0.15); }
         .script-module-header {
             font-family: 'Architects Daughter', cursive;
@@ -155,9 +155,10 @@
             font-size: 17px; 
             color: #1a0f0a;
             line-height: 1.6;
+            white-space: pre-wrap; /* Crucial for vertical alignment */
         }
-        .script-list-area ul { list-style-type: disc; padding-left: 20px; }
-        .script-list-area li { margin-bottom: 6px; font-weight: 700; color: #1a0f0a; }
+        .script-list-area ul { list-style-type: disc; padding-left: 20px; margin: 15px 0; }
+        .script-list-area li { margin-bottom: 8px; font-weight: 700; color: #1a0f0a; }
 
         .leather-tile { background: #5d4037; background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png'); color: #fdfaf3; padding: 22px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); border-top: 4px solid #b8860b; box-shadow: 0 8px 20px rgba(0,0,0,0.25); margin-bottom: 15px; }
         .leather-tile-label { font-family: 'Cinzel', serif; font-size: 10px; color: #dcc89f; display: block; margin-bottom: 10px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid rgba(184, 134, 11, 0.3); padding-bottom: 6px; }
@@ -409,6 +410,7 @@
             html = html.replace(/__(.*?)__/g, '<u>$1</u>');
             
             // Bullet Point Support (Typing - or * creates bullets)
+            // Enhanced to handle multiline lists properly
             html = html.replace(/^[\s]*[-*•]\s+(.+)/gm, '<li>$1</li>');
             html = html.replace(/(<li>.*<\/li>(\n)?)+/g, (match) => `<ul class="my-4 space-y-1">${match}</ul>`);
             
@@ -732,7 +734,7 @@
                 </div>
             `;
 
-            // LEAF 3 - Scripts (Refined Hand-Printed Title)
+            // LEAF 3 - Scripts (Improved Vertical List Alignment)
             const scriptTiers = JSON.parse(v.scriptTiers || '[]');
             document.getElementById('content-scripts').innerHTML = `
                 <h2 class="record-title-culture dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'headerScripts', this.innerText)">${v.headerScripts || 'Terminal Scripts'}</h2>

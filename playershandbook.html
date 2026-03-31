@@ -595,8 +595,10 @@
                 return;
             }
             currentClass = c; 
-            const shortClasses = ["Heartbound", "Nomad", "Fabricator"];
-            if (shortClasses.includes(c)) { if (currentLevel < 1) currentLevel = 1; if (currentLevel > 5) currentLevel = 5; }
+            const noTricks = ["Heartbound", "Nomad"];
+            const maxLevelFive = ["Heartbound", "Nomad", "Fabricator"];
+            if (noTricks.includes(c) && currentLevel < 1) currentLevel = 1; 
+            if (maxLevelFive.includes(c) && currentLevel > 5) currentLevel = 5; 
             window.switchView('scripts');
             renderNavs(); renderLists(); 
             window.scrollTo(0,0);
@@ -918,8 +920,14 @@
 
             const lNav = document.getElementById('level-nav');
             if (lNav) {
-                const shortClasses = ["Heartbound", "Nomad", "Fabricator"];
-                let levels = shortClasses.includes(currentClass) ? [1, 2, 3, 4, 5] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                let levels;
+                if (["Heartbound", "Nomad"].includes(currentClass)) {
+                    levels = [1, 2, 3, 4, 5];
+                } else if (currentClass === "Fabricator") {
+                    levels = [0, 1, 2, 3, 4, 5];
+                } else {
+                    levels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                }
                 lNav.innerHTML = levels.map(l => `<div class="level-bubble ${currentLevel === l ? 'active' : ''}" onclick="window.selectLevel(${l})">${l === 0 ? 'T' : l}</div>`).join('');
             }
             const title = document.getElementById('current-class-title');

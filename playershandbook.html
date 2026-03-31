@@ -786,13 +786,22 @@
             const targetItem = list.find(i => i.id === targetId);
             if (!sourceItem || !targetItem) return;
 
-            const sourceOrder = sourceItem.order ?? sourceItem.createdAt;
-            const targetOrder = targetItem.order ?? targetItem.createdAt;
+            const sourceOrder = sourceItem.order ?? sourceItem.createdAt ?? 0;
+            const targetOrder = targetItem.order ?? targetItem.createdAt ?? 0;
 
             await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', collectionName, sourceItem.id), { order: targetOrder });
             await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', collectionName, targetItem.id), { order: sourceOrder });
             window.showToast("Record Snapped into Place");
         };
+
+        function applyMarkdown(text, isDM) {
+            if (!text) return '';
+            if (isDM) return text; // Don't parse while editing to keep markdown syntax intact
+            let html = text.replace(/\*\*([\s\S]*?)\*\*/g, '<b>$1</b>');
+            html = html.replace(/\*([\s\S]*?)\*/g, '<i>$1</i>');
+            html = html.replace(/__([\s\S]*?)__/g, '<u>$1</u>');
+            return html;
+        }
 
         function parseAeonfallContent(text, isDM) {
             if (!text) return '';
@@ -803,10 +812,7 @@
                 const definition = parts.length > 1 ? parts[1].trim() : (TOOLTIPS[term] || "No technical record found in archives.");
                 return `<span class="term-hover def-term">${term}<span class="tooltip-content">${definition}</span></span>`;
             });
-            html = html.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-            html = html.replace(/\*(.*?)\*/g, '<i>$1</i>');
-            html = html.replace(/__(.*?)__/g, '<u>$1</u>');
-            return html;
+            return applyMarkdown(html, false);
         }
 
         function wrapWithTooltip(label, termKey) {
@@ -861,7 +867,9 @@
                         itemName = itemName.substring(0, lowestIndex).trim();
                     }
                     
-                    const capitalizedItem = itemName.split(/\s+/).map(word => {
+                    const cleanItemName = itemName.replace(/\*\*|\*|__/g, '');
+                    
+                    const capitalizedItem = cleanItemName.split(/\s+/).map(word => {
                         if (!word) return "";
                         return word.split('-').map(sub => {
                             if (!sub) return "";
@@ -874,7 +882,7 @@
 
                 return `(${linkedParts.join('')})`;
             });
-            return linked;
+            return applyMarkdown(linked, false);
         }
 
         window.jumpToItem = (itemName) => {
@@ -1077,7 +1085,7 @@
                         <li><b>${wrapWithTooltip('Duration')}:</b> <span class="dm-editable" contenteditable="${isDM}" oninput="window.debounceUpdate('${s.id}', 'duration', this.innerText)">${s.duration || 'Instantaneous'}</span></li>
                     </ul>
                     <div class="script-body ${isDM ? 'dm-editable' : ''}" contenteditable="${isDM}" oninput="window.debounceUpdate('${s.id}', 'content', this.innerText)">${parseAeonfallContent(s.content, isDM)}</div>
-                    <div class="script-higher-levels"><b>${wrapWithTooltip('At Higher Levels')}.</b> <span class="dm-editable" contenteditable="${isDM}" oninput="window.debounceUpdate('${s.id}', 'higherLevels', this.innerText)">${s.higherLevels || '...'}</span></div>
+                    <div class="script-higher-levels"><b>${wrapWithTooltip('At Higher Levels')}.</b> <span class="dm-editable" contenteditable="${isDM}" oninput="window.debounceUpdate('${s.id}', 'higherLevels', this.innerText)">${applyMarkdown(s.higherLevels || '...', isDM)}</span></div>
                     <div class="script-footer"><b>Lists:</b> <span class="${isDM ? 'dm-editable' : ''}" contenteditable="${isDM}" oninput="window.debounceUpdate('${s.id}', 'scriptLists', this.innerText)">${isDM ? (s.scriptLists || currentClass) : linkifyClasses(s.scriptLists || currentClass)}</span></div>
                     <button onclick="window.copyScript('${s.id}')" class="mt-4 w-full bg-[#2c1810]/5 hover:bg-[#7a1d1d]/10 border border-[#7a1d1d33] py-2 rounded-lg text-[#7a1d1d] font-black text-[9px] uppercase transition-all flex items-center justify-center gap-2"><span>📋</span> Copy Script Data</button>
                 </div>
@@ -1254,7 +1262,7 @@
                         ${imgHtml}
                         ${personalTieHtml}
                         ${isDM ? `<span class="item-url-input mt-2">Asset: <span class="dm-editable inline-block min-w-[50px] border-b border-amber-900/20" contenteditable="true" oninput="window.debounceUpdateLandmark('${l.id}', 'imageUrl', this.innerText)">${imgUrl}</span></span>` : ''}
-                        <div class="item-flavor-text mt-4 ${isDM ? 'dm-editable' : ''}" contenteditable="${isDM}" oninput="window.debounceUpdateLandmark('${l.id}', 'flavorText', this.innerText)">${l.flavorText || ""}</div>
+                        <div class="item-flavor-text mt-4 ${isDM ? 'dm-editable' : ''}" contenteditable="${isDM}" oninput="window.debounceUpdateLandmark('${l.id}', 'flavorText', this.innerText)">${applyMarkdown(l.flavorText || "", isDM)}</div>
                         <span class="item-description-label">Regional Data</span>
                         <div class="script-body ${isDM ? 'dm-editable' : ''}" contenteditable="${isDM}" oninput="window.debounceUpdateLandmark('${l.id}', 'content', this.innerText)">${parseAeonfallContent(l.content, isDM)}</div>
                         <div class="script-footer mt-4"><b>Tags:</b> <span class="dm-editable" contenteditable="${isDM}" oninput="window.debounceUpdateLandmark('${l.id}', 'tags', this.innerText)">${l.tags || 'Location'}</span></div>
@@ -1319,10 +1327,10 @@
                         ${imgHtml}
                         ${isDM ? `<span class="item-url-input">Asset: <span class="dm-editable inline-block min-w-[50px] border-b border-amber-900/20" contenteditable="true" oninput="window.debounceUpdateItem('${i.id}', 'imageUrl', this.innerText)">${imgUrl}</span></span>` : ''}
                         <ul class="script-prop-list"><li><b>Weight:</b> <span class="dm-editable" contenteditable="${isDM}" oninput="window.debounceUpdateItem('${i.id}', 'weight', this.innerText)">${i.weight || '1 lb'}</span></li><li><b>Value:</b> <span class="dm-editable" contenteditable="${isDM}" oninput="window.debounceUpdateItem('${i.id}', 'cost', this.innerText)">${i.cost || '-'}</span></li></ul>
-                        <div class="item-flavor-text ${isDM ? 'dm-editable' : ''}" contenteditable="${isDM}" oninput="window.debounceUpdateItem('${i.id}', 'flavorText', this.innerText)">${i.flavorText || ""}</div>
+                        <div class="item-flavor-text ${isDM ? 'dm-editable' : ''}" contenteditable="${isDM}" oninput="window.debounceUpdateItem('${i.id}', 'flavorText', this.innerText)">${applyMarkdown(i.flavorText || "", isDM)}</div>
                         <span class="item-description-label">Description</span>
                         <div class="script-body ${isDM ? 'dm-editable' : ''}" contenteditable="${isDM}" oninput="window.debounceUpdateItem('${i.id}', 'content', this.innerText)">${parseAeonfallContent(i.content, isDM)}</div>
-                        <div class="script-higher-levels"><b>Properties.</b> <span class="dm-editable" contenteditable="${isDM}" oninput="window.debounceUpdateItem('${i.id}', 'properties', this.innerText)">${i.properties || 'None.'}</span></div>
+                        <div class="script-higher-levels"><b>Properties.</b> <span class="dm-editable" contenteditable="${isDM}" oninput="window.debounceUpdateItem('${i.id}', 'properties', this.innerText)">${applyMarkdown(i.properties || 'None.', isDM)}</span></div>
                         ${stockControls}<div class="flex items-center">${visibilityActionBtn}${storeActionBtn}</div>
                         <button onclick="window.copyItem('${i.id}')" class="mt-4 w-full bg-[#2c1810]/5 hover:bg-[#7a1d1d]/10 border border-[#7a1d1d33] py-2 rounded-lg text-[#7a1d1d] font-black text-[9px] uppercase transition-all flex items-center justify-center gap-2"><span>📋</span> Copy Data</button>
                     `;
@@ -1351,11 +1359,11 @@
                         <div class="mt-8">
                             <h4 class="font-serif font-black text-lg uppercase text-[#7a1d1d] mb-4">Scenes & Beats</h4>
                             <div class="space-y-4">
-                                <div class="session-field-group"><b>1. Opening:</b> <div class="dm-editable italic min-h-[20px]" contenteditable="${isDM}" oninput="window.debounceUpdateSession('${s.id}', 'scene1', this.innerText)">${s.scene1 || '...'}</div></div>
-                                <div class="session-field-group"><b>2. Key Goals:</b> <div class="dm-editable italic min-h-[20px]" contenteditable="${isDM}" oninput="window.debounceUpdateSession('${s.id}', 'scene2', this.innerText)">${s.scene2 || '...'}</div></div>
-                                <div class="session-field-group"><b>3. Challenges:</b> <div class="dm-editable italic min-h-[20px]" contenteditable="${isDM}" oninput="window.debounceUpdateSession('${s.id}', 'scene3', this.innerText)">${s.scene3 || '...'}</div></div>
-                                <div class="session-field-group"><b>4. Secrets:</b> <div class="dm-editable italic min-h-[20px]" contenteditable="${isDM}" oninput="window.debounceUpdateSession('${s.id}', 'scene4', this.innerText)">${s.scene4 || '...'}</div></div>
-                                <div class="session-field-group"><b>5. Closing:</b> <div class="dm-editable italic min-h-[20px]" contenteditable="${isDM}" oninput="window.debounceUpdateSession('${s.id}', 'scene5', this.innerText)">${s.scene5 || '...'}</div></div>
+                                <div class="session-field-group"><b>1. Opening:</b> <div class="dm-editable italic min-h-[20px]" contenteditable="${isDM}" oninput="window.debounceUpdateSession('${s.id}', 'scene1', this.innerText)">${applyMarkdown(s.scene1 || '...', isDM)}</div></div>
+                                <div class="session-field-group"><b>2. Key Goals:</b> <div class="dm-editable italic min-h-[20px]" contenteditable="${isDM}" oninput="window.debounceUpdateSession('${s.id}', 'scene2', this.innerText)">${applyMarkdown(s.scene2 || '...', isDM)}</div></div>
+                                <div class="session-field-group"><b>3. Challenges:</b> <div class="dm-editable italic min-h-[20px]" contenteditable="${isDM}" oninput="window.debounceUpdateSession('${s.id}', 'scene3', this.innerText)">${applyMarkdown(s.scene3 || '...', isDM)}</div></div>
+                                <div class="session-field-group"><b>4. Secrets:</b> <div class="dm-editable italic min-h-[20px]" contenteditable="${isDM}" oninput="window.debounceUpdateSession('${s.id}', 'scene4', this.innerText)">${applyMarkdown(s.scene4 || '...', isDM)}</div></div>
+                                <div class="session-field-group"><b>5. Closing:</b> <div class="dm-editable italic min-h-[20px]" contenteditable="${isDM}" oninput="window.debounceUpdateSession('${s.id}', 'scene5', this.innerText)">${applyMarkdown(s.scene5 || '...', isDM)}</div></div>
                             </div>
                         </div>
                         ${isDM ? `<div class="dm-intel-box mt-10 p-4 bg-[#2c1810]/5 rounded-xl border border-[#2c1810]/10"><span class="text-[9px] uppercase font-black text-[#7a1d1d] opacity-50 block mb-4">DM Intel Overlay</span><div class="mb-4"><div class="font-black text-[10px] uppercase text-[#7a1d1d] mb-1">Goals</div><div class="dm-editable min-h-[40px] bg-white/50 p-2 rounded" contenteditable="true" oninput="window.debounceUpdateSession('${s.id}', 'dmGoals', this.innerText)">${s.dmGoals || '...'}</div></div><div class="mb-4"><div class="font-black text-[10px] uppercase text-[#7a1d1d] mb-1">Notes</div><div class="dm-editable min-h-[60px] bg-white/50 p-2 rounded" contenteditable="true" oninput="window.debounceUpdateSession('${s.id}', 'dmRunningNotes', this.innerText)">${s.dmRunningNotes || '...'}</div></div></div>` : ""}
@@ -1482,7 +1490,7 @@
             await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'handbookLandmarks'), { title: "NEW LANDMARK", content: "Detailed description...", flavorText: "", region: region, tags: "Location", imageUrl: "", personalTie: "", personalTieContent: "", createdAt: Date.now() });
         };
 
-        const sortFn = (a, b) => (a.order ?? a.createdAt) - (b.order ?? b.createdAt);
+        const sortFn = (a, b) => (Number(a.order ?? a.createdAt ?? 0)) - (Number(b.order ?? b.createdAt ?? 0));
 
         const init = async () => {
             await signInAnonymously(auth);

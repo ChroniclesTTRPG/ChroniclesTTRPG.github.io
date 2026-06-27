@@ -3,474 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chronicles - Custodian's Athenaeum</title>
+    <title>Chronicles - Lineages</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Homemade+Apple&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'parchment': '#f1e5c5',
+                        'ink': '#2c1e16',
+                        'blood': '#7a1b1b',
+                        'gold': '#c5a059',
+                        'wood': '#1a110b',
+                        'stone': '#e8e0cd'
+                    },
+                    fontFamily: {
+                        'serif': ['Lora', 'serif'],
+                        'heading': ['Cinzel', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        :root {
-            --parchment: #f4eedd; /* Soft cream paper */
-            --parchment-dark: #e3d5b8; /* Aged paper edge */
-            --ink: #36271c; /* Deep sepia/brown ink */
-            --accent: #7b8e78; /* Sage green from scholar's cloak */
-            --accent-dark: #5e6f5c; /* Darker sage for hover */
-            --leather: #6b4d35; /* Warm mid-tone brown */
-            --leather-dark: #422d1e; /* Dark binding leather */
-            --brass: #bda27e; /* Soft, aged metallic brass */
-            --brass-dark: #967d5c; /* Tarnished brass */
-            --wood-bg: #2b1f17; /* Very dark warm wood for main background */
-            --sunlight: #ffebd6; /* Warm glowing light */
+        body { font-family: 'Lora', serif; background-color: #1a110b; color: #2c1e16; overflow-x: hidden; 
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%232c1e16' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
         }
-
-        /* Utility classes for dynamic JS injection using new palette */
-        .bg-accent { background-color: var(--accent) !important; }
-        .text-accent { color: var(--accent) !important; }
-        .border-accent { border-color: var(--accent) !important; }
-        .text-brass { color: var(--brass) !important; }
-        .text-ink { color: var(--ink) !important; }
-        .border-ink { border-color: var(--ink) !important; }
-        .bg-ink { background-color: var(--ink) !important; }
-        .text-parchment { color: var(--parchment) !important; }
-
-        body { 
-            font-family: 'Lora', serif; 
-            background-color: var(--wood-bg); 
+        
+        .parchment-paper {
+            background-color: #f1e5c5;
             background-image: 
-                radial-gradient(circle at center, rgba(66, 45, 30, 0.4) 0%, rgba(25, 17, 12, 0.95) 100%),
-                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
-            color: var(--parchment); 
-            min-height: 100vh;
-            overflow-x: hidden; 
-        }
-
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-left: 1px solid var(--leather-dark); }
-        ::-webkit-scrollbar-thumb { background: var(--brass-dark); border-radius: 5px; border: 2px solid var(--wood-bg); }
-        ::-webkit-scrollbar-thumb:hover { background: var(--brass); }
-
-        .topbar {
-            background: linear-gradient(to bottom, var(--leather-dark), #1f150f);
-            border-bottom: 2px solid var(--brass-dark);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 20px;
-            min-height: calc(100vh - 80px);
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* --- FANTASY DOOR ANIMATION STYLES --- */
-        .door-container { perspective: 1200px; }
-        .door { transition: transform 3s cubic-bezier(0.25, 0.8, 0.25, 1); backface-visibility: hidden; }
-        .door-left { transform-origin: left; }
-        .door-right { transform-origin: right; }
-        .door-open-left { transform: rotateY(-105deg); }
-        .door-open-right { transform: rotateY(105deg); }
-        
-        .glow-overlay { 
-            opacity: 0; 
-            transition: opacity 2s ease-in, transform 3.5s ease-out; 
-            background: radial-gradient(circle, var(--sunlight) 0%, rgba(255, 235, 214, 0.8) 25%, transparent 70%); 
-            transform: scale(0.1); 
-        }
-        .glow-active { opacity: 1; transform: scale(3.5); }
-        /* ---------------------------- */
-
-        .library-shelf {
-            background: rgba(30, 20, 14, 0.6);
-            border-radius: 6px;
-            padding: 40px 20px 20px 20px;
-            border: 1px solid rgba(189, 162, 126, 0.1);
-            box-shadow: inset 0 20px 50px rgba(0,0,0,0.5);
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 30px;
-            align-items: end;
-            position: relative;
-        }
-
-        .library-shelf::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 20px;
-            background: linear-gradient(to bottom, var(--leather), var(--leather-dark));
-            border-top: 2px solid var(--brass-dark); border-radius: 0 0 6px 6px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6); z-index: 0;
-        }
-
-        .book-item {
-            position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center;
-            cursor: pointer; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            transform-origin: bottom center;
+                radial-gradient(circle at center, transparent 0%, rgba(200, 170, 120, 0.3) 100%),
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+            box-shadow: inset 0 0 40px rgba(139, 90, 43, 0.4), 0 10px 30px rgba(0,0,0,0.7);
+            border: 2px solid #c5a059;
+            color: #2c1e16;
+            border-radius: 4px;
         }
         
-        .book-item:hover { transform: translateY(-12px) scale(1.03); z-index: 10; }
-
-        .book-cover {
-            width: 140px; height: 190px; border-radius: 3px 10px 10px 3px;
-            box-shadow: inset 5px 0 15px rgba(0,0,0,0.4), inset -1px 0 3px rgba(255,255,255,0.1), 6px 6px 15px rgba(0,0,0,0.6);
-            position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px;
-            border-left: 6px solid rgba(0,0,0,0.3);
-        }
-
-        /* Natural, earthy book variations */
-        .type-book .book-cover { background: linear-gradient(135deg, #3d5a4a, #263b30); border: 1px solid #5a7a67; } /* Moss green */
-        .type-journal .book-cover { background: linear-gradient(135deg, var(--leather), #473220); border: 1px solid var(--brass-dark); border-radius: 6px; }
-        .type-manuscript .book-cover { background: linear-gradient(135deg, var(--parchment-dark), #cfc1a5); border: 1px solid #a89a80; border-radius: 2px; color: var(--ink); box-shadow: inset 0 0 30px rgba(100,70,40,0.1), 4px 4px 12px rgba(0,0,0,0.4); }
-        .type-textbook .book-cover { background: linear-gradient(135deg, #444c54, #272e36); border: 1px solid #6b7580; } /* Slate blue-grey */
-        .type-newspaper .book-cover { background: var(--parchment); border: 1px solid #b8a991; border-radius: 0; color: var(--ink); box-shadow: 2px 2px 8px rgba(0,0,0,0.2); width: 150px; height: 210px; }
-        .type-parchment .book-cover { background: var(--parchment); border-radius: 0 30px 30px 0; color: var(--ink); border-left: 5px solid var(--accent); width: 130px; height: 180px; box-shadow: inset -10px 0 20px rgba(0,0,0,0.05), 3px 3px 10px rgba(0,0,0,0.3);}
-        .type-song .book-cover { background: linear-gradient(135deg, #7c4c5e, #4d2b38); border: 1px solid #a37284; } /* Soft burgundy */
-
-        .book-title { font-family: 'Cinzel', serif; font-weight: 700; font-size: 13px; text-transform: uppercase; color: var(--parchment); text-shadow: 1px 1px 3px rgba(0,0,0,0.6); line-height: 1.3; word-wrap: break-word; letter-spacing: 0.5px; }
-        .type-manuscript .book-title, .type-newspaper .book-title, .type-parchment .book-title { color: var(--ink); text-shadow: none; font-weight: 900;}
-        .type-book .book-title { color: #e6f0e6; }
+        .fantasy-btn { background: linear-gradient(to bottom, #8a2b2b, #5a1111); color: #f1e5c5 !important; border: 2px solid #c5a059 !important; font-family: 'Cinzel', serif; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.2) !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+        .fantasy-btn:hover { background: linear-gradient(to bottom, #a33232, #7a1b1b); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.6) !important; border-color: #e8cd87 !important; }
         
-        .book-author { font-size: 9px; margin-top: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; color: inherit; font-family: 'Lora', serif; font-style: italic; }
+        .fantasy-btn-alt { background: linear-gradient(to bottom, #2c1e16, #1a110b); color: #c5a059 !important; border: 2px solid #c5a059 !important; font-family: 'Cinzel', serif; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s ease; }
+        .fantasy-btn-alt:hover { background: linear-gradient(to bottom, #3d2a1f, #2c1e16); color: #f1e5c5 !important; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.6) !important; }
 
-        .book-decoration { position: absolute; inset: 6px; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 2px 6px 6px 2px; pointer-events: none; }
-        .type-manuscript .book-decoration, .type-newspaper .book-decoration, .type-parchment .book-decoration { border-color: rgba(0,0,0,0.1); }
-        .type-journal .book-decoration { border-color: rgba(189, 162, 126, 0.3); }
+        .nav-link { color: #888; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; transition: color 0.2s; cursor: pointer; text-decoration: none; white-space: nowrap; font-family: 'Cinzel', serif; }
+        .nav-link.active { color: #c5a059; border-bottom: 2px solid #c5a059; padding-bottom: 4px; text-shadow: 0 0 10px rgba(197, 160, 89, 0.5); }
+        .nav-link:hover { color: #f1e5c5; }
 
-        .badge-personal {
-            position: absolute; top: -8px; right: -8px; background: var(--leather-dark); color: var(--brass); font-size: 9px; padding: 4px 8px; border-radius: 4px; 
-            box-shadow: 0 0 12px rgba(189, 162, 126, 0.4), 0 4px 6px rgba(0,0,0,0.5); border: 1px solid var(--brass-dark); z-index: 20; font-family: 'Cinzel', serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .badge-new {
-            position: absolute; top: -8px; left: -8px; background: var(--accent); color: var(--parchment); font-size: 9px; padding: 4px 8px; border-radius: 4px; 
-            box-shadow: 0 0 12px var(--accent); border: 1px solid #9db59a; z-index: 20; font-family: 'Cinzel', serif; font-weight: 600; text-transform: uppercase; animation: soft-pulse 2.5s infinite;
-        }
+        .sidebar-link { display: block; padding: 12px 16px; margin-bottom: 8px; border-radius: 4px; font-family: 'Cinzel', serif; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #f1e5c5; background: rgba(0,0,0,0.4); border: 1px solid #555; transition: all 0.2s; }
+        .sidebar-link:hover { background: rgba(0,0,0,0.8); border-color: #c5a059; transform: translateX(4px); }
+        .sidebar-link.active-page { background: #7a1b1b; border-color: #c5a059; color: white; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
 
-        .book-item.is-personal .book-cover { box-shadow: 0 0 20px rgba(189, 162, 126, 0.3), inset 5px 0 15px rgba(0,0,0,0.5); border: 1px solid var(--brass); }
-
-        .desk-view { display: none; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.6s ease-out; }
-        .desk-view.active { display: flex; }
-
-        .book-cover-wrap {
-            width: 100%; max-width: 900px;
-            background: var(--leather-dark);
-            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5z' fill='%23000000' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
-            border-radius: 6px 16px 16px 6px;
-            padding: 12px 20px 12px 40px;
-            position: relative; 
-            border: 1px solid #5a3d28;
-            box-shadow: 0 40px 60px -15px rgba(0,0,0,0.8), inset 10px 0 20px rgba(0,0,0,0.8), inset -2px 0 8px rgba(255,255,255,0.05);
-        }
-
-        .book-spine-fold {
-            position: absolute; top: 0; bottom: 0; left: 15px; width: 25px;
-            background: linear-gradient(to right, transparent, rgba(0,0,0,0.6) 30%, rgba(255,255,255,0.05) 50%, transparent);
-            z-index: 5; pointer-events: none;
-        }
-
-        .desk-pages {
-            background: var(--parchment);
-            background-image: radial-gradient(circle at center, transparent 0%, rgba(138, 107, 78, 0.08) 100%), url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
-            border-radius: 2px 8px 8px 2px;
-            padding: 60px 80px 100px 80px;
-            box-shadow: inset 15px 0 30px rgba(0,0,0,0.15), -4px 0 10px rgba(0,0,0,0.6);
-            min-height: 750px;
-            position: relative;
-        }
-
-        .desk-header { text-align: center; margin-bottom: 50px; border-bottom: 1px solid var(--brass-dark); padding-bottom: 25px; position: relative; }
-        .desk-title { font-family: 'Cinzel', serif; font-weight: 700; font-size: 2.8rem; color: var(--ink); text-transform: uppercase; letter-spacing: 1px; }
-        .desk-meta { font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--accent-dark); letter-spacing: 2px; text-transform: uppercase; margin-top: 15px; }
-
-        .content-block { position: relative; margin-bottom: 25px; border: 1px solid transparent; transition: all 0.3s ease; border-radius: 4px; padding: 5px; }
-        .content-block.group:hover { border-color: rgba(189, 162, 126, 0.3); background: rgba(189, 162, 126, 0.03); }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2c1e16; border: 1px solid #c5a059; color: #f1e5c5; padding: 12px 24px; border-radius: 4px; z-index: 100000; pointer-events: none; opacity: 0; transition: opacity 0.3s; font-family: 'Cinzel', serif; box-shadow: 0 10px 20px rgba(0,0,0,0.8); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 200000; padding: 20px; backdrop-filter: blur(4px); }
         
-        .manual-h3 { font-family: 'Cinzel', serif; font-weight: 600; font-size: 1.6rem; border-bottom: 1px solid rgba(189, 162, 126, 0.5); padding-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; color: var(--ink); margin-top: 35px; }
-        .manual-p { font-size: 1.15rem; line-height: 1.8; color: var(--ink); text-align: justify; white-space: pre-wrap; font-weight: 400; }
-        .manual-divider { width: 40%; height: 1px; background: var(--brass-dark); margin: 40px auto; opacity: 0.6; position: relative; }
-        .manual-divider::after { content: '♦'; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--brass-dark); font-size: 12px; background: var(--parchment); padding: 0 10px; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .arch-btn { font-size: 11px; font-weight: 600; text-transform: uppercase; padding: 12px 24px; border-radius: 4px; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(to bottom, var(--accent), var(--accent-dark)); color: var(--parchment); font-family: 'Cinzel', serif; letter-spacing: 1.5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.2); border: 1px solid #8ba389; }
-        .arch-btn:hover { background: linear-gradient(to bottom, #8ba389, var(--accent)); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.4); border-color: #a4bea2; }
-        
-        .arch-btn-secondary { background: linear-gradient(to bottom, var(--leather), var(--leather-dark)); color: var(--parchment); border-color: #8a6446; }
-        .arch-btn-secondary:hover { background: linear-gradient(to bottom, #7d5a3e, var(--leather)); border-color: #a67c58; }
+        /* LINEAGE SPECIFIC STYLES */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; padding: 10px 0; }
 
-        #dm-global-controls { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(43, 31, 23, 0.95); backdrop-filter: blur(12px); border: 1px solid var(--brass-dark); border-top: 3px solid var(--accent); border-radius: 6px; padding: 16px 24px; z-index: 1000; box-shadow: 0 20px 40px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 12px; min-width: 600px; }
-
-        .block-controls {
-            position: absolute; top: 0; right: -50px; opacity: 0; transition: opacity 0.2s;
-            display: flex; flex-direction: column; gap: 5px; background: var(--wood-bg); border: 1px solid var(--brass-dark); border-radius: 4px; padding: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 50;
+        .race-card {
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px solid rgba(139, 90, 43, 0.4);
+            box-shadow: inset 0 0 15px rgba(255,255,255,0.5), 0 4px 6px rgba(0,0,0,0.1);
+            position: relative; display: flex; flex-direction: column; height: 380px; overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer; border-radius: 4px;
         }
-        .content-block:hover .block-controls { opacity: 1; right: -55px; }
+        .race-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-color: #c5a059; }
         
-        .book-dm-controls {
-            position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); opacity: 0; transition: all 0.3s ease;
-            display: flex; gap: 5px; background: rgba(43, 31, 23, 0.95); border: 1px solid var(--brass-dark); border-radius: 4px; padding: 6px; z-index: 50; pointer-events: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        .card-bg-image { position: absolute; top: 0; right: 0; width: 50%; height: 100%; z-index: 1; filter: sepia(0.3) contrast(1.1) brightness(0.9); transition: all 0.5s ease; border-left: 2px solid rgba(139,90,43,0.3); }
+        .race-card:hover .card-bg-image { filter: sepia(0) contrast(1.1) brightness(1); width: 55%; }
+        .card-bg-image::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, #f1e5c5 10%, transparent 90%); z-index: 2; pointer-events: none; }
+        .card-bg-image img, .card-bg-image video { width: 100%; height: 100%; object-fit: cover; }
+
+        .card-text-panel { position: relative; z-index: 3; width: 65%; height: 100%; padding: 24px; display: flex; flex-direction: column; background: linear-gradient(to right, #f1e5c5 80%, transparent); pointer-events: none; }
+        .card-text-panel > * { pointer-events: auto; }
+
+        .view-btn {
+            background: #2c1e16; color: #c5a059; font-family: 'Cinzel', serif; font-weight: 900; font-size: 10px; text-transform: uppercase;
+            padding: 10px; border-radius: 4px; text-align: center; width: 100%; margin-top: auto; letter-spacing: 2px; border: 1px solid #c5a059;
+            transition: background 0.3s ease;
         }
-        .book-item:hover .book-dm-controls { opacity: 1; bottom: -45px; pointer-events: auto; }
+        .race-card:hover .view-btn { background: #7a1b1b; color: #f1e5c5; border-color: #f1e5c5; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes soft-pulse { 0% { box-shadow: 0 0 8px var(--accent); } 50% { box-shadow: 0 0 15px var(--accent); transform: scale(1.02); } 100% { box-shadow: 0 0 8px var(--accent); } }
-        
-        .hidden { display: none !important; }
-        .toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-20px); background: var(--wood-bg); color: var(--parchment); padding: 16px 40px; border-radius: 4px; z-index: 2000000; opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-family: 'Cinzel'; font-size: 12px; font-weight: 600; pointer-events: none; border: 1px solid var(--brass-dark); box-shadow: 0 15px 40px rgba(0,0,0,0.6); letter-spacing: 1px; text-transform: uppercase; }
+        .reorder-controls { position: absolute; left: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 4px; z-index: 20; background: #2c1e16; padding: 8px 4px; border-radius: 0 4px 4px 0; border: 1px solid #c5a059; border-left: none; }
+        .reorder-btn { width: 24px; height: 24px; color: #c5a059; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .reorder-btn:hover:not(:disabled) { color: #f1e5c5; transform: scale(1.1); }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(20, 14, 10, 0.85); display: flex; align-items: center; justify-content: center; z-index: 200000; padding: 20px; backdrop-filter: blur(4px); }
-        .modal-container { background: var(--parchment); border: 1px solid var(--brass-dark); border-radius: 6px; width: 100%; max-width: 420px; padding: 32px; box-shadow: inset 0 0 50px rgba(138, 107, 78, 0.1), 0 25px 50px -12px rgba(0, 0, 0, 0.8); position: relative; color: var(--ink); text-align: center; background-image: radial-gradient(circle at center, transparent 0%, rgba(138, 107, 78, 0.05) 100%);}
-        
-        .font-signature { font-family: 'Homemade Apple', cursive; }
+        /* VIEW TRANSITIONS */
+        .view-section { transition: opacity 0.4s ease-in-out, transform 0.4s ease; }
+        .view-hidden { opacity: 0; pointer-events: none; position: absolute; transform: translateY(15px); width: 100%; }
+        .view-active { opacity: 1; pointer-events: auto; position: relative; transform: translateY(0); }
 
-        #access-terminal {
-            position: fixed; inset: 0; background: rgba(25, 17, 12, 0.95); backdrop-filter: blur(8px); z-index: 100000;
-            display: flex; align-items: center; justify-content: center; padding: 20px;
-            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        /* FLIP MECHANICS */
+        .flip-wrapper { display: grid; width: 100%; transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1); transform-style: preserve-3d; perspective: 2500px; }
+        .flip-wrapper.flipped { transform: rotateY(180deg); }
+        .side-front, .side-back { grid-area: 1 / 1; width: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        .side-front { z-index: 2; opacity: 1; transition: opacity 0.4s; }
+        .side-back { transform: rotateY(180deg); z-index: 1; opacity: 0; transition: opacity 0.4s; }
+        .flipped .side-front { opacity: 0; pointer-events: none; visibility: hidden; z-index: 1; }
+        .flipped .side-back { opacity: 1; pointer-events: auto; visibility: visible; z-index: 2; }
+
+        /* DM EDITABLE STATES */
+        .dm-active-edit .dm-editable { 
+            background: rgba(255, 255, 255, 0.3); 
+            outline: 1px dashed rgba(139, 90, 43, 0.5); 
+            border-radius: 4px; padding: 4px; 
+            transition: background 0.2s, outline 0.2s, color 0.2s;
+            min-height: 1.2em;
         }
-        #access-terminal.unlocked { opacity: 0; pointer-events: none; transform: scale(1.03) translateY(-15px); }
-
-        @media (max-width: 1024px) {
-            .book-cover-wrap { padding: 5px 10px 5px 20px; border-radius: 0; border-left: none; border-right: none; }
-            .desk-pages { padding: 40px 25px; }
-            #dm-global-controls { min-width: 0; width: 95%; padding: 12px; }
-            .library-shelf { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-            .book-cover { width: 110px; height: 150px; }
+        .dm-active-edit .dm-editable:focus {
+            background: rgba(255, 255, 255, 0.8);
+            outline: 2px solid #7a1b1b;
         }
+        .dm-active-edit [contenteditable="true"]:empty::before {
+            content: "Click to add entry..."; color: #888; font-style: italic; pointer-events: none; display: block;
+        }
+
+        /* Specific fix for dark elements (like LOG ENTRY titles) being edited */
+        .dm-active-edit .bg-ink.dm-editable {
+            background-color: #2c1e16 !important; /* Keep it dark */
+            color: #f1e5c5 !important;            /* Keep text light */
+            outline: 1px dashed rgba(197, 160, 89, 0.8); 
+        }
+        .dm-active-edit .bg-ink.dm-editable:focus {
+            background-color: #1a110b !important;
+            outline: 2px solid #c5a059;
+        }
+
+        /* TABLES */
+        .prog-table { width: 100%; border-collapse: separate; border-spacing: 0; font-family: 'Lora', serif; font-size: 13px; margin: 25px 0; background: rgba(255,255,255,0.5); border: 2px solid #c5a059; border-radius: 4px; overflow: hidden; }
+        .prog-table th { font-family: 'Cinzel', serif; text-transform: uppercase; font-size: 11px; color: #f1e5c5; background: #2c1e16; padding: 14px 12px; text-align: left; font-weight: 900; letter-spacing: 1px; border-bottom: 2px solid #7a1b1b; }
+        .prog-table td { padding: 12px; border-bottom: 1px dashed rgba(139, 90, 43, 0.3); border-right: 1px dashed rgba(139, 90, 43, 0.3); color: #2c1e16; }
+        .prog-table tr:nth-child(even) td { background-color: rgba(255,255,255,0.3); }
+        .prog-table th:last-child, .prog-table td:last-child { border-right: none; }
+        .prog-table tr:last-child td { border-bottom: none; }
+        .dm-active-edit .prog-table th:focus { color: #c5a059 !important; }
+
+        .ledger-list { list-style: none; padding: 0; }
+        .ledger-list li { margin-bottom: 24px; border-bottom: 1px dashed rgba(139, 90, 43, 0.3); padding-bottom: 16px; display: flex; flex-direction: column; }
+        .ledger-list b { font-family: 'Cinzel', serif; font-size: 11px; text-transform: uppercase; color: #7a1b1b; letter-spacing: 1px; font-weight: 900; border-bottom: 1px solid rgba(197, 160, 89, 0.3); padding-bottom: 4px; margin-bottom: 8px; }
+        .ledger-list .ledger-content { font-family: 'Lora', serif; font-size: 14px; color: #2c1e16; line-height: 1.6; }
+
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col items-center">
 
-    <div id="intro-animation" class="fixed inset-0 z-[300000] flex items-center justify-center bg-transparent door-container transition-opacity duration-1000">
-        <!-- Soft Warm Sunlight Behind Doors -->
-        <div id="intro-glow" class="absolute inset-0 glow-overlay z-0 pointer-events-none"></div>
+    <div id="toast" class="toast">Message</div>
 
-        <!-- Left Oak Door -->
-        <div id="door-left" class="door door-left absolute top-0 left-0 w-1/2 h-full bg-[#3a2618] border-r-2 border-[#1f130b] flex justify-end items-center z-10 shadow-[10px_0_30px_rgba(0,0,0,0.8)] bg-[url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.04\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100\' height=\'100\' filter=\'url(%23noise)\' opacity=\'0.15\'/%3E%3C/svg%3E')]">
-            <div class="w-16 h-full border-r border-[#5c4028] bg-gradient-to-r from-transparent to-[#291a10] absolute right-0"></div>
-            <div class="w-24 h-64 border-2 border-[var(--brass-dark)] border-r-0 rounded-l-full mr-1 flex items-center justify-end p-3 bg-[#2b1c11] shadow-[inset_0_0_20px_rgba(0,0,0,0.6)]">
-            </div>
-        </div>
-
-        <!-- Right Oak Door -->
-        <div id="door-right" class="door door-right absolute top-0 right-0 w-1/2 h-full bg-[#3a2618] border-l-2 border-[#1f130b] flex justify-start items-center z-10 shadow-[-10px_0_30px_rgba(0,0,0,0.8)] bg-[url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.04\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100\' height=\'100\' filter=\'url(%23noise)\' opacity=\'0.15\'/%3E%3C/svg%3E')]">
-            <div class="w-16 h-full border-l border-[#5c4028] bg-gradient-to-l from-transparent to-[#291a10] absolute left-0"></div>
-            <div class="w-24 h-64 border-2 border-[var(--brass-dark)] border-l-0 rounded-r-full ml-1 flex items-center justify-start p-3 bg-[#2b1c11] shadow-[inset_0_0_20px_rgba(0,0,0,0.6)]">
-            </div>
-        </div>
-
-        <!-- Center Lock/Emblem & Button -->
-        <div id="door-center-console" class="absolute z-20 flex flex-col items-center pointer-events-auto">
-            <div id="door-emblem" class="w-36 h-36 bg-[var(--wood-bg)] rounded-full border-4 border-[var(--brass-dark)] flex items-center justify-center shadow-[0_0_30px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(189,162,126,0.1)] mb-8 transition-all duration-1000 relative overflow-hidden">
-                <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.05\' numOctaves=\'2\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100\' height=\'100\' filter=\'url(%23noise)\' opacity=\'0.1\'/%3E%3C/svg%3E')]"></div>
-                <i class="fa-solid fa-leaf text-[var(--accent)] text-5xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] z-10"></i>
-            </div>
-            <div id="auth-loading-text" class="text-[var(--parchment)] font-heading uppercase text-xs tracking-[0.2em] animate-pulse font-bold bg-[#1a110b]/80 px-5 py-2 rounded border border-[var(--brass-dark)]">Brushing away the dust...</div>
-            <button id="open-doors-btn" class="arch-btn !text-lg !py-3 !px-8 shadow-[0_0_20px_rgba(123,142,120,0.4)] animate-pulse hidden" onclick="window.playDoorAnimation()">Enter the Archives</button>
-        </div>
+    <!-- Initial Loading State -->
+    <div id="initial-loading" class="flex flex-col items-center justify-center h-screen fade-in w-full text-center">
+        <i class="fa-solid fa-compass fa-spin text-6xl text-gold mb-6"></i>
+        <h2 class="font-heading text-2xl text-parchment animate-pulse">Charting the Tomes...</h2>
     </div>
 
-    <div id="toast" class="toast">Notification</div>
-
-    <div id="access-terminal" class="hidden">
-        <div class="w-full max-w-2xl bg-[var(--parchment)] rounded-md shadow-[0_0_50px_rgba(0,0,0,0.6)] border border-[var(--brass-dark)] flex overflow-hidden min-h-[400px]">
-            <div class="w-12 bg-[var(--leather-dark)] border-r border-[var(--brass-dark)] shadow-[inset_-3px_0_10px_rgba(0,0,0,0.4)] flex-shrink-0"></div> <!-- Book Spine -->
-            <div class="flex-1 p-8 md:p-12 flex flex-col relative bg-[url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.05\' numOctaves=\'2\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100\' height=\'100\' filter=\'url(%23noise)\' opacity=\'0.04\'/%3E%3C/svg%3E')]">
-                <h2 class="text-3xl font-heading font-bold text-[var(--ink)] text-center mb-1 uppercase tracking-wider">The Great Ledger</h2>
-                <p class="text-[11px] font-serif italic text-[var(--ink)]/70 text-center mb-8">Sign your name to peruse the historical records.</p>
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboard-screen" class="min-h-screen p-4 md:p-8 hidden w-full">
+        <div class="max-w-[1400px] mx-auto">
+            <!-- HEADER & NAVIGATION -->
+            <header class="flex flex-col items-center md:items-start md:flex-row justify-between mb-8 border-b border-gray-700 pb-6 gap-6 relative">
+                <div class="absolute -bottom-1.5 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-50"></div>
                 
-                <div class="flex-grow flex flex-col justify-center max-w-md mx-auto w-full gap-6 mb-6">
-                    <div>
-                        <label class="text-[10px] font-heading font-bold uppercase text-[var(--accent-dark)] tracking-widest mb-2 block text-center">Visitor Identity</label>
-                        <select id="guestbook-char-select" class="w-full bg-[var(--parchment-dark)]/30 border border-[var(--brass-dark)] p-3 rounded font-serif text-sm focus:outline-none focus:border-[var(--accent)] text-center shadow-inner cursor-pointer text-[var(--ink)]" onchange="window.onGuestbookCharSelect(this.value)">
-                            <option value="">-- Choose Character --</option>
-                        </select>
-                    </div>
-
-                    <div class="mt-2">
-                        <input type="text" id="guestbook-signature" class="w-full bg-transparent border-none border-b border-[var(--brass-dark)] font-signature text-3xl p-4 text-center text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] transition-colors placeholder:opacity-30 placeholder:font-serif placeholder:text-sm" placeholder="Sign in ink...">
-                    </div>
-
-                    <button onclick="window.submitGuestbookSignature()" class="arch-btn w-full shadow !py-3">Inscribe & Enter</button>
-                </div>
-
-                <div class="mt-auto pt-6 border-t border-[var(--brass-dark)]/30 text-center">
-                    <button onclick="window.bypassTerminal()" class="text-[10px] font-bold uppercase text-[var(--ink)]/60 hover:text-[var(--accent)] transition-colors tracking-widest">Browse as Unregistered Guest</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <header class="topbar flex items-center justify-between px-6 py-4">
-        <div class="flex items-center gap-4">
-            <i class="fa-solid fa-scroll text-[var(--brass)] text-2xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"></i>
-            <div>
-                <h1 id="main-campaign-title" class="font-heading font-bold text-xl text-[var(--parchment)] uppercase tracking-wider m-0 leading-none">Chronicles</h1>
-                <p id="sidebar-subtitle" class="text-[9px] uppercase font-bold tracking-[2px] text-[var(--brass)]/80 font-heading m-0 mt-1">Custodian's Athenaeum</p>
-            </div>
-        </div>
-        
-        <div class="flex items-center gap-6">
-            <div id="user-display-container" class="text-right hidden sm:block">
-                <div id="user-identity" class="font-heading text-xs font-bold uppercase text-[var(--parchment)] mb-0.5">Authenticating...</div>
-                <div id="user-identity-sub" class="font-serif italic text-[10px] text-[var(--brass)]/70 hidden"></div>
-            </div>
-            
-            <button id="sync-btn" onclick="window.forceSync()" class="arch-btn arch-btn-secondary !text-[10px] !py-1.5 !px-3 !bg-transparent !border-[var(--brass-dark)] hover:!bg-[var(--leather)]" title="Synchronize Archive">
-                <i class="fa-solid fa-arrows-rotate sync-icon transition-all duration-500 ease-in-out"></i>
-            </button>
-
-            <button onclick="window.routeTo('handbook.html')" class="text-[var(--brass)]/60 hover:text-[var(--parchment)] transition-colors text-lg" title="Exit Library">
-                <i class="fa-solid fa-door-open"></i>
-            </button>
-        </div>
-    </header>
-
-    <main class="main-container">
-        
-        <div id="library-view" class="w-full animation-fadeIn">
-            <div class="flex justify-between items-end mb-8 border-b border-[var(--brass-dark)]/30 pb-4">
-                <div>
-                    <h2 class="font-heading text-3xl font-bold text-[var(--parchment)] uppercase tracking-wider drop-shadow-md">The Grand Stacks</h2>
-                    <div class="text-[10px] font-heading font-bold text-[var(--brass)]/70 uppercase tracking-widest mt-1"><span id="book-count">0</span> Records Found</div>
-                </div>
-                <div id="library-actions-container">
-                    <!-- Request Lore button populated here -->
-                </div>
-            </div>
-            
-            <div id="library-shelves-container" class="space-y-16">
-                <!-- Shelves dynamically generated here -->
-            </div>
-        </div>
-
-        <div id="desk-view" class="desk-view">
-            <div class="w-full max-w-4xl flex justify-between items-center mb-6 px-4">
-                <button onclick="window.closeBook()" class="arch-btn arch-btn-secondary !text-[10px] !bg-transparent border border-[var(--brass-dark)] hover:bg-[var(--leather-dark)]"><i class="fa-solid fa-arrow-left mr-2"></i> Return to Shelves</button>
-                <div class="text-[10px] font-heading font-bold text-[var(--brass)]/60 uppercase tracking-widest">Reading Desk</div>
-            </div>
-
-            <div class="book-cover-wrap">
-                <div class="book-spine-fold"></div>
-                <div class="desk-pages">
-                    <div class="desk-header group">
-                        <div id="desk-book-title-container" class="relative inline-block w-full">
-                            <!-- Title & Edit Button Injected Here -->
+                <div class="text-center md:text-left w-full md:w-auto">
+                    <h1 id="main-campaign-title" class="text-4xl md:text-5xl text-gray-400 font-bold mb-1 font-heading tracking-tight leading-none drop-shadow-md">Chronicles</h1>
+                    <div class="flex flex-col md:flex-row items-center gap-3 mt-2">
+                        <p class="text-gray-500 text-xs uppercase tracking-[0.2em] font-bold font-heading">Campaign Library</p>
+                        <div class="bg-black bg-opacity-60 border border-gray-700 px-3 py-1 rounded flex items-center gap-2 shadow-inner">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                            <span id="user-display-name" class="text-[10px] font-black text-gray-400 uppercase tracking-widest font-heading">Guest</span>
                         </div>
-                        <div id="desk-book-meta" class="desk-meta">Type • Access Level</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center md:items-end gap-4 w-full md:w-auto mt-4 md:mt-0">
+                    <div class="flex items-center gap-4">
+                        <button onclick="try { window.location.href='campaigns.html' } catch(e) { window.showToast('Redirects disabled in preview.') }" class="fantasy-btn-alt px-4 py-1.5 text-xs rounded !border-gray-600 !text-gray-400 hover:!text-white"><i class="fa-solid fa-arrow-left mr-2"></i>Nexus</button>
+                    </div>
+
+                    <nav id="main-nav" class="flex gap-4 md:gap-6 items-center w-full overflow-x-auto scrollbar-hide pb-2 px-2 md:px-0 md:pb-0 justify-start md:justify-end mt-2">
+                        <a href="#" onclick="window.routeTo('characters.html'); return false;" class="nav-link">Party</a>
+                        <a href="#" onclick="window.routeTo('npcs.html'); return false;" class="nav-link">NPCs</a>
+                        <a href="#" onclick="window.routeTo('beasts.html'); return false;" class="nav-link">Bestiary</a>
+                        <a href="#" onclick="window.routeTo('backpack.html'); return false;" class="nav-link">Backpack</a>
+                        <a href="#" onclick="window.routeTo('handbook.html'); return false;" class="nav-link active">Handbook</a>
+                        <a href="#" onclick="window.routeTo('graveyard.html'); return false;" class="nav-link">Graveyard</a>
+                    </nav>
+                </div>
+            </header>
+
+            <!-- HANDBOOK SPLIT LAYOUT -->
+            <div class="flex flex-col lg:flex-row gap-8 items-start">
+                
+                <!-- LEFT SIDEBAR: Library Navigation -->
+                <div class="w-full lg:w-64 flex-shrink-0">
+                    <div class="bg-black/60 border border-gray-700 rounded-lg p-4 sticky top-4">
+                        <h2 class="text-gold font-heading font-bold text-lg mb-4 text-center border-b border-gray-700 pb-2">The Archives</h2>
+                        <nav id="library-nav" class="flex flex-col">
+                            <!-- Links generated dynamically by JS -->
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- RIGHT AREA: The Parchment Document -->
+                <div class="flex-grow w-full relative">
+                    <div class="flex justify-between items-end mb-6">
+                        <h2 id="page-title-display" class="text-3xl md:text-4xl font-heading font-bold text-gray-400 uppercase tracking-widest drop-shadow">Loading Lineages...</h2>
+                        <div id="dm-top-controls" class="hidden flex gap-2">
+                            <button id="add-record-btn" onclick="window.addRecord()" class="fantasy-btn px-4 py-2 rounded text-[10px]"><i class="fa-solid fa-plus mr-1"></i> New Entry</button>
+                            <button id="remove-record-btn" onclick="window.togglePurgeMode()" class="fantasy-btn-alt px-4 py-2 rounded text-[10px]">Purge Mode</button>
+                        </div>
                     </div>
                     
-                    <div id="desk-content-container">
-                        <!-- Pages/Blocks dynamically generated here -->
+                    <div class="parchment-paper p-6 md:p-12 min-h-[600px] mb-24 overflow-hidden" id="content-pane">
+                        
+                        <!-- VIEW: GRID -->
+                        <div id="view-grid" class="view-section view-active">
+                            <div class="border-b border-gold pb-4 mb-6">
+                                <h3 class="font-heading text-2xl font-bold uppercase text-blood tracking-tight">Biological Stacks</h3>
+                                <p class="font-serif italic text-xs text-ink mt-1">Dossiers of the known world</p>
+                            </div>
+                            
+                            <!-- Category Tabs & Management -->
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-6 pb-2 border-b border-gold/30">
+                                <div id="category-tabs" class="flex flex-wrap gap-2 flex-grow"></div>
+                                <button id="edit-categories-btn" onclick="window.openCategoryModal()" class="hidden fantasy-btn-alt px-3 py-1.5 rounded text-[10px] whitespace-nowrap"><i class="fa-solid fa-tags mr-1"></i> Edit Terminology</button>
+                            </div>
+
+                            <div id="stack-grid" class="grid-container"></div>
+                        </div>
+
+                        <!-- VIEW: DETAILS -->
+                        <div id="view-details" class="view-section view-hidden">
+                            <div class="flex flex-col sm:flex-row justify-between items-center sm:items-start mb-8 gap-4 border-b border-gold pb-4">
+                                <button onclick="window.setView('grid')" class="text-[11px] font-heading font-black uppercase tracking-[0.2em] text-ink hover:text-blood transition-colors flex items-center gap-2">
+                                    <i class="fa-solid fa-arrow-left"></i> Return to Directory
+                                </button>
+                                <button onclick="window.flipPage()" id="btn-flip" class="fantasy-btn-alt px-6 py-2 rounded text-[10px] flex items-center gap-2">
+                                    <i class="fa-solid fa-scroll"></i> <span id="flip-text">Turn Page</span>
+                                </button>
+                            </div>
+                            
+                            <div id="flip-container" class="flip-wrapper">
+                                <div class="side-front" id="details-front"></div>
+                                <div class="side-back" id="details-back"></div>
+                            </div>
+                            
+                            <div id="dm-bottom-controls" class="hidden flex flex-col sm:flex-row gap-3 mt-12 pt-8 border-t border-gold">
+                                <button onclick="window.addSection()" class="fantasy-btn px-6 py-2 rounded font-black uppercase text-[10px]">+ Append Log Section</button>
+                                <button onclick="window.triggerDel()" class="border border-blood text-blood hover:bg-blood hover:text-parchment px-6 py-2 rounded font-black uppercase text-[10px] transition-colors">Expunge Record</button>
+                            </div>
+                        </div>
+
                     </div>
-
-                    <div class="mt-24 text-center select-none pointer-events-none">
-                        <div class="w-8 h-8 mx-auto bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTY3ZDVjIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJ2MjBNMiAxMmgyMCIvPjwvc3ZnPg==')] bg-no-repeat bg-center opacity-30"></div>
-                        <p class="uppercase tracking-widest text-[9px] font-bold font-heading text-[var(--ink)]/40 mt-3">End of Record</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div id="dm-global-controls" class="hidden">
-        <div class="text-[10px] font-bold uppercase text-center text-[var(--brass)] mb-3 tracking-widest border-b border-[var(--brass-dark)]/40 pb-2 font-heading w-full" id="dm-toolbar-title">Archivist Tools</div>
-        
-        <!-- Library View Tools (Add Books) -->
-        <div id="toolbar-library" class="flex flex-wrap justify-center gap-3 w-full">
-            <button class="arch-btn" onclick="window.addVolume('book')"><i class="fa-solid fa-book mr-1.5"></i> Tome</button>
-            <button class="arch-btn" onclick="window.addVolume('journal')"><i class="fa-solid fa-book-journal-whills mr-1.5"></i> Journal</button>
-            <button class="arch-btn" onclick="window.addVolume('textbook')"><i class="fa-solid fa-book-open mr-1.5"></i> Text Book</button>
-            <button class="arch-btn" onclick="window.addVolume('newspaper')"><i class="fa-solid fa-newspaper mr-1.5"></i> Chronicle</button>
-            <button class="arch-btn" onclick="window.addVolume('manuscript')"><i class="fa-solid fa-scroll mr-1.5"></i> Manuscript</button>
-            <button class="arch-btn" onclick="window.addVolume('parchment')"><i class="fa-solid fa-file-lines mr-1.5"></i> Parchment</button>
-            <button class="arch-btn" onclick="window.addVolume('song')"><i class="fa-solid fa-music mr-1.5"></i> Song</button>
-        </div>
-
-        <!-- Desk View Tools (Add Content to Book) -->
-        <div id="toolbar-desk" class="hidden flex flex-wrap justify-center gap-3 w-full">
-            <button class="arch-btn" onclick="window.addBlock('inner-subheading')"><i class="fa-solid fa-heading mr-1.5"></i> Section Title</button>
-            <button class="arch-btn" onclick="window.addBlock('text')"><i class="fa-solid fa-paragraph mr-1.5"></i> Text Block</button>
-            <button class="arch-btn" onclick="window.addBlock('textbook')"><i class="fa-solid fa-book-open mr-1.5"></i> Scholar Note</button>
-            <button class="arch-btn" onclick="window.addBlock('note')"><i class="fa-solid fa-comment-dots mr-1.5"></i> Marginalia</button>
-            <button class="arch-btn" onclick="window.addBlock('divider')"><i class="fa-solid fa-minus mr-1.5"></i> Divider</button>
-        </div>
-    </div>
-
-    <!-- DOSSIER / BIND USER MODAL -->
-    <div id="uid-link-modal" class="modal-overlay hidden">
-        <div class="modal-container !p-0 overflow-hidden !bg-[var(--parchment)]">
-            <div class="bg-[var(--leather-dark)] text-[var(--parchment)] p-4 flex justify-between items-center border-b border-[var(--brass-dark)]">
-                <span class="font-heading uppercase text-xs font-bold tracking-wider">Bind Volume to Scholar</span>
-                <button onclick="window.closeModal('uid-link-modal')" class="text-[var(--brass)] hover:text-white text-lg leading-none">&times;</button>
-            </div>
-            <div class="p-5 text-left">
-                <input type="text" id="user-search" class="w-full bg-[var(--parchment-dark)] border border-[var(--brass-dark)] p-2.5 mb-4 rounded font-serif text-sm focus:outline-none focus:border-[var(--accent)] shadow-inner text-[var(--ink)] placeholder-[var(--ink)]/40" placeholder="Search character name..." oninput="window.filterDMUsers(this.value)">
-                
-                <div id="user-results" class="max-h-60 overflow-y-auto border border-[var(--brass-dark)]/30 rounded bg-[var(--parchment)] mb-1 shadow-inner">
-                    <!-- Populated dynamically -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- DELETE CONFIRMATION MODAL -->
+    <!-- LIGHTBOX FOR MEDIA -->
+    <div id="lightbox" class="fixed inset-0 z-[9999] bg-black/95 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" onclick="window.closeLightbox()">
+        <button class="absolute top-6 right-8 text-gray-400 text-4xl hover:text-gold z-[10001] transition-colors drop-shadow-lg">&times;</button>
+        <div id="lightbox-content" class="relative max-w-[95vw] max-h-[95vh] w-full h-full flex items-center justify-center pointer-events-none"></div>
+    </div>
+
+    <!-- PURGE MODAL -->
     <div id="del-modal" class="modal-overlay hidden">
-        <div class="modal-container border border-[var(--ink)]">
-            <h3 class="text-xl font-heading font-bold text-[var(--ink)] uppercase mb-2">Purge Record</h3>
-            <p id="del-modal-text" class="text-sm text-[var(--ink)]/80 mb-6 italic font-serif">This text will be lost to the ages.</p>
-            <div class="flex flex-col gap-2 font-heading">
-                <button id="confirm-del-btn" class="w-full bg-[#8c3535] text-white py-2.5 rounded font-bold uppercase text-xs shadow hover:bg-[#6e2929] transition-colors">Confirm Deletion</button>
-                <button onclick="window.closeModal('del-modal')" class="w-full bg-transparent text-[var(--ink)] border border-[var(--brass-dark)] py-2.5 rounded font-bold uppercase text-xs transition-colors hover:bg-[var(--parchment-dark)]">Cancel</button>
+        <div class="parchment-paper p-8 max-w-sm w-full text-center border-2 border-blood shadow-2xl">
+            <h3 class="font-heading font-black text-2xl text-blood uppercase tracking-widest mb-2">Purge Record</h3>
+            <p class="font-serif italic text-ink mb-6 text-sm">By order of the archivist, this subject will be permanently shredded.</p>
+            <div class="flex flex-col gap-3 font-heading">
+                <button id="confirm-del-btn" class="w-full bg-blood text-parchment py-3 rounded border border-gold font-bold uppercase text-xs shadow transition-colors hover:bg-red-800">Confirm Shred</button>
+                <button onclick="document.getElementById('del-modal').classList.add('hidden')" class="w-full bg-transparent text-ink border border-ink py-3 rounded font-bold uppercase text-xs transition-colors hover:bg-ink hover:text-parchment">Abort Procedure</button>
             </div>
         </div>
     </div>
 
-    <!-- REQUEST LORE MODAL -->
-    <div id="request-modal" class="modal-overlay hidden">
-        <div class="modal-container !p-0 overflow-hidden">
-            <div class="bg-[var(--leather-dark)] text-[var(--parchment)] p-4 flex justify-between items-center border-b border-[var(--brass-dark)]">
-                <span class="font-heading uppercase text-xs font-bold tracking-wider"><i class="fa-solid fa-hand-holding-hand mr-2"></i> Request Lore</span>
-                <button onclick="window.closeModal('request-modal')" class="text-[var(--brass)] hover:text-white text-lg leading-none">&times;</button>
+    <!-- CATEGORY/TERMINOLOGY MODAL -->
+    <div id="category-modal" class="modal-overlay hidden">
+        <div class="parchment-paper p-8 max-w-md w-full border-2 border-gold shadow-2xl">
+            <h3 class="font-heading font-black text-2xl text-ink uppercase tracking-widest mb-2">Archive Terminology</h3>
+            <p class="font-serif italic text-ink mb-6 text-sm">Manage the classifications used to organize these dossiers.</p>
+            
+            <div id="category-list-edit" class="flex flex-col gap-2 mb-4 max-h-[30vh] overflow-y-auto pr-2">
+                <!-- Dynamic inputs -->
             </div>
-            <div class="p-5 text-left">
-                <p class="text-xs text-[var(--ink)]/70 mb-4 font-serif italic">Inquire with the Archivist for specific texts, lost journals, or hidden knowledge your character seeks.</p>
-                <textarea id="request-text" class="w-full h-28 bg-[var(--parchment-dark)]/50 border border-[var(--brass-dark)] p-3 rounded font-serif text-sm focus:outline-none focus:border-[var(--accent)] shadow-inner text-[var(--ink)] resize-none" placeholder="e.g. Do you have any records regarding the ancient badger druids?"></textarea>
-                <button onclick="window.submitRequest()" class="arch-btn w-full mt-4 !py-2.5 shadow">Submit Inquiry</button>
+            
+            <div class="flex gap-2 mb-8">
+                <input type="text" id="new-category-input" placeholder="New Classification..." class="flex-1 p-2 text-xs bg-white/50 border border-gold rounded focus:border-blood text-ink outline-none" onkeydown="if(event.key==='Enter') window.addCategory()">
+                <button onclick="window.addCategory()" class="fantasy-btn px-4 py-2 rounded font-black text-[10px] uppercase shadow"><i class="fa-solid fa-plus"></i> Add</button>
             </div>
-        </div>
-    </div>
-
-    <!-- VIEW REQUESTS MODAL (DM ONLY) -->
-    <div id="view-requests-modal" class="modal-overlay hidden">
-        <div class="modal-container !max-w-2xl !p-0 overflow-hidden">
-            <div class="bg-[var(--leather-dark)] text-[var(--parchment)] p-4 flex justify-between items-center border-b border-[var(--brass-dark)]">
-                <span class="font-heading uppercase text-xs font-bold tracking-wider"><i class="fa-solid fa-inbox mr-2"></i> Pending Inquiries</span>
-                <button onclick="window.closeModal('view-requests-modal')" class="text-[var(--brass)] hover:text-white text-lg leading-none">&times;</button>
-            </div>
-            <div class="p-5 text-left bg-[var(--parchment-dark)]/20">
-                <div id="requests-list" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                    <!-- Populated dynamically -->
-                </div>
+            
+            <div class="flex gap-3 font-heading">
+                <button onclick="window.saveCategories()" class="flex-1 bg-ink text-parchment py-2.5 rounded border border-gold font-bold uppercase text-xs hover:bg-[#1a110b] shadow transition-colors">Save Updates</button>
+                <button onclick="window.closeCategoryModal()" class="flex-1 bg-transparent text-ink border border-ink py-2.5 rounded font-bold uppercase text-xs hover:bg-ink hover:text-parchment transition-colors">Cancel</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, addDoc, deleteDoc, writeBatch, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+        import { getFirestore, collection, doc, updateDoc, onSnapshot, addDoc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
         // --- CORE UI FUNCTIONS ---
-        window.showToast = (message) => {
-            const toast = document.getElementById('toast');
-            if (toast) {
-                toast.textContent = message;
-                toast.style.opacity = '1';
-                toast.style.transform = 'translateX(-50%) translateY(0)';
-                setTimeout(() => {
-                    toast.style.opacity = '0';
-                    toast.style.transform = 'translateX(-50%) translateY(-20px)';
-                }, 3000);
-            }
+        window.showToast = (m) => { 
+            const t = document.getElementById('toast'); 
+            if(t){ t.textContent=m; t.style.opacity=1; setTimeout(()=>t.style.opacity=0, 4000); } 
         };
 
         window.routeTo = (page) => {
@@ -484,53 +329,6 @@
             } catch(e) {
                 window.showToast("Redirects disabled in preview window.");
             }
-        };
-
-        window.closeModal = (modalId) => {
-            document.getElementById(modalId)?.classList.add('hidden');
-        };
-
-        window.openDelModal = (text, callback) => {
-            const txtEl = document.getElementById('del-modal-text');
-            if (txtEl) txtEl.innerText = text;
-            deleteCallback = callback;
-            document.getElementById('del-modal')?.classList.remove('hidden');
-        };
-
-        // --- DOOR ANIMATION LOGIC ---
-        window.playDoorAnimation = () => {
-            const consoleEl = document.getElementById('door-center-console');
-            const emblemEl = document.getElementById('door-emblem');
-            const doorLeft = document.getElementById('door-left');
-            const doorRight = document.getElementById('door-right');
-            const glow = document.getElementById('intro-glow');
-            const introWrapper = document.getElementById('intro-animation');
-
-            // 1. Scale emblem up and fade out center console slowly
-            emblemEl.style.transform = 'scale(1.1)';
-            emblemEl.style.boxShadow = '0 0 50px rgba(189, 162, 126, 0.4)';
-            emblemEl.style.transition = 'all 1s ease-in-out';
-            consoleEl.style.pointerEvents = 'none';
-            
-            setTimeout(() => {
-                consoleEl.style.opacity = '0';
-                consoleEl.style.transition = 'opacity 0.8s';
-            }, 600);
-
-            // 2. Swing heavy wooden doors open and trigger warm soft light
-            setTimeout(() => {
-                doorLeft.classList.add('door-open-left');
-                doorRight.classList.add('door-open-right');
-                glow.classList.add('glow-active');
-                
-                // 3. Fade out overlay to reveal library
-                setTimeout(() => {
-                    introWrapper.style.opacity = '0';
-                    setTimeout(() => {
-                        introWrapper.classList.add('hidden');
-                    }, 2000); 
-                }, 1800); 
-            }, 1200); 
         };
 
         // --- FIREBASE SETUP ---
@@ -557,686 +355,696 @@
             else { try { window.location.href = "campaigns.html"; } catch(e) {} }
         }
 
-        const DB_COLLECTION = `custodiansAthenaeum_${appId}`;
+        // Use 'lineages' as the page ID
+        const pageId = "lineages";
+        const DB_COLLECTION = `handbookLineages_${appId}`; // Unique collection per campaign for lineages
 
-        let rawSections = [];
-        let structuredLibrary = []; 
-        let allUsers = []; 
-        let seenDocs = [];
-        let campaignSettings = { terms: {} };
+        const libraryPages = [
+            { id: 'handbook', title: 'Main Index' },
+            { id: 'howtoplay', title: 'How to Play' },
+            { id: 'lineages', title: 'Lineages' },
+            { id: 'backgrounds', title: 'Backgrounds' },
+            { id: 'vocations', title: 'Vocations' },
+            { id: 'landmarks', title: 'Landmarks' },
+            { id: 'script_codex', title: 'Script Codex' },
+            { id: 'gear_artifacts', title: 'Gear & Artifacts' },
+            { id: 'worldlore', title: 'World Lore' },
+            { id: 'sessionlogs', title: 'Session Logs' }
+        ];
+
+        function renderSidebar() {
+            const nav = document.getElementById('library-nav');
+            const currentPageTitle = libraryPages.find(p => p.id === pageId)?.title || "Lineages";
+            document.getElementById('page-title-display').textContent = currentPageTitle;
+
+            nav.innerHTML = libraryPages.map(page => {
+                const isActive = page.id === pageId;
+                const targetUrl = `${page.id}.html?id=${appId}`;
+                return `<a href="${targetUrl}" class="sidebar-link ${isActive ? 'active-page' : ''}">${page.title}</a>`;
+            }).join('');
+        }
+
+        // --- LINEAGES STATE ---
+        let lineages = [];
+        let currentUser = null;
+        let activeRole = 'player';
+        let currentView = 'grid';
+        let activeRaceId = null;
+        let isFlipped = false;
+        let saveTimer = null;
+        let targetDelId = null;
+        window.isPurgeMode = false;
+        window.currentHeritageSlide = 0;
+        let isUserTyping = false;
         
-        let currentUser = null; 
-        let activeRole = 'player'; 
-        let activeAnchorUID = null; 
+        let activeTab = 'All';
+        let CATEGORIES = ["Core Races", "Bestiari Lineages", "Automatons", "Mycelin Lineages", "Fractured Plane Lineages"];
         
-        let currentView = 'library'; 
-        let activeBookId = null;
-
-        let activeEditBlockId = null; 
-        let activeEditField = null;   
-
-        let deleteCallback = null;
-        let targetSectionForUID = null;
-        let activeEditId = null; 
-        
-        let loreRequests = []; 
-
-        // --- DATA PROCESSING LOGIC ---
-        const processDataToLibrary = () => {
-            structuredLibrary = [];
-            let currentBook = null;
-
-            rawSections.forEach(sec => {
-                if (sec.type === 'subheading') {
-                    currentBook = { ...sec, blocks: [] };
-                    structuredLibrary.push(currentBook);
-                } else {
-                    if (currentBook) {
-                        currentBook.blocks.push(sec);
-                    } else {
-                        currentBook = {
-                            id: 'orphan-tome',
-                            title: 'Unbound Pages',
-                            type: 'subheading',
-                            docType: 'parchment',
-                            visibility: 'public',
-                            sharedWith: [],
-                            order: -1,
-                            blocks: [sec],
-                            isOrphan: true
-                        };
-                        structuredLibrary.push(currentBook);
-                    }
-                }
-            });
-        };
-
-        // --- GUESTBOOK LOGIC ---
-        window.populateTerminal = () => {
-            const selectEl = document.getElementById('guestbook-char-select');
-            if (!selectEl) return;
-            
-            let displayUsers = allUsers;
-            if (activeRole !== 'dm' && currentUser) {
-                displayUsers = allUsers.filter(u => u.owner === currentUser.username);
+        document.addEventListener('focusin', (e) => {
+            if(e.target && e.target.classList && e.target.classList.contains('dm-editable')) {
+                isUserTyping = true;
             }
-            
-            selectEl.innerHTML = '<option value="">-- Choose Character --</option>';
-            if (displayUsers.length === 0) {
-                selectEl.innerHTML += '<option value="" disabled>No characters found.</option>';
-                return;
+        });
+        document.addEventListener('focusout', (e) => {
+            if(e.target && e.target.classList && e.target.classList.contains('dm-editable')) {
+                isUserTyping = false;
+                if(currentView === 'details') renderDetails();
             }
-            displayUsers.forEach(u => {
-                const opt = document.createElement('option');
-                opt.value = u.uid;
-                opt.textContent = u.name || 'Unidentified Adventurer';
-                selectEl.appendChild(opt);
-            });
+        });
+
+        const safeJSONParse = (data, fallback = []) => {
+            try { if (!data) return fallback; if (typeof data === 'object') return data; return JSON.parse(data);
+            } catch (e) { return fallback; }
         };
 
-        window.onGuestbookCharSelect = (uid) => {
-            const sigInput = document.getElementById('guestbook-signature');
-            if(sigInput) {
-                if(uid) sigInput.focus();
-                else sigInput.value = '';
-            }
-        };
-
-        window.submitGuestbookSignature = () => {
-            const uid = document.getElementById('guestbook-char-select').value;
-            const sig = document.getElementById('guestbook-signature').value.trim();
-
-            if (!uid) { window.showToast("Select a character first."); return; }
-            if (!sig) { window.showToast("You must sign the ledger."); return; }
-            window.anchorIdentity(uid);
-        };
-
-        window.anchorIdentity = (uid) => {
-            activeAnchorUID = uid;
-            sessionStorage.setItem('chronicles_lib_anchored', 'true');
-            localStorage.setItem('chronicles_lib_uid', uid);
-            
-            window.showToast("Signature Accepted");
-            document.getElementById('access-terminal')?.classList.add('unlocked');
-            
-            const identText = document.getElementById('user-identity');
-            const subText = document.getElementById('user-identity-sub');
-            const char = allUsers.find(u => u.uid === uid);
-            if (identText) identText.innerText = char ? char.name : (currentUser ? currentUser.username : 'Guest');
-            if (subText && char) {
-                subText.innerText = `Player: ${currentUser.username}`;
-                subText.classList.remove('hidden');
-            }
-            
-            window.fetchSeenDocuments(uid);
-            window.renderUI();
-        };
-
-        window.bypassTerminal = () => {
-            activeAnchorUID = null;
-            sessionStorage.setItem('chronicles_lib_anchored', 'true'); 
-            document.getElementById('access-terminal')?.classList.add('unlocked');
-            window.showToast("Entering as Guest");
-            
-            const identText = document.getElementById('user-identity');
-            const subText = document.getElementById('user-identity-sub');
-            if (identText) identText.innerText = currentUser ? currentUser.username : 'Guest';
-            if (subText) subText.classList.add('hidden');
-            
-            window.renderUI();
-        };
-
-        window.fetchSeenDocuments = (uid) => {
-            if (!uid || !currentUser) return;
-            onSnapshot(collection(db, 'artifacts', appId, 'users', uid, 'seenLibDocs'),
-                (snap) => { seenDocs = snap.docs.map(d => d.id); window.renderUI(); },
-                (error) => console.error("Seen docs error:", error)
-            );
-        };
-
-        window.markAsSeen = async (id) => {
-            if (!seenDocs.includes(id)) {
-                seenDocs.push(id);
-                window.renderUI();
-            }
-            if (activeAnchorUID && currentUser && id !== 'orphan-tome') {
-                try {
-                    await setDoc(doc(db, 'artifacts', appId, 'users', activeAnchorUID, 'seenLibDocs', id), { seenAt: Date.now() });
-                } catch(err) { console.error("Error saving seen state:", err); }
-            }
-        };
-
-        // --- DATABASE LISTENERS ---
-        const setupListeners = () => {
-            if (!currentUser) return;
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION),
-                (snap) => {
-                    rawSections = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    rawSections.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-                    processDataToLibrary();
-                    window.renderUI();
-                },
-                (error) => console.error("Sections listener error:", error)
-            );
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'characters'),
-                (snap) => {
-                    allUsers = snap.docs.map(d => ({ uid: d.id, ...d.data() })).filter(c => c.type === 'PC' && !c.isDeleted);
-                    const isAnchored = sessionStorage.getItem('chronicles_lib_anchored') === 'true';
-                    const savedUID = localStorage.getItem('chronicles_lib_uid');
-                    
-                    if (isAnchored) {
-                        if (savedUID) {
-                            activeAnchorUID = savedUID;
-                            const char = allUsers.find(u => u.uid === savedUID);
-                            const identText = document.getElementById('user-identity');
-                            const subText = document.getElementById('user-identity-sub');
-                            if (identText) identText.innerText = char ? char.name : currentUser.username;
-                            if (subText && char) {
-                                subText.innerText = `Player: ${currentUser.username}`;
-                                subText.classList.remove('hidden');
-                            }
-                            window.fetchSeenDocuments(savedUID);
-                        } else {
-                            document.getElementById('user-identity').innerText = currentUser.username;
-                        }
-                    } else {
-                        document.getElementById('access-terminal')?.classList.remove('hidden');
-                        window.populateTerminal();
-                    }
-                    window.renderUI();
-                }
-            );
-
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'campaignConfig', 'settings'), (docSnap) => {
-                if (docSnap.exists()) {
-                    campaignSettings = docSnap.data();
-                    const custName = campaignSettings.terms?.lore_custodians || "Custodian's Athenaeum";
-                    const subEl = document.getElementById('sidebar-subtitle');
-                    if (subEl) subEl.innerText = custName;
-                }
-            });
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'loreRequests'),
-                (snap) => {
-                    loreRequests = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => b.createdAt - a.createdAt);
-                    window.renderUI();
-                }
-            );
-        };
-
-        // --- DM EDITING & DATA MUTATIONS ---
         window.updateRoleUI = () => {
             const isDM = activeRole === 'dm';
-            document.getElementById('dm-global-controls')?.classList.toggle('hidden', !isDM);
-            window.renderUI();
+            document.body.classList.toggle('dm-active-edit', isDM);
+            document.getElementById('dm-top-controls')?.classList.toggle('hidden', !isDM);
+            document.getElementById('dm-bottom-controls')?.classList.toggle('hidden', !isDM);
+            
+            if (!isUserTyping) {
+                if(currentView === 'grid') renderGrid(); else renderDetails();
+            }
         };
 
-        window.startEditBlock = (id, field) => { 
-            activeEditBlockId = id; 
-            activeEditField = field;
-            window.renderUI(); 
+        window.togglePurgeMode = () => {
+            window.isPurgeMode = !window.isPurgeMode;
+            const btn = document.getElementById('remove-record-btn');
+            if(btn) {
+                btn.className = window.isPurgeMode ? "bg-blood text-white px-4 py-2 rounded text-[10px] border border-gold" : "fantasy-btn-alt px-4 py-2 rounded text-[10px]";
+                btn.innerText = window.isPurgeMode ? "Exit Purge Mode" : "Purge Mode";
+            }
+            renderGrid();
+        };
+
+        window.flipPage = () => {
+            isFlipped = !isFlipped;
+            document.getElementById('flip-container').classList.toggle('flipped', isFlipped);
+            document.getElementById('flip-text').innerText = isFlipped ? "Return to Front" : "View Details";
+        };
+
+        window.renderTabs = () => {
+            const tabsContainer = document.getElementById('category-tabs');
+            if(!tabsContainer) return;
+            
+            const displayCats = ["All", ...CATEGORIES, "Uncategorized"];
+            
+            if (!displayCats.includes(activeTab)) {
+                activeTab = 'All';
+            }
+
+            tabsContainer.innerHTML = displayCats.map(cat => `
+                <button onclick="window.setTab('${cat}')" 
+                        class="px-3 py-1.5 rounded text-[10px] font-heading font-black uppercase tracking-widest transition-all
+                        ${activeTab === cat ? 'bg-blood text-parchment shadow-md border border-gold' : 'bg-transparent text-ink border border-ink/30 hover:bg-ink hover:text-parchment'}">
+                    ${cat}
+                </button>
+            `).join('');
+
+            const editBtn = document.getElementById('edit-categories-btn');
+            if(editBtn) editBtn.classList.toggle('hidden', activeRole !== 'dm');
+        };
+
+        window.setTab = (tab) => {
+            activeTab = tab;
+            window.renderTabs();
+            window.renderGrid();
+        };
+
+        // Terminology Modal Management
+        let editingCats = [];
+        window.openCategoryModal = () => {
+            editingCats = [...CATEGORIES];
+            window.renderCategoryEditList();
+            document.getElementById('category-modal').classList.remove('hidden');
         };
         
-        window.cancelEditBlock = () => { 
-            activeEditBlockId = null; 
-            activeEditField = null;
-            window.renderUI(); 
+        window.closeCategoryModal = () => {
+            document.getElementById('category-modal').classList.add('hidden');
         };
 
-        window.saveBlock = async (id, field) => {
-            const inputEl = document.getElementById('edit-input-' + id);
-            if (!inputEl) return;
-            
-            const newValue = inputEl.value;
-            try {
-                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, id), {
-                    [field]: newValue
-                });
-                window.cancelEditBlock();
-                window.showToast("Ink Sealed");
-            } catch (err) {
-                console.error("Save error:", err);
-                window.showToast("Failed to seal ink");
-            }
-        };
-
-        window.dbUpdateSection = async (id, field, value) => {
-            if (activeRole !== 'dm') return;
-            try {
-                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, id), { [field]: value });
-            } catch (error) {
-                console.error("Update error:", error);
-            }
-        };
-
-        window.addVolume = async (docType) => {
-            if (activeRole !== 'dm') return;
-            const newOrder = rawSections.length ? Math.max(...rawSections.map(s => s.order || 0)) + 10 : 0;
-            
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION), {
-                    title: "New Volume",
-                    content: "",
-                    type: "subheading",
-                    docType: docType,
-                    order: newOrder,
-                    createdAt: Date.now(),
-                    visibility: 'public',
-                    sharedWith: []
-                });
-                window.showToast("New Volume Placed on Shelf");
-            } catch(e) { console.error(e); }
-        };
-
-        window.addBlock = async (type) => {
-            if (activeRole !== 'dm' || !activeBookId) return;
-            const book = structuredLibrary.find(b => b.id === activeBookId);
-            if (!book) return;
-
-            let baseOrder = book.order;
-            if (book.blocks && book.blocks.length > 0) {
-                baseOrder = Math.max(...book.blocks.map(b => b.order));
-            }
-            const newOrder = baseOrder + 0.001;
-
-            let defaultTitle = type === 'inner-subheading' ? "Chapter Title" : "";
-            let defaultContent = type === 'divider' ? "" : "Inscribe text here...";
-
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION), {
-                    title: defaultTitle,
-                    content: defaultContent,
-                    type: type,
-                    order: newOrder,
-                    createdAt: Date.now()
-                });
-                window.showToast("Block Added to Volume");
-            } catch(e) { console.error(e); }
-        };
-
-        window.triggerDelete = (id, isBook) => {
-            const text = isBook ? "Burn this volume? All pages within will be lost." : "Remove this block from the volume?";
-            window.openDelModal(text, async () => {
-                try {
-                    const batch = writeBatch(db);
-                    batch.delete(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, id));
-                    
-                    if (isBook) {
-                        const book = structuredLibrary.find(b => b.id === id);
-                        if(book && book.blocks) {
-                            book.blocks.forEach(block => {
-                                batch.delete(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, block.id));
-                            });
-                        }
-                    }
-                    
-                    await batch.commit();
-                    window.showToast(isBook ? "Volume Destroyed" : "Block Removed");
-                    if (isBook && activeBookId === id) window.closeBook();
-                } catch(err) { console.error("Delete error:", err); }
-            });
-        };
-
-        window.forceSync = () => {
-            const icon = document.querySelector('.sync-icon');
-            if (icon) {
-                icon.style.transform = 'rotate(180deg)';
-                setTimeout(() => icon.style.transform = 'rotate(360deg)', 250);
-                setTimeout(() => {
-                    icon.style.transition = 'none';
-                    icon.style.transform = 'rotate(0deg)';
-                    void icon.offsetWidth;
-                    icon.style.transition = 'all 0.5s ease-in-out';
-                }, 500);
-            }
-            if (activeEditId) {
-                const el = document.getElementById(activeEditId);
-                if (el) {
-                    const idPart = activeEditId.split('-').pop();
-                    const isTitle = activeEditId.startsWith('head-') || activeEditId.startsWith('desk-book-title');
-                    const realId = activeEditId.startsWith('desk-book-title') ? activeBookId : idPart;
-                    if(realId) window.dbUpdateSection(realId, isTitle ? 'title' : 'content', isTitle ? el.innerText : el.innerHTML);
-                }
-                activeEditId = null;
-            }
-            window.showToast("Archive Synchronized");
-            window.renderUI();
-        };
-
-        // --- DM BINDING LOGIC ---
-        window.openUserModal = (bookId) => {
-            targetSectionForUID = bookId;
-            document.getElementById('uid-link-modal')?.classList.remove('hidden');
-            const searchInput = document.getElementById('user-search');
-            if (searchInput) searchInput.value = '';
-            window.filterDMUsers('');
-        };
-
-        window.filterDMUsers = (val) => {
-            const container = document.getElementById('user-results');
-            if (!container) return;
-            const search = (val || '').toLowerCase();
-            const filtered = allUsers.filter(u => (u.name || '').toLowerCase().includes(search));
-            
-            container.innerHTML = filtered.map(u => `
-                <div class="flex justify-between items-center p-3 hover:bg-[var(--parchment-dark)] border-b border-[var(--brass-dark)]/30 transition-colors cursor-pointer" onclick="window.assignUIDToBook('${u.uid}')">
-                    <div>
-                        <div class="font-bold text-sm text-[var(--ink)] font-heading uppercase">${u.name || 'Unidentified'}</div>
-                        <div class="font-serif text-[10px] text-[var(--ink)]/60 mt-0.5">Player: ${u.owner || 'Unknown'}</div>
-                    </div>
-                    <button class="bg-[var(--accent)] text-[var(--parchment)] border border-[var(--brass-dark)] rounded px-2.5 py-1 text-[9px] font-bold uppercase font-heading hover:bg-[var(--accent-dark)] transition-colors shadow-sm">Checkout</button>
-                </div>
-            `).join('') || '<div class="p-5 text-center text-[var(--ink)]/50 text-xs italic font-serif">No matching scholars found.</div>';
-        };
-
-        window.assignUIDToBook = async (uid) => {
-            if (!targetSectionForUID) return;
-            try {
-                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, targetSectionForUID), {
-                    sharedWith: [uid],
-                    visibility: 'personal'
-                });
-                window.closeModal('uid-link-modal');
-                window.showToast("Volume Bound to Scholar");
-            } catch (err) { console.error("Bind error:", err); }
-        };
-
-        window.unbindUIDFromBook = async (bookId) => {
-            try {
-                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, bookId), {
-                    sharedWith: [],
-                    visibility: 'secret' 
-                });
-                window.showToast("Volume Returned - Now Hidden");
-            } catch (err) { console.error("Unbind error:", err); }
-        };
-
-        // --- REQUESTS SYSTEM ---
-        window.openRequestModal = () => {
-            document.getElementById('request-modal')?.classList.remove('hidden');
-            document.getElementById('request-text').value = '';
-        };
-
-        window.submitRequest = async () => {
-            const text = document.getElementById('request-text').value.trim();
-            if(!text) { window.showToast("Please write your inquiry."); return; }
-            
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'loreRequests'), {
-                    content: text,
-                    requestedByUID: activeAnchorUID || 'Guest',
-                    requestedByName: document.getElementById('user-identity').innerText,
-                    createdAt: Date.now(),
-                    status: 'pending'
-                });
-                window.closeModal('request-modal');
-                window.showToast("The Archivist has received your request.");
-            } catch (err) { console.error("Request error:", err); }
-        };
-
-        window.viewRequests = () => {
-            document.getElementById('view-requests-modal')?.classList.remove('hidden');
-            const container = document.getElementById('requests-list');
-            
-            if (loreRequests.length === 0) {
-                container.innerHTML = `<div class="text-center italic text-[var(--ink)]/50 p-6">No pending inquiries.</div>`;
-                return;
-            }
-            
-            container.innerHTML = loreRequests.map(req => `
-                <div class="bg-[var(--parchment)] border border-[var(--brass-dark)] p-4 rounded shadow-sm relative">
-                    <div class="flex justify-between items-start mb-2 border-b border-[var(--brass-dark)]/40 pb-2">
-                        <div>
-                            <div class="text-xs font-bold uppercase text-[var(--ink)] font-heading tracking-wider">${req.requestedByName}</div>
-                            <div class="text-[10px] text-[var(--ink)]/50 font-serif">${new Date(req.createdAt).toLocaleString()}</div>
-                        </div>
-                        <button onclick="window.deleteRequest('${req.id}')" class="text-[var(--brass-dark)] hover:text-[var(--accent)] transition-colors p-1.5 rounded text-[11px]" title="Dismiss Request"><i class="fa-solid fa-check"></i> Dismiss</button>
-                    </div>
-                    <div class="text-sm text-[var(--ink)] font-serif whitespace-pre-wrap">${req.content}</div>
+        window.renderCategoryEditList = () => {
+            document.getElementById('category-list-edit').innerHTML = editingCats.map((cat, i) => `
+                <div class="flex items-center gap-2">
+                    <input type="text" class="flex-1 p-2 text-xs bg-white/50 border border-gold rounded text-ink outline-none focus:border-blood" value="${cat}" oninput="editingCats[${i}] = this.value">
+                    <button onclick="editingCats.splice(${i}, 1); window.renderCategoryEditList()" class="text-blood hover:text-red-700 px-3 py-2 text-[10px]"><i class="fa-solid fa-trash"></i></button>
                 </div>
             `).join('');
         };
 
-        window.deleteRequest = async (id) => {
+        window.addCategory = () => {
+            const input = document.getElementById('new-category-input');
+            const val = input.value.trim();
+            if(val && !editingCats.includes(val) && val !== 'All' && val !== 'Uncategorized') {
+                editingCats.push(val);
+                input.value = '';
+                window.renderCategoryEditList();
+            }
+        };
+
+        window.saveCategories = async () => {
+            if(!currentUser) return;
+            editingCats = editingCats.filter(c => c.trim().length > 0 && c !== 'All' && c !== 'Uncategorized');
             try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'loreRequests', id));
-                window.viewRequests(); 
-            } catch(e) { console.error(e); }
+                window.showToast("Saving terminology...");
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, '_lineage_config'), { categories: editingCats }, { merge: true });
+                window.closeCategoryModal();
+            } catch(e) { 
+                window.showToast("Failed to save."); 
+                console.error(e);
+            }
         };
 
-        // --- VIEW SWITCHING & RENDERING ---
-        window.openBook = (id) => {
-            activeBookId = id;
-            currentView = 'desk';
-            window.markAsSeen(id);
-            window.renderUI();
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        };
-
-        window.closeBook = () => {
-            activeBookId = null;
-            currentView = 'library';
-            window.renderUI();
-        };
-
-        window.renderUI = () => {
-            const isDM = activeRole === 'dm';
-
-            const visibleBooks = structuredLibrary.filter(book => {
-                if (isDM) return true;
-                if (book.visibility === 'public') return true;
-                if (book.visibility === 'personal' && activeAnchorUID && book.sharedWith?.includes(activeAnchorUID)) return true;
-                return false;
-            });
-
-            const libView = document.getElementById('library-view');
-            const deskView = document.getElementById('desk-view');
+        window.setView = (v, id = null) => {
+            if (currentView === v && id === activeRaceId) return; 
             
-            if (isDM) {
-                document.getElementById('toolbar-library').classList.toggle('hidden', currentView !== 'library');
-                document.getElementById('toolbar-desk').classList.toggle('hidden', currentView !== 'desk');
-                document.getElementById('dm-toolbar-title').innerText = currentView === 'library' ? "Shelving Tools" : "Inscribe Tools";
+            const gridView = document.getElementById('view-grid');
+            const detailsView = document.getElementById('view-details');
+            
+            if (currentView === 'grid') {
+                gridView.classList.remove('view-active');
+                gridView.classList.add('view-hidden');
+            } else {
+                detailsView.classList.remove('view-active');
+                detailsView.classList.add('view-hidden');
             }
+            
+            currentView = v; 
+            activeRaceId = id; 
+            isFlipped = false;
+            window.currentHeritageSlide = 0; 
+            
+            document.getElementById('flip-container')?.classList.remove('flipped');
+            document.getElementById('flip-text').innerText = "Turn Page";
 
-            const actionsContainer = document.getElementById('library-actions-container');
-            if (actionsContainer) {
-                if (!isDM) {
-                    actionsContainer.innerHTML = `<button onclick="window.openRequestModal()" class="arch-btn arch-btn-secondary !text-[10px] !py-1.5"><i class="fa-solid fa-hand-holding-hand mr-1.5"></i> Request Lore</button>`;
-                } else {
-                    const pendingCount = loreRequests.length;
-                    actionsContainer.innerHTML = `
-                        <button onclick="window.viewRequests()" class="arch-btn arch-btn-secondary relative !text-[10px] !py-1.5">
-                            <i class="fa-solid fa-inbox mr-1.5"></i> Inquiries
-                            ${pendingCount > 0 ? `<span class="absolute -top-2 -right-2 bg-[var(--accent)] text-white text-[9px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-md animate-pulse">${pendingCount}</span>` : ''}
-                        </button>
-                    `;
-                }
-            }
-
-            if (currentView === 'library') {
-                libView.classList.remove('hidden');
-                deskView.classList.remove('active');
-                
-                document.getElementById('book-count').innerText = visibleBooks.length;
-                
-                const container = document.getElementById('library-shelves-container');
-                container.innerHTML = '';
-                
-                // Group books by shelf visually (approx 6 per shelf)
-                const SHELF_SIZE = 8;
-                for (let i = 0; i < visibleBooks.length; i += SHELF_SIZE) {
-                    const shelfBooks = visibleBooks.slice(i, i + SHELF_SIZE);
-                    
-                    let shelfHTML = '<div class="library-shelf">';
-                    
-                    shelfBooks.forEach(book => {
-                        const isNew = (Date.now() - (book.createdAt || 0)) < 86400000;
-                        const hasNotSeen = !seenDocs.includes(book.id);
-                        const showNewBadge = isNew && hasNotSeen;
-                        const isPersonal = book.visibility === 'personal';
-                        const docTypeClass = `type-${book.docType || 'book'}`;
-                        const sharedCharacter = isPersonal ? allUsers.find(u => u.uid === book.sharedWith?.[0]) : null;
-
-                        let dmControls = '';
-                        if (isDM) {
-                            dmControls = `
-                                <div class="book-dm-controls" onclick="event.stopPropagation()">
-                                    <select class="text-[9px] bg-[var(--parchment)] border border-[var(--brass-dark)] rounded text-[var(--ink)] outline-none" onchange="window.dbUpdateSection('${book.id}', 'visibility', this.value)">
-                                        <option value="public" ${book.visibility==='public'?'selected':''}>Public</option>
-                                        <option value="secret" ${book.visibility==='secret'?'selected':''}>Secret</option>
-                                        <option value="personal" ${book.visibility==='personal'?'selected':''}>Bound</option>
-                                    </select>
-                                    <button onclick="window.openUserModal('${book.id}')" class="text-[9px] bg-[var(--leather-dark)] border border-[var(--brass-dark)] text-[var(--brass)] px-1.5 rounded hover:bg-[var(--leather)]" title="Bind Volume"><i class="fa-solid fa-link"></i></button>
-                                    <button onclick="window.triggerDelete('${book.id}', true)" class="text-[9px] bg-[#8c3535] border border-[#521d1d] text-white px-1.5 rounded hover:bg-[#6e2929]" title="Destroy Volume"><i class="fa-solid fa-fire"></i></button>
-                                </div>
-                            `;
-                        }
-
-                        let personalBadge = isPersonal ? `<div class="badge-personal">Checked Out</div>` : '';
-                        if(isDM && isPersonal && sharedCharacter) {
-                            personalBadge = `<div class="badge-personal">Bound: ${sharedCharacter.name}</div>`;
-                        }
-
-                        shelfHTML += `
-                            <div class="book-item ${docTypeClass} ${isPersonal ? 'is-personal' : ''}" onclick="window.openBook('${book.id}')">
-                                ${showNewBadge ? '<div class="badge-new">NEW</div>' : ''}
-                                ${personalBadge}
-                                <div class="book-cover">
-                                    <div class="book-decoration"></div>
-                                    <div class="book-title">${book.title}</div>
-                                    <div class="book-author">${book.docType || 'Volume'}</div>
-                                </div>
-                                ${dmControls}
-                            </div>
-                        `;
-                    });
-                    
-                    shelfHTML += '</div>';
-                    container.innerHTML += shelfHTML;
-                }
-
-                if (visibleBooks.length === 0) {
-                    container.innerHTML = `<div class="library-shelf"><div class="col-span-full text-center py-10 opacity-40 font-serif italic text-[var(--parchment)] text-sm">The shelves lie bare.</div></div>`;
-                }
-
-            } else if (currentView === 'desk') {
-                libView.classList.add('hidden');
-                deskView.classList.add('active');
-
-                const book = structuredLibrary.find(b => b.id === activeBookId);
-                if (!book) { window.closeBook(); return; }
-
-                const titleContainer = document.getElementById('desk-book-title-container');
-                const isEditingTitle = activeEditBlockId === book.id && activeEditField === 'title';
-                
-                if (isEditingTitle) {
-                    titleContainer.innerHTML = `
-                        <div class="bg-[var(--parchment-dark)] p-5 border border-[var(--brass-dark)] rounded shadow-md relative z-20 max-w-lg mx-auto mb-4">
-                            <div class="text-[10px] font-bold text-[var(--ink)] uppercase mb-2 font-heading tracking-widest text-left">Editing Title</div>
-                            <input id="edit-input-${book.id}" class="w-full bg-transparent border-b border-[var(--brass-dark)] p-2 text-2xl text-center font-heading text-[var(--ink)] focus:outline-none focus:border-[var(--accent)]" value="${book.title.replace(/"/g, '&quot;')}">
-                            <div class="flex justify-end gap-2 mt-4">
-                                <button onclick="window.cancelEditBlock()" class="px-3 py-1.5 rounded border border-[var(--brass-dark)] text-[var(--ink)] text-[10px] font-bold uppercase hover:bg-[var(--parchment)] transition-colors">Cancel</button>
-                                <button onclick="window.saveBlock('${book.id}', 'title')" class="px-3 py-1.5 rounded bg-[var(--accent)] text-[var(--parchment)] border border-[#8ba389] text-[10px] font-bold uppercase hover:bg-[var(--accent-dark)] transition-colors shadow">Save</button>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    titleContainer.innerHTML = `
-                        <h1 class="desk-title">${book.title}</h1>
-                        ${isDM ? `
-                            <button onclick="window.startEditBlock('${book.id}', 'title')" class="absolute top-1/2 -translate-y-1/2 -right-8 opacity-0 group-hover:opacity-100 transition-opacity bg-[var(--parchment-dark)] text-[var(--ink)] p-2 rounded-full hover:bg-[var(--parchment)] shadow border border-[var(--brass-dark)]" title="Edit Title">
-                                <i class="fa-solid fa-pencil text-[12px]"></i>
-                            </button>
-                        ` : ''}
-                    `;
-                }
-
-                const metaEl = document.getElementById('desk-book-meta');
-                metaEl.innerText = `${(book.docType || 'Volume').toUpperCase()} • ${book.visibility.toUpperCase()}`;
-                
-                const contentContainer = document.getElementById('desk-content-container');
-                contentContainer.innerHTML = book.blocks.map(b => {
-                    const isEditing = activeEditBlockId === b.id;
-                    let dmBlockControls = '';
-                    
-                    if (isDM && !isEditing) {
-                        dmBlockControls = `
-                            <div class="absolute top-0 -right-[45px] flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-all z-10">
-                                <button onclick="window.startEditBlock('${b.id}', '${b.type === 'inner-subheading' ? 'title' : 'content'}')" class="bg-[var(--parchment-dark)] text-[var(--ink)] p-2 rounded hover:bg-[var(--parchment)] shadow border border-[var(--brass-dark)]" title="Edit Content"><i class="fa-solid fa-pencil text-[10px]"></i></button>
-                                <button onclick="window.triggerDelete('${b.id}', false)" class="bg-[#8c3535] text-white p-2 rounded hover:bg-[#6e2929] shadow border border-[#521d1d]" title="Delete Block"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
-                            </div>
-                        `;
-                    }
-
-                    if (isEditing) {
-                        const fieldToEdit = b.type === 'inner-subheading' ? 'title' : 'content';
-                        const val = fieldToEdit === 'title' ? b.title : b.content;
-                        
-                        return `
-                            <div class="content-block my-6">
-                                <div class="bg-[var(--parchment-dark)] p-5 border border-[var(--brass-dark)] rounded shadow-md relative z-20">
-                                    <div class="text-[10px] font-bold text-[var(--ink)] uppercase mb-3 font-heading tracking-widest flex items-center gap-2"><i class="fa-solid fa-pen-nib"></i> Transcribing</div>
-                                    ${fieldToEdit === 'title' 
-                                        ? `<input id="edit-input-${b.id}" class="w-full bg-transparent border-b border-[var(--brass-dark)] p-2 text-xl font-heading text-[var(--ink)] focus:outline-none focus:border-[var(--accent)]" value="${val.replace(/"/g, '&quot;')}">`
-                                        : `<textarea id="edit-input-${b.id}" class="w-full h-48 bg-[var(--parchment)]/60 border border-[var(--brass-dark)] p-4 text-[var(--ink)] font-serif text-lg focus:outline-none focus:border-[var(--accent)] focus:bg-[var(--parchment)] rounded resize-y shadow-inner">${val}</textarea>`
-                                    }
-                                    <div class="flex justify-end gap-2 mt-4">
-                                        <button onclick="window.cancelEditBlock()" class="px-4 py-2 rounded border border-[var(--brass-dark)] text-[var(--ink)] text-[10px] font-bold uppercase hover:bg-[var(--parchment)] transition-colors">Cancel</button>
-                                        <button onclick="window.saveBlock('${b.id}', '${fieldToEdit}')" class="px-4 py-2 rounded bg-[var(--accent)] text-[var(--parchment)] border border-[#8ba389] text-[10px] font-bold uppercase hover:bg-[var(--accent-dark)] transition-colors shadow">Seal Ink</button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    let innerHTML = '';
-                    if (b.type === 'inner-subheading') {
-                        innerHTML = `<h3 class="manual-h3">${b.title}</h3>`;
-                    } else if (b.type === 'divider') {
-                        innerHTML = `<div class="manual-divider"></div>`;
-                    } else if (b.type === 'text') {
-                        innerHTML = `<div class="manual-p">${b.content}</div>`;
-                    } else if (b.type === 'textbook') {
-                        innerHTML = `
-                            <div class="bg-[rgba(255,255,255,0.4)] border-t border-[var(--leather)] p-6 rounded shadow-sm my-6 relative">
-                                <div class="absolute -top-[12px] left-4 bg-[var(--leather)] text-[var(--parchment)] px-3 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded shadow font-heading border border-[#8a6446]">Scholar's Note</div>
-                                <div class="manual-p text-[var(--ink)] font-serif !mb-0">${b.content}</div>
-                            </div>`;
-                    } else if (b.type === 'note') {
-                        innerHTML = `
-                            <div class="bg-[rgba(123,142,120,0.1)] border-l-2 border-[var(--accent)] p-5 rounded my-6 italic">
-                                <div class="manual-p !mb-0 text-[var(--ink)] opacity-90">${b.content}</div>
-                            </div>`;
-                    }
-
-                    return `
-                        <div class="content-block group">
-                            ${dmBlockControls}
-                            ${innerHTML}
-                        </div>
-                    `;
-                }).join('');
+            if(v === 'grid') {
+                renderGrid();
+                setTimeout(() => {
+                    gridView.classList.remove('view-hidden');
+                    gridView.classList.add('view-active');
+                }, 150);
+            } else {
+                renderDetails();
+                document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => {
+                    detailsView.classList.remove('view-hidden');
+                    detailsView.classList.add('view-active');
+                }, 150);
             }
         };
 
-        const confirmBtn = document.getElementById('confirm-del-btn');
-        if (confirmBtn) {
-            confirmBtn.onclick = async () => {
-                if (deleteCallback) await deleteCallback();
-                window.closeModal('del-modal');
-            };
-        }
+        window.renderGrid = () => {
+            const isDM = activeRole === 'dm';
+            const grid = document.getElementById('stack-grid');
+            
+            let filteredLineages = lineages;
+            if (activeTab !== 'All') {
+                if (activeTab === 'Uncategorized') {
+                    filteredLineages = lineages.filter(r => !r.category || !CATEGORIES.includes(r.category) || r.category === 'Uncategorized');
+                } else {
+                    filteredLineages = lineages.filter(r => r.category === activeTab);
+                }
+            }
 
-        // --- AUTH & INIT ---
+            if (filteredLineages.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-16 text-center text-ink italic font-serif text-sm opacity-60">The archives are currently empty for this classification.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filteredLineages.map((race, idx) => `
+                <div class="race-card ${window.isPurgeMode ? 'border-blood shadow-[0_0_15px_rgba(122,27,27,0.3)]' : ''}" onclick="!window.isPurgeMode && window.setView('details', '${race.id}')">
+                    <div class="card-bg-image">
+                        ${race.gridUrl ? (race.gridUrl.includes('.mp4') ? `<video src="${race.gridUrl}" autoplay loop muted></video>` : `<img src="${race.gridUrl}">`) : '<div class="w-full h-full bg-[rgba(139,90,43,0.2)] flex items-center justify-center italic text-xs text-ink opacity-50">No Visual</div>'}
+                    </div>
+                    <div class="card-text-panel">
+                        <h3 class="font-heading font-black text-2xl text-ink leading-none mb-1">${race.name || 'Unknown'}</h3>
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="font-serif italic text-[10px] text-blood">Dossier #${race.custodianId || '000'}</span>
+                            <span class="text-[8px] bg-blood/10 text-blood px-1.5 py-0.5 rounded border border-blood/20 uppercase tracking-widest font-heading font-bold">${race.category || 'Uncategorized'}</span>
+                        </div>
+                        <p class="font-serif text-xs text-ink line-clamp-3 mb-4">${isDM ? (race.desc || '') : (race.desc || '')}</p>
+                        
+                        <div class="mt-auto">
+                            <div class="uppercase text-[9px] tracking-[0.2em] font-black text-gold border-b border-gold/30 pb-1 mb-2">Primary Traits</div>
+                            <div class="text-[11px] text-ink italic line-clamp-2 mb-4">${isDM ? (race.traits || '') : (race.traits || '')}</div>
+                            
+                            ${window.isPurgeMode 
+                                ? `<button onclick="event.stopPropagation(); window.triggerDel('${race.id}')" class="bg-blood hover:bg-red-800 text-parchment w-full py-2.5 text-[10px] font-black tracking-widest uppercase rounded transition-colors shadow-md">Purge Entry</button>` 
+                                : `<button class="view-btn flex items-center justify-center gap-2">Inspect Log <i class="fa-solid fa-arrow-right"></i></button>`}
+                        </div>
+                        
+                        ${isDM && !window.isPurgeMode ? `
+                            <div class="reorder-controls">
+                                <button onclick="event.stopPropagation(); window.moveRecord('${race.id}', -1)" class="reorder-btn" title="Move Up"><i class="fa-solid fa-caret-up"></i></button>
+                                <button onclick="event.stopPropagation(); window.moveRecord('${race.id}', 1)" class="reorder-btn" title="Move Down"><i class="fa-solid fa-caret-down"></i></button>
+                            </div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        window.renderDetails = () => {
+            const race = lineages.find(r => r.id === activeRaceId);
+            if (!race) return;
+            const isDM = activeRole === 'dm';
+            const tables = safeJSONParse(race.mechTables);
+            
+            let heritageUrls = window.getHeritageUrls(race);
+            if(window.currentHeritageSlide >= heritageUrls.length && heritageUrls.length > 0) {
+                window.currentHeritageSlide = Math.max(0, heritageUrls.length - 1);
+            }
+
+            // FRONT PAGE
+            document.getElementById('details-front').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                    <div class="flex flex-col">
+                        <h2 class="font-heading text-4xl md:text-5xl font-black text-ink leading-none mb-2 dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${race.id}', 'name', this.innerText)">${race.name}</h2>
+                        <div class="border-b border-gold/50 pb-3 mb-6 flex flex-wrap items-center gap-4 text-[10px] font-black text-blood tracking-widest uppercase">
+                            <div class="flex items-center gap-2">
+                                <span>Dossier ID #</span>
+                                <span class="dm-editable min-w-[30px] inline-block" contenteditable="${isDM}" oninput="window.dbUp('${race.id}', 'custodianId', this.innerText)">${race.custodianId || '994'}</span>
+                            </div>
+                            <span class="text-ink/30">|</span>
+                            <div class="flex items-center gap-2">
+                                <span>Class:</span>
+                                ${isDM ? `
+                                    <select class="bg-transparent border border-gold/50 rounded text-ink outline-none px-1 py-0.5 cursor-pointer hover:border-blood" onchange="window.dbUp('${race.id}', 'category', this.value)">
+                                        ${CATEGORIES.map(c => `<option value="${c}" ${c === (race.category || 'Uncategorized') ? 'selected' : ''}>${c}</option>`).join('')}
+                                        <option value="Uncategorized" ${(!race.category || !CATEGORIES.includes(race.category)) ? 'selected' : ''}>Uncategorized</option>
+                                    </select>
+                                ` : `
+                                    <span class="text-ink">${race.category || 'Uncategorized'}</span>
+                                `}
+                            </div>
+                        </div>
+                        <div class="bg-[rgba(255,255,255,0.4)] border-l-4 border-blood p-4 md:p-6 rounded shadow-inner">
+                            <h4 class="font-heading font-black uppercase text-xs tracking-widest text-blood mb-3">Innate Parameters</h4>
+                            <div class="dm-editable text-sm italic leading-relaxed text-ink min-h-[40px] font-serif whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.dbUp('${race.id}','traits',this.innerText)">${race.traits || ''}</div>
+                        </div>
+                    </div>
+                    <div class="relative group cursor-zoom-in shadow-lg border-2 border-gold rounded overflow-hidden bg-[rgba(139,90,43,0.1)]" onclick="window.zoomMedia('${race.detailUrl}')">
+                        <div class="absolute inset-0 bg-black/0 md:group-hover:bg-black/10 transition-colors z-10 pointer-events-none flex items-center justify-center">
+                            <span class="text-white opacity-0 md:group-hover:opacity-100 bg-black/60 px-4 py-2 rounded text-xs font-bold uppercase tracking-widest transition-opacity hidden md:block">Enlarge Visual</span>
+                        </div>
+                        ${race.detailUrl ? (race.detailUrl.includes('.mp4') ? `<video src="${race.detailUrl}" autoplay loop muted class="w-full h-[250px] md:h-full object-cover"></video>` : `<img src="${race.detailUrl}" class="w-full h-[250px] md:h-full object-cover">`) : '<div class="h-[250px] md:h-full flex items-center justify-center italic text-ink opacity-50 text-sm font-serif">Awaiting Detail Scan</div>'}
+                    </div>
+                </div>
+                
+                ${isDM ? `
+                <div class="bg-[rgba(139,90,43,0.1)] p-4 rounded mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 border border-gold/50">
+                    <div>
+                        <label class="text-[10px] font-black text-blood uppercase tracking-widest font-heading">Grid Profile URL</label>
+                        <input type="text" class="w-full p-2 text-xs bg-white/50 border border-gold mt-1 rounded focus:outline-none focus:border-blood text-ink" value="${race.gridUrl||''}" placeholder="https://..." oninput="window.dbUp('${race.id}', 'gridUrl', this.value)">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-blood uppercase tracking-widest font-heading">Detail View URL</label>
+                        <input type="text" class="w-full p-2 text-xs bg-white/50 border border-gold mt-1 rounded focus:outline-none focus:border-blood text-ink" value="${race.detailUrl||''}" placeholder="https://..." oninput="window.dbUp('${race.id}', 'detailUrl', this.value)">
+                    </div>
+                </div>` : ''}
+
+                <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner mb-8 dm-editable font-serif text-ink leading-relaxed whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.dbUp('${race.id}', 'desc', this.innerText)">
+                    ${(race.desc && race.desc.length > 0) ? `<span class="float-left text-5xl font-heading text-blood leading-none pr-3 pt-2">${race.desc.charAt(0)}</span>${race.desc.slice(1)}` : 'Click to add description...'}
+                </div>
+
+                <div id="additional-logs" class="space-y-6">
+                    ${(race.intros || []).map((intro, idx) => `
+                    <div class="border-l-4 border-gold pl-6 py-2 relative bg-gradient-to-r from-[rgba(197,160,89,0.1)] to-transparent">
+                        <h3 class="font-heading font-black text-sm text-parchment bg-ink inline-block px-4 py-1 uppercase tracking-widest mb-4 dm-editable shadow" contenteditable="${isDM}" oninput="window.updateIntroField(${idx}, 'leftTitle', this.innerText)">${intro.leftTitle || 'LOG ENTRY'}</h3>
+                        <div class="dm-editable font-serif leading-relaxed text-sm text-ink min-h-[40px] break-words whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.updateIntroField(${idx}, 'leftText', this.innerText)">${intro.leftText || ''}</div>
+                        ${isDM ? `<button onclick="window.removeSection(${idx})" class="absolute top-0 right-0 text-blood hover:text-red-600 px-2 py-1 text-[10px] uppercase font-black transition-colors"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    </div>`).join('')}
+                </div>
+            `;
+
+            // BACK PAGE
+            document.getElementById('details-back').innerHTML = `
+                <h2 class="font-heading text-3xl font-black text-blood mb-8 border-b-2 border-gold inline-block pb-2 pr-10">Archival Heritage</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+                    
+                    <ul class="ledger-list bg-[rgba(255,255,255,0.4)] p-6 rounded border border-gold shadow-inner">
+                        ${[
+                            { f: 'cultureName', l: 'Archival Identity' },
+                            { f: 'majorityPop', l: 'Majority Population' },
+                            { f: 'coreValues', l: 'Core Philosophies' },
+                            { f: 'government', l: 'Governance Structure' },
+                            { f: 'belief', l: 'Belief Systems' },
+                            { f: 'culturalPractices', l: 'Cultural Practices' },
+                            { f: 'attitudes', l: 'Societal Attitudes' }
+                        ].map(item => `<li><b class="block">${item.l}:</b> <div class="dm-editable ledger-content min-h-[20px] w-full break-words whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.dbUp('${race.id}','${item.f}',this.innerText)">${race[item.f] || ''}</div></li>`).join('')}
+                    </ul>
+                    
+                    <div class="flex flex-col gap-4">
+                        <div class="relative w-full h-[300px] md:h-[400px] rounded border-2 border-gold shadow-lg bg-[rgba(139,90,43,0.1)] overflow-hidden group cursor-zoom-in" onclick="window.zoomActiveHeritage()">
+                            ${heritageUrls.length > 0 ? heritageUrls.map((url, i) => `
+                                <div class="absolute inset-0 transition-opacity duration-500 ${i === window.currentHeritageSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'} heritage-slide" data-url="${url}">
+                                    ${url.includes('.mp4') ? `<video src="${url}" autoplay loop muted class="w-full h-full object-cover"></video>` : `<img src="${url}" class="w-full h-full object-cover">`}
+                                </div>
+                            `).join('') : '<div class="absolute inset-0 flex items-center justify-center italic text-ink opacity-50 text-sm font-serif">Heritage visual records lost</div>'}
+                            
+                            ${heritageUrls.length > 1 ? `
+                                <button onclick="event.stopPropagation(); window.changeHeritageSlide(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-ink/70 text-gold w-8 h-8 flex items-center justify-center rounded-full hover:bg-ink transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 font-bold border border-gold shadow"><i class="fa-solid fa-chevron-left"></i></button>
+                                <button onclick="event.stopPropagation(); window.changeHeritageSlide(1)" class="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-ink/70 text-gold w-8 h-8 flex items-center justify-center rounded-full hover:bg-ink transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 font-bold border border-gold shadow"><i class="fa-solid fa-chevron-right"></i></button>
+                                <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-20 bg-gradient-to-t from-black/60 to-transparent pt-6 pb-2">
+                                    ${heritageUrls.map((_, i) => `<div class="w-2 h-2 rounded-full transition-all duration-300 ${i === window.currentHeritageSlide ? 'bg-gold scale-125' : 'bg-white/40'} heritage-dot"></div>`).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        ${isDM ? `
+                        <div class="bg-[rgba(139,90,43,0.1)] p-4 border border-gold/50 rounded shadow-inner">
+                            <div class="text-[10px] font-black uppercase tracking-widest text-blood mb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-gold/30 pb-2 font-heading">
+                                <span>Heritage Visuals (Slider)</span>
+                                <button onclick="window.addHeritageMedia()" class="fantasy-btn px-3 py-1.5 rounded text-[8px] shadow">+ Add Slide</button>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                ${heritageUrls.map((url, i) => `
+                                    <div class="flex gap-2 items-center">
+                                        <span class="text-[9px] font-bold text-ink w-4">${i+1}</span>
+                                        <input type="text" class="flex-1 p-2 text-xs bg-white/50 border border-gold rounded focus:border-blood focus:outline-none text-ink" value="${url}" placeholder="Media URL (.jpg, .mp4)" oninput="window.updateHeritageMedia(${i}, this.value)">
+                                        <button onclick="window.removeHeritageMedia(${i})" class="text-blood hover:text-red-700 px-3 py-2 text-[10px] font-black transition-colors"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                `).join('')}
+                                ${heritageUrls.length === 0 ? `<div class="text-[10px] italic text-ink opacity-60 py-2">No slider media configured.</div>` : ''}
+                            </div>
+                        </div>` : ''}
+                    </div>
+                </div>
+
+                <!-- SYSTEMIC READOUT (Mechanics) -->
+                <div class="mt-12 border-t-2 border-gold pt-8">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <h4 class="m-0 font-heading font-black text-blood uppercase tracking-widest text-xl drop-shadow-sm">Systemic Readout</h4>
+                        ${isDM ? `<button onclick="window.addMechTable()" class="fantasy-btn-alt px-4 py-2 text-[10px] rounded shadow w-full sm:w-auto text-center">+ Add Ledger</button>` : ''}
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <b class="text-[10px] uppercase text-ink block mb-2 tracking-widest font-black font-heading border-b border-gold/50 pb-1">Innate Capabilities</b>
+                            <div class="dm-editable min-h-[80px] p-4 bg-[rgba(255,255,255,0.4)] rounded italic text-sm border border-gold shadow-inner break-words font-serif text-ink whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.dbUp('${race.id}','mechTraits',this.innerText)">${race.mechTraits || ''}</div>
+                        </div>
+                        <div>
+                            <b class="text-[10px] uppercase text-ink block mb-2 tracking-widest font-black font-heading border-b border-gold/50 pb-1">Core Matrix</b>
+                            <div class="dm-editable min-h-[80px] p-4 bg-[rgba(255,255,255,0.4)] rounded italic text-sm border border-gold shadow-inner break-words font-serif text-ink whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.dbUp('${race.id}','mechDescription',this.innerText)">${race.mechDescription || ''}</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+                        ${[
+                            {f:'size',l:'Size'}, {f:'speed',l:'Speed'}, {f:'mechLanguages',l:'Languages'},
+                            {f:'mechBackgrounds',l:'Backgrounds'}, {f:'mechFeats',l:'Feats'}, {f:'mechEquipment',l:'Equipment'}
+                        ].map(item => `
+                            <div class="bg-[rgba(255,255,255,0.4)] p-4 border border-gold rounded shadow-inner">
+                                <span class="block text-[10px] uppercase font-black text-blood border-b border-gold pb-1 mb-2 tracking-widest font-heading">${item.l}</span>
+                                <div class="dm-editable text-sm min-h-[24px] break-words font-serif text-ink whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.dbUp('${race.id}','${item.f}',this.innerText)">${race[item.f] || ''}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div id="mech-tables-root" class="space-y-8 w-full">
+                        ${tables.map((table, tIdx) => `
+                            <div class="relative group bg-[rgba(255,255,255,0.4)] p-4 rounded border border-gold shadow-inner overflow-hidden">
+                                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 gap-3">
+                                    <b class="text-[12px] uppercase text-blood dm-editable font-black tracking-widest w-full lg:w-auto break-words font-heading whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.updateMechTableField(${tIdx}, 'title', this.innerText)">${table.title}</b>
+                                    ${isDM ? `
+                                        <div class="flex flex-wrap gap-2 bg-ink p-1.5 rounded shadow w-full lg:w-auto justify-center">
+                                            <button onclick="window.addMechTableRow(${tIdx})" class="text-gold hover:text-white px-2 py-1 text-[9px] font-black uppercase" title="Add Row">+R</button>
+                                            <button onclick="window.remMechTableRow(${tIdx})" class="text-gold hover:text-white px-2 py-1 text-[9px] font-black uppercase" title="Remove Row">-R</button>
+                                            <div class="w-px bg-gray-600 mx-1"></div>
+                                            <button onclick="window.addMechTableCol(${tIdx})" class="text-gold hover:text-white px-2 py-1 text-[9px] font-black uppercase" title="Add Column">+C</button>
+                                            <button onclick="window.remMechTableCol(${tIdx})" class="text-gold hover:text-white px-2 py-1 text-[9px] font-black uppercase" title="Remove Column">-C</button>
+                                            <div class="w-px bg-gray-600 mx-1"></div>
+                                            <button onclick="window.delMechTable(${tIdx})" class="text-blood hover:text-red-500 px-2 py-1 text-[9px] font-black uppercase"><i class="fa-solid fa-trash"></i></button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                <div class="overflow-x-auto pb-2">
+                                    <table class="prog-table w-full min-w-[500px] md:min-w-full">
+                                        <thead><tr>${table.headers.map((h, hIdx) => `<th class="dm-editable whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.updateMechTableField(${tIdx}, 'headers', this.innerText, ${hIdx})">${h}</th>`).join('')}</tr></thead>
+                                        <tbody>${table.rows.map((row, rIdx) => `<tr>${row.map((cell, cIdx) => `<td class="dm-editable whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.updateMechTableField(${tIdx}, 'rows', this.innerText, ${rIdx}, ${cIdx})">${cell}</td>`).join('')}</tr>`).join('')}</tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        };
+
+        // Slider Logic
+        window.getHeritageUrls = (race) => {
+            try { return race.heritageMedia ? JSON.parse(race.heritageMedia) : (race.backMediaUrl ? [race.backMediaUrl] : []); } 
+            catch(e) { return []; }
+        };
+
+        window.changeHeritageSlide = (dir) => {
+            const slides = document.querySelectorAll('.heritage-slide');
+            const dots = document.querySelectorAll('.heritage-dot');
+            if (slides.length <= 1) return;
+
+            slides[window.currentHeritageSlide].classList.remove('opacity-100', 'z-10');
+            slides[window.currentHeritageSlide].classList.add('opacity-0', 'z-0');
+            dots[window.currentHeritageSlide].classList.remove('bg-gold', 'scale-125');
+            dots[window.currentHeritageSlide].classList.add('bg-white/40');
+
+            window.currentHeritageSlide = (window.currentHeritageSlide + dir + slides.length) % slides.length;
+
+            slides[window.currentHeritageSlide].classList.remove('opacity-0', 'z-0');
+            slides[window.currentHeritageSlide].classList.add('opacity-100', 'z-10');
+            dots[window.currentHeritageSlide].classList.remove('bg-white/40');
+            dots[window.currentHeritageSlide].classList.add('bg-gold', 'scale-125');
+        };
+
+        window.zoomActiveHeritage = () => {
+            const slides = document.querySelectorAll('.heritage-slide');
+            if (slides.length > 0) {
+                window.zoomMedia(slides[window.currentHeritageSlide].getAttribute('data-url'));
+            }
+        };
+
+        // Database Mutators with Debounce
+        const debounce = (func, wait) => {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(...args), wait);
+            };
+        };
+
+        const performUpdate = async (id, payload) => {
+            if (!currentUser) return;
+            try {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, id), payload);
+            } catch (e) {
+                console.error("Save failed:", e);
+                window.showToast("Network Sync Failed");
+            }
+        };
+        const debouncedUpdate = debounce(performUpdate, 800);
+
+        window.dbUp = (id, field, val) => {
+            debouncedUpdate(id, { [field]: val });
+        };
+
+        // Complex Data Updaters
+        window.addHeritageMedia = () => {
+            const race = lineages.find(r => r.id === activeRaceId);
+            const urls = window.getHeritageUrls(race);
+            urls.push("");
+            window.dbUp(activeRaceId, 'heritageMedia', JSON.stringify(urls));
+            if(!isUserTyping) setTimeout(renderDetails, 100);
+        };
+
+        window.updateHeritageMedia = (idx, val) => {
+            const race = lineages.find(r => r.id === activeRaceId);
+            const urls = window.getHeritageUrls(race);
+            urls[idx] = val;
+            window.dbUp(activeRaceId, 'heritageMedia', JSON.stringify(urls));
+        };
+
+        window.removeHeritageMedia = (idx) => {
+            const race = lineages.find(r => r.id === activeRaceId);
+            const urls = window.getHeritageUrls(race);
+            urls.splice(idx, 1);
+            if(window.currentHeritageSlide >= urls.length) window.currentHeritageSlide = Math.max(0, urls.length - 1);
+            performUpdate(activeRaceId, { heritageMedia: JSON.stringify(urls) });
+            setTimeout(renderDetails, 100);
+        };
+
+        window.updateIntroField = (idx, field, val) => {
+            const race = lineages.find(r => r.id === activeRaceId);
+            const intros = race.intros || [];
+            intros[idx][field] = val;
+            debouncedUpdate(activeRaceId, { intros: intros });
+        };
+
+        window.addMechTable = () => {
+            const race = lineages.find(r => r.id === activeRaceId);
+            const tables = safeJSONParse(race.mechTables);
+            tables.push({ title: "ARCHIVAL PARAMETERS", headers: ["ID", "Readout"], rows: [["", ""]] });
+            performUpdate(activeRaceId, { mechTables: JSON.stringify(tables) });
+            setTimeout(renderDetails, 100);
+        };
+
+        window.updateMechTableField = (tIdx, field, val, idx1 = null, idx2 = null) => {
+            const race = lineages.find(r => r.id === activeRaceId);
+            const tables = safeJSONParse(race.mechTables);
+            if(field === 'title') tables[tIdx].title = val;
+            else if(field === 'headers') tables[tIdx].headers[idx1] = val;
+            else if(field === 'rows') tables[tIdx].rows[idx1][idx2] = val;
+            debouncedUpdate(activeRaceId, { mechTables: JSON.stringify(tables) });
+        };
+
+        window.addMechTableRow = (tIdx) => {
+            const race = lineages.find(r => r.id === activeRaceId);
+            const tables = safeJSONParse(race.mechTables);
+            tables[tIdx].rows.push(new Array(tables[tIdx].headers.length).fill(""));
+            performUpdate(activeRaceId, { mechTables: JSON.stringify(tables) });
+            setTimeout(renderDetails, 100);
+        };
+
+        window.remMechTableRow = (tIdx) => {
+            const race = lineages.find(r => r.id === activeRaceId);
+            const tables = safeJSONParse(race.mechTables);
+            if(tables[tIdx].rows.length > 1) {
+                tables[tIdx].rows.pop();
+                performUpdate(activeRaceId, { mechTables: JSON.stringify(tables) });
+                setTimeout(renderDetails, 100);
+            }
+        };
+
+        window.addMechTableCol = (tIdx) => {
+            const race = lineages.find(r => r.id === activeRaceId);
+            const tables = safeJSONParse(race.mechTables);
+            tables[tIdx].headers.push("NEW");
+            tables[tIdx].rows = tables[tIdx].rows.map(r => [...r, ""]);
+            performUpdate(activeRaceId, { mechTables: JSON.stringify(tables) });
+            setTimeout(renderDetails, 100);
+        };
+
+        window.remMechTableCol = (tIdx) => {
+            const race = lineages.find(r => r.id === activeRaceId);
+            const tables = safeJSONParse(race.mechTables);
+            if(tables[tIdx].headers.length > 1) {
+                tables[tIdx].headers.pop();
+                tables[tIdx].rows = tables[tIdx].rows.map(r => r.slice(0, -1));
+                performUpdate(activeRaceId, { mechTables: JSON.stringify(tables) });
+                setTimeout(renderDetails, 100);
+            }
+        };
+
+        window.delMechTable = (tIdx) => {
+            if(confirm("Expunge this data ledger completely?")) {
+                const race = lineages.find(r => r.id === activeRaceId);
+                const tables = safeJSONParse(race.mechTables);
+                tables.splice(tIdx, 1);
+                performUpdate(activeRaceId, { mechTables: JSON.stringify(tables) });
+                setTimeout(renderDetails, 100);
+            }
+        };
+
+        window.moveRecord = async (id, direction) => {
+            if (!currentUser) return;
+            const index = lineages.findIndex(r => r.id === id);
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= lineages.length) return;
+            
+            const cur = lineages[index]; 
+            const tar = lineages[targetIndex];
+            const curO = cur.order ?? (cur.createdAt || Date.now());
+            const tarO = tar.order ?? (tar.createdAt || Date.now());
+            
+            try {
+                [lineages[index], lineages[targetIndex]] = [lineages[targetIndex], lineages[index]];
+                renderGrid();
+                
+                await Promise.all([
+                    updateDoc(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, cur.id), { order: tarO }),
+                    updateDoc(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, tar.id), { order: curO })
+                ]);
+            } catch (err) { window.showToast("Uplink Failed"); }
+        };
+
+        window.addRecord = async () => {
+            if (!currentUser) return;
+            const maxOrder = lineages.length > 0 ? Math.max(...lineages.map(l => l.order || l.createdAt || 0)) : Date.now();
+            
+            // Generate a random 3-digit Dossier ID
+            const newCustodianId = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
+            const defaultCat = CATEGORIES.length > 0 ? CATEGORIES[0] : "Uncategorized";
+            
+            window.showToast("Inking new archive...");
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION), { 
+                name: "NEW SUBJECT", custodianId: newCustodianId, category: defaultCat, speed: "30", size: "M", desc: "", traits: "", intros: [],
+                cultureName: "", majorityPop: "", coreValues: "", government: "", belief: "", culturalPractices: "", attitudes: "",
+                mechTraits: "", mechDescription: "", mechBackgrounds: "", mechLanguages: "", mechFeats: "", mechEquipment: "", mechTables: "[]",
+                createdAt: Date.now(), order: maxOrder + 1000 
+            });
+        };
+
+        window.addSection = async () => {
+            if (!currentUser) return;
+            const race = lineages.find(r => r.id === activeRaceId);
+            const intros = race.intros || [];
+            intros.push({ leftTitle: "LOG ENTRY", leftText: "" });
+            performUpdate(activeRaceId, { intros: intros });
+            setTimeout(renderDetails, 100);
+        };
+
+        window.removeSection = async (idx) => {
+            if (!currentUser) return;
+            const race = lineages.find(r => r.id === activeRaceId);
+            const intros = race.intros || [];
+            intros.splice(idx, 1);
+            performUpdate(activeRaceId, { intros: intros });
+            setTimeout(renderDetails, 100);
+            window.showToast("Section Redacted");
+        };
+
+        window.triggerDel = (id = null) => { targetDelId = id || activeRaceId; document.getElementById('del-modal')?.classList.remove('hidden'); };
+        
+        document.getElementById('confirm-del-btn').onclick = async () => {
+            if (!targetDelId || !currentUser) return;
+            document.getElementById('del-modal')?.classList.add('hidden'); 
+            window.showToast("Purging...");
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, targetDelId));
+                if (currentView === 'details') window.setView('grid');
+            } catch(e) { window.showToast("Purge failed."); }
+        };
+
+        window.zoomMedia = (url) => { 
+            if (!url || url.trim() === 'undefined' || url.trim() === 'null') return; 
+            const lb = document.getElementById('lightbox');
+            const content = document.getElementById('lightbox-content');
+            
+            const isVideo = url.includes('.mp4') || url.includes('.webm');
+            if (isVideo) {
+                content.innerHTML = `<video src="${url}" autoplay controls loop class="max-w-full max-h-full object-contain rounded border-2 border-gold shadow-2xl"></video>`;
+            } else {
+                content.innerHTML = `<img src="${url}" class="max-w-full max-h-full object-contain rounded border-2 border-gold shadow-2xl">`;
+            }
+            
+            lb.classList.remove('hidden');
+            lb.classList.add('flex');
+            requestAnimationFrame(() => lb.classList.remove('opacity-0'));
+        };
+
+        window.closeLightbox = () => {
+            const lb = document.getElementById('lightbox');
+            lb.classList.add('opacity-0');
+            setTimeout(() => {
+                lb.classList.add('hidden');
+                lb.classList.remove('flex');
+                document.getElementById('lightbox-content').innerHTML = '';
+            }, 300); 
+        };
+
+        // --- AUTHENTICATION SYNC ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {
-                    const consoleEl = document.getElementById('door-center-console');
-                    if (consoleEl) {
-                        consoleEl.innerHTML = `<div class="flex flex-col items-center bg-[var(--wood-bg)] p-8 rounded border border-[var(--brass-dark)] shadow-xl"><i class="fa-solid fa-lock text-4xl text-[var(--brass-dark)] mb-4"></i><h2 class="font-heading text-xl text-[var(--parchment)] mb-4">Authentication Required</h2><button onclick="window.location.href='index.html'" class="arch-btn px-6 py-2 rounded text-xs mt-2">Return to Login</button></div>`;
-                    }
+                    document.getElementById('initial-loading').innerHTML = `<h2 class="font-heading text-2xl text-blood">Authentication Required</h2>`;
                 }
                 return;
             }
@@ -1248,9 +1056,6 @@
                     const userDoc = await getDoc(doc(db, 'users', u.uid));
                     if (userDoc.exists()) {
                         currentUser = { uid: u.uid, ...userDoc.data() };
-                        if (!currentUser.username) {
-                            currentUser.username = u.displayName || 'Traveler';
-                        }
                     } else {
                         currentUser = { uid: u.uid, username: u.displayName || 'Traveler', role: 'player' };
                     }
@@ -1258,38 +1063,49 @@
 
                 activeRole = currentUser.role || 'player';
 
+                // Fetch campaign name
                 if (appId !== "demo_campaign") {
-                    try {
-                        const campDoc = await getDoc(doc(db, 'campaigns', appId));
-                        if (campDoc.exists() && campDoc.data().name) {
-                            const titleEls = [document.getElementById('main-campaign-title')];
-                            titleEls.forEach(el => { if(el) el.innerText = campDoc.data().name; });
-                            document.title = `${campDoc.data().name} - Custodian's Athenaeum`;
-                        }
-                    } catch (err) {
-                        console.warn("Could not read campaign info:", err);
+                    const campDoc = await getDoc(doc(db, 'campaigns', appId));
+                    if (campDoc.exists() && campDoc.data().name) {
+                        const titleEl = document.getElementById('main-campaign-title');
+                        if (titleEl) titleEl.innerText = campDoc.data().name;
+                        document.title = `${campDoc.data().name} - Lineages`;
                     }
                 }
 
-                document.getElementById('user-identity').innerText = currentUser.username;
+                document.getElementById('user-display-name').innerText = currentUser.username;
+                
+                window.renderTabs();
                 window.updateRoleUI();
+                renderSidebar();
 
-                // Trigger door readiness
-                const authText = document.getElementById('auth-loading-text');
-                const openBtn = document.getElementById('open-doors-btn');
-                if (authText && openBtn) {
-                    authText.classList.add('hidden');
-                    openBtn.classList.remove('hidden');
-                }
-
-                setupListeners();
+                document.getElementById('initial-loading').classList.add('hidden');
+                document.getElementById('dashboard-screen').classList.remove('hidden');
+                
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION), (snap) => {
+                    // Extract config document for categories if present
+                    const configDoc = snap.docs.find(d => d.id === '_lineage_config');
+                    if (configDoc) {
+                        CATEGORIES = configDoc.data().categories || ["Core Races", "Bestiari Lineages", "Automatons", "Mycelin Lineages", "Fractured Plane Lineages"];
+                    }
+                    
+                    lineages = snap.docs.filter(d => d.id !== '_lineage_config').map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.order ?? a.createdAt) - (b.order ?? b.createdAt));
+                    
+                    window.renderTabs();
+                    
+                    if (!isUserTyping) {
+                        if(currentView === 'grid') renderGrid(); else renderDetails();
+                    }
+                }, (err) => {
+                    console.error("Archive failure:", err);
+                    window.showToast("Archival Stream Error");
+                });
 
             } catch (error) {
-                console.error(error);
-                const loadingText = document.getElementById('auth-loading-text');
-                if (loadingText) {
-                    loadingText.innerHTML = `<i class="fa-solid fa-key text-[var(--brass-dark)] text-xl mr-2"></i> Database Access Denied`;
-                    loadingText.classList.remove('animate-pulse');
+                console.error("Initialization Error:", error);
+                const initLoad = document.getElementById('initial-loading');
+                if (initLoad) {
+                    initLoad.innerHTML = `<h2 class="font-heading text-2xl text-blood">Connection Failed</h2><p class="text-xs text-gray-400 mt-2">${error.message}</p>`;
                 }
             }
         });

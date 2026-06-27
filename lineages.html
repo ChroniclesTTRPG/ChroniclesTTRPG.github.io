@@ -663,9 +663,7 @@
                     </div>
                 </div>` : ''}
 
-                <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner mb-8 dm-editable font-serif text-ink leading-relaxed whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.dbUp('${race.id}', 'desc', this.innerText)">
-                    ${(race.desc && race.desc.length > 0) ? `<span class="float-left text-5xl font-heading text-blood leading-none pr-1 pt-1.5">${race.desc.charAt(0)}</span>${race.desc.slice(1)}` : 'Click to add description...'}
-                </div>
+                <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner mb-8 dm-editable font-serif text-ink leading-relaxed whitespace-pre-wrap" contenteditable="${isDM}" oninput="window.dbUp('${race.id}', 'desc', this.innerText)">${(race.desc && race.desc.length > 0) ? `<span class="float-left text-5xl font-heading text-blood leading-none pr-2 mr-1 pt-1.5">${race.desc.charAt(0)}</span>${race.desc.slice(1)}` : 'Click to add description...'}</div>
 
                 <div id="additional-logs" class="space-y-6">
                     ${(race.intros || []).map((intro, idx) => `

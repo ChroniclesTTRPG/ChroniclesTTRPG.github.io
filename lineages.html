@@ -693,10 +693,10 @@
                     </ul>
                     
                     <div class="flex flex-col gap-4">
-                        <div class="relative w-full h-[300px] md:h-[400px] rounded border-2 border-gold shadow-lg bg-[rgba(139,90,43,0.1)] overflow-hidden group cursor-zoom-in" onclick="window.zoomActiveHeritage()">
+                        <div class="relative w-full rounded border-2 border-gold shadow-lg bg-[rgba(139,90,43,0.1)] overflow-hidden group cursor-zoom-in min-h-[200px]" onclick="window.zoomActiveHeritage()">
                             ${heritageUrls.length > 0 ? heritageUrls.map((url, i) => `
-                                <div class="absolute inset-0 transition-opacity duration-500 ${i === window.currentHeritageSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'} heritage-slide" data-url="${url}">
-                                    ${url.includes('.mp4') ? `<video src="${url}" autoplay loop muted class="w-full h-full object-cover"></video>` : `<img src="${url}" class="w-full h-full object-cover">`}
+                                <div class="transition-opacity duration-500 ${i === window.currentHeritageSlide ? 'opacity-100 z-10 relative' : 'opacity-0 z-0 absolute top-0 left-0 w-full'} heritage-slide" data-url="${url}">
+                                    ${url.includes('.mp4') ? `<video src="${url}" autoplay loop muted class="w-full h-auto block object-contain"></video>` : `<img src="${url}" class="w-full h-auto block object-contain">`}
                                 </div>
                             `).join('') : '<div class="absolute inset-0 flex items-center justify-center italic text-ink opacity-50 text-sm font-serif">Heritage visual records lost</div>'}
                             
@@ -800,15 +800,15 @@
             const dots = document.querySelectorAll('.heritage-dot');
             if (slides.length <= 1) return;
 
-            slides[window.currentHeritageSlide].classList.remove('opacity-100', 'z-10');
-            slides[window.currentHeritageSlide].classList.add('opacity-0', 'z-0');
+            slides[window.currentHeritageSlide].classList.remove('opacity-100', 'z-10', 'relative');
+            slides[window.currentHeritageSlide].classList.add('opacity-0', 'z-0', 'absolute', 'top-0', 'left-0', 'w-full');
             dots[window.currentHeritageSlide].classList.remove('bg-gold', 'scale-125');
             dots[window.currentHeritageSlide].classList.add('bg-white/40');
 
             window.currentHeritageSlide = (window.currentHeritageSlide + dir + slides.length) % slides.length;
 
-            slides[window.currentHeritageSlide].classList.remove('opacity-0', 'z-0');
-            slides[window.currentHeritageSlide].classList.add('opacity-100', 'z-10');
+            slides[window.currentHeritageSlide].classList.remove('opacity-0', 'z-0', 'absolute', 'top-0', 'left-0', 'w-full');
+            slides[window.currentHeritageSlide].classList.add('opacity-100', 'z-10', 'relative');
             dots[window.currentHeritageSlide].classList.remove('bg-white/40');
             dots[window.currentHeritageSlide].classList.add('bg-gold', 'scale-125');
         };

@@ -997,7 +997,13 @@
             
             // Generate a random 3-digit Dossier ID
             const newCustodianId = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
-            const defaultCat = CATEGORIES.length > 0 ? CATEGORIES[0] : "Uncategorized";
+            
+            let defaultCat = CATEGORIES.length > 0 ? CATEGORIES[0] : "Uncategorized";
+            if (activeTab && activeTab !== 'All' && activeTab !== 'Uncategorized') {
+                defaultCat = activeTab;
+            } else if (activeTab === 'Uncategorized') {
+                defaultCat = "Uncategorized";
+            }
             
             window.showToast("Inking new archive...");
             await addDoc(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION), { 

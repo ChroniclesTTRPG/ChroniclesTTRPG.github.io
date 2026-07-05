@@ -555,15 +555,26 @@
             document.getElementById('flip-container')?.classList.remove('flipped');
             document.getElementById('flip-text').innerText = "Turn Page";
 
+            // Safely scroll to the top of the content pane specifically, rather than relying on window.scroll
+            const scrollToTop = () => {
+                const header = document.getElementById('page-title-display');
+                if (header) {
+                    header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            };
+
             if(v === 'grid') {
                 renderGrid();
+                scrollToTop();
                 setTimeout(() => {
                     gridView.classList.remove('view-hidden');
                     gridView.classList.add('view-active');
                 }, 150);
             } else {
                 renderDetails();
-                document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
+                scrollToTop();
                 setTimeout(() => {
                     detailsView.classList.remove('view-hidden');
                     detailsView.classList.add('view-active');

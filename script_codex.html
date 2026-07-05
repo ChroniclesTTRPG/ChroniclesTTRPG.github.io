@@ -161,9 +161,10 @@
                     </div>
                     
                     <div class="flex items-center gap-3">
-                        <button id="btn-import" onclick="window.openImportModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-download mr-2"></i>Import Compendium</button>
+                        <button id="btn-import" onclick="window.openImportModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-download mr-2"></i>Import</button>
+                        <button id="btn-publish" onclick="window.openPublishModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-upload mr-2"></i>Publish</button>
                         <button onclick="document.getElementById('definitions-modal').classList.remove('hidden')" class="fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-book-open mr-2"></i>Definitions</button>
-                        <button id="btn-create-script" onclick="window.openScriptModal()" class="hidden fantasy-btn px-6 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-plus mr-2"></i>Inscribe Script</button>
+                        <button id="btn-create-script" onclick="window.openScriptModal()" class="hidden fantasy-btn px-6 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-plus mr-2"></i>Inscribe</button>
                     </div>
                 </div>
             </div>
@@ -220,33 +221,35 @@
 
     <!-- COMPENDIUM IMPORT MODAL (DM ONLY) -->
     <div id="import-modal" class="modal-overlay hidden z-[960]">
-        <div class="modal-container max-w-4xl text-center bg-wood !border-gray-600 shadow-2xl">
-            <h2 class="font-heading text-3xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Initialize Codex</h2>
-            <p class="text-sm font-serif text-gray-400 italic mb-8 mt-4">Select a foundational ruleset to automatically populate this campaign's codex with iconic abilities. <br>This process runs once and cannot be undone.</p>
+        <div class="modal-container max-w-4xl bg-wood !border-gray-600 shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="text-center mb-6">
+                <h2 class="font-heading text-3xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Initialize Codex</h2>
+                <p class="text-sm font-serif text-gray-400 italic mt-4">Select a published codex from the community to import into your realm.</p>
+            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- D&D 5e -->
-                <div class="import-card" onclick="window.executeImport('dnd')">
-                    <i class="fa-solid fa-dragon"></i>
-                    <h3 class="font-heading text-lg font-bold text-white uppercase mb-2">D&D 5e Magic</h3>
-                    <p class="text-xs text-gray-400">Injects 35+ foundational arcane and divine spells ranging from Cantrips to Wish.</p>
-                </div>
-                <!-- Star Wars FFG -->
-                <div class="import-card" onclick="window.executeImport('sw')">
-                    <i class="fa-brands fa-jedi-order"></i>
-                    <h3 class="font-heading text-lg font-bold text-white uppercase mb-2">Star Wars FFG</h3>
-                    <p class="text-xs text-gray-400">Injects 20+ core vehicle maneuvers, actions, and combat techniques.</p>
-                </div>
-                <!-- Custom -->
-                <div class="import-card" onclick="window.closeImportModal()">
-                    <i class="fa-solid fa-scroll"></i>
-                    <h3 class="font-heading text-lg font-bold text-white uppercase mb-2">Blank Canvas</h3>
-                    <p class="text-xs text-gray-400">Start from scratch. Manually inscribe custom spells, cyberware, or mutations.</p>
-                </div>
+            <div id="global-compendiums-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6 overflow-y-auto scrollbar-hide flex-grow px-2 py-2">
+                <!-- Populated by JS -->
             </div>
 
-            <div class="flex justify-center">
-                <button onclick="window.closeImportModal()" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Close Menu</button>
+            <div class="flex justify-center mt-4 pt-4 border-t border-gray-700">
+                <button onclick="window.closeImportModal()" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PUBLISH CODEX MODAL (DM ONLY) -->
+    <div id="publish-modal" class="modal-overlay hidden z-[960]">
+        <div class="modal-container !max-w-md text-center">
+            <h2 class="font-heading text-2xl font-black text-blood uppercase tracking-widest mb-2 border-b-2 border-gold pb-2">Publish Codex</h2>
+            <p class="text-xs font-serif text-ink italic mb-6">Share this realm's scripts globally for other DMs to use.</p>
+            <input type="text" id="publish-codex-name" class="form-input mb-4 font-heading text-center uppercase font-bold" placeholder="E.g. Voidwalker Magic">
+            <select id="publish-codex-vis" class="form-input mb-6 font-heading text-center uppercase font-bold cursor-pointer">
+                <option value="private">Private (Only You)</option>
+                <option value="public">Public (Community)</option>
+            </select>
+            <div class="flex justify-center gap-4 font-heading">
+                <button onclick="document.getElementById('publish-modal').classList.add('hidden')" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink px-4">Cancel</button>
+                <button onclick="window.executePublish()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Publish</button>
             </div>
         </div>
     </div>
@@ -416,9 +419,9 @@
 
     <!-- FIREBASE & LOGIC -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, addDoc, deleteDoc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, addDoc, deleteDoc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- CORE UI FUNCTIONS ---
         window.showToast = (m) => { 
@@ -482,6 +485,8 @@
         let scripts = [];
         let characters = []; 
         let vocationsData = []; 
+        let publicCompendiums = [];
+        let privateCompendiums = [];
         let currentUser = null;
         let activeRole = 'player';
         
@@ -506,7 +511,6 @@
             { id: 'class_fabricator', default: 'Fabricator', min: 0, max: 5 }
         ];
 
-        // --- STREAMING_CHUNK:Render and Filter Logic... ---
         window.renderLevelTabs = () => {
             const container = document.getElementById('level-tabs-container');
             if (!container) return;
@@ -626,7 +630,6 @@
             }
         };
 
-        // --- STREAMING_CHUNK:Definitions Handling... ---
         const DEFAULT_DEFINITIONS = `**Scriptcasting**
 The Eternal Heart saturates Aeonfall with unseen energies. Across the world, these energies can be shaped into precise patterns known as **Scripts**.
 
@@ -696,7 +699,6 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- STREAMING_CHUNK:Campaign Terminology (DM Only)... ---
         window.openCampaignSettings = () => {
             if (activeRole !== 'dm') return;
             const terms = campaignSettings?.terms || {};
@@ -824,7 +826,6 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }).join('');
         };
 
-        // --- STREAMING_CHUNK:DM Actions and Save Logic... ---
         window.openScriptModal = (id = null) => {
             if (activeRole !== 'dm') return;
             activeScriptId = id;
@@ -920,7 +921,6 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             });
         };
 
-        // --- STREAMING_CHUNK:Transfer System... ---
         window.openTransferModal = (scriptId) => {
             targetTransferScript = scripts.find(s => s.id === scriptId);
             if (!targetTransferScript) return;
@@ -998,9 +998,32 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- STREAMING_CHUNK:Compendium Import Logic... ---
         window.openImportModal = () => {
             if (activeRole !== 'dm') return;
+            const grid = document.getElementById('global-compendiums-grid');
+            grid.innerHTML = '';
+            
+            const allComps = [...privateCompendiums, ...publicCompendiums];
+            
+            if (allComps.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-8 text-center text-gray-500 italic text-sm">No codices found. Create and publish one!</div>`;
+            } else {
+                allComps.forEach(comp => {
+                    const badge = comp.visibility === 'private' 
+                        ? '<span class="bg-gray-800 text-gray-400 border border-gray-600 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md inline-block mb-2"><i class="fa-solid fa-lock text-[7px] mr-1"></i>Private</span>' 
+                        : '<span class="bg-indigo-900 text-indigo-200 border border-indigo-700 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md inline-block mb-2"><i class="fa-solid fa-globe text-[7px] mr-1"></i>Public</span>';
+                        
+                    grid.innerHTML += `
+                        <div class="import-card flex flex-col items-center" onclick="window.executeImport('${comp.id}', '${comp.visibility}')">
+                            ${badge}
+                            <i class="fa-solid fa-book-journal-whills"></i>
+                            <h3 class="font-heading text-lg font-bold text-white uppercase mb-2">${comp.name}</h3>
+                            <p class="text-xs text-gray-400">By ${comp.author}</p>
+                            <p class="text-[10px] text-gray-500 mt-2">${comp.scripts?.length || 0} Scripts</p>
+                        </div>
+                    `;
+                });
+            }
             document.getElementById('import-modal').classList.remove('hidden');
         };
 
@@ -1008,77 +1031,88 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             document.getElementById('import-modal').classList.add('hidden');
         };
 
-        window.executeImport = async (ruleset) => {
+        window.executeImport = async (compId, vis) => {
             if (activeRole !== 'dm') return;
+            const list = vis === 'private' ? privateCompendiums : publicCompendiums;
+            const comp = list.find(c => c.id === compId);
+            if (!comp || !comp.scripts || comp.scripts.length === 0) return window.showToast("Codex is empty or invalid.");
+
             window.showToast("Initializing Compendium...");
             document.getElementById('import-modal').classList.add('hidden');
             
-            let dataset = [];
-            if (ruleset === 'dnd') dataset = DND_SPELLS;
-            if (ruleset === 'sw') dataset = SW_POWERS;
-            if (dataset.length === 0) return;
-
             try {
                 const batch = writeBatch(db);
-                dataset.forEach(item => {
+                comp.scripts.forEach(item => {
                     const docRef = doc(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION));
                     batch.set(docRef, { ...item, createdAt: Date.now(), updatedAt: Date.now() });
                 });
                 await batch.commit();
                 window.showToast("Compendium injection successful!");
-                document.getElementById('btn-import').classList.add('hidden'); // Hide after first import
             } catch (e) {
                 console.error(e);
                 window.showToast("Error during import.");
             }
         };
 
-        // Defining the "Starter Packs"
-        const DND_SPELLS = [
-            { name: "Acid Splash", level: "0", school: "Conjuration", activation: "1 Action", range: "60 feet", comp: "V, S", duration: "Instantaneous", desc: "You hurl a bubble of acid. Choose one creature within range, or choose two creatures within range that are within 5 feet of each other. A target must succeed on a Dexterity saving throw or take 1d6 acid damage.", scaling: "Damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).", lists: "Universal" },
-            { name: "Mage Hand", level: "0", school: "Conjuration", activation: "1 Action", range: "30 feet", comp: "V, S", duration: "1 minute", desc: "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration or until you dismiss it as an action. You can use your action to control the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item. The hand can't attack, activate magic items, or carry more than 10 pounds.", scaling: "", lists: "Universal" },
-            { name: "Prestidigitation", level: "0", school: "Transmutation", activation: "1 Action", range: "10 feet", comp: "V, S", duration: "Up to 1 hour", desc: "You create an instantaneous, harmless sensory effect, such as a shower of sparks, a puff of wind, faint musical notes, or an odd odor. You instantaneously light or snuff out a candle, a torch, or a small campfire. You instantaneously clean or soil an object no larger than 1 cubic foot.", scaling: "", lists: "Universal" },
-            { name: "Absorb Elements", level: "1", school: "Abjuration", activation: "1 Reaction", range: "Self", comp: "S", duration: "1 round", desc: "The spell captures some of the incoming energy, lessening its effect on you and storing it for your next melee attack. You have resistance to the triggering damage type until the start of your next turn. Also, the first time you hit with a melee attack on your next turn, the target takes an extra 1d6 damage of the triggering type.", scaling: "Damage increases by 1d6 for each slot level above 1st.", lists: "Universal" },
-            { name: "Alarm", level: "1", school: "Abjuration", activation: "1 minute", range: "30 feet", comp: "V, S, M (a tiny bell and fine silver wire)", duration: "8 hours", desc: "You set an alarm against unwanted intrusion. Choose a door, window, or area up to 20-foot cube. Until the spell ends, an alarm alerts you whenever a Tiny or larger creature touches or enters the warded area. You designate creatures that won't set it off.", scaling: "", lists: "Universal" },
-            { name: "Cure Wounds", level: "1", school: "Evocation", activation: "1 Action", range: "Touch", comp: "V, S", duration: "Instantaneous", desc: "A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier. This spell has no effect on undead or constructs.", scaling: "Healing increases by 1d8 for each slot level above 1st.", lists: "Universal" },
-            { name: "Magic Missile", level: "1", school: "Evocation", activation: "1 Action", range: "120 feet", comp: "V, S", duration: "Instantaneous", desc: "You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range. A dart deals 1d4+1 force damage to its target. The darts all strike simultaneously, and you can direct them to hit one creature or several.", scaling: "Creates one more dart for each slot level above 1st.", lists: "Universal" },
-            { name: "Shield", level: "1", school: "Abjuration", activation: "1 Reaction", range: "Self", comp: "V, S", duration: "1 round", desc: "An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from magic missile.", scaling: "", lists: "Universal" },
-            { name: "Alter Self", level: "2", school: "Transmutation", activation: "1 Action", range: "Self", comp: "V, S", duration: "Concentration, up to 1 hour", desc: "You assume a different form. Options include **Aquatic Adaptation** (breathe underwater, swim speed), **Change Appearance** (transform visually but stats remain), or **Natural Weapons** (grow claws/fangs, unarmed strikes deal 1d6 and gain +1 to hit/damage).", scaling: "", lists: "Universal" },
-            { name: "Hold Person", level: "2", school: "Enchantment", activation: "1 Action", range: "60 feet", comp: "V, S, M (a small, straight piece of iron)", duration: "Concentration, up to 1 minute", desc: "Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another Wisdom saving throw to end the effect.", scaling: "Target one additional humanoid for each slot level above 2nd.", lists: "Universal" },
-            { name: "Misty Step", level: "2", school: "Conjuration", activation: "1 Bonus Action", range: "Self", comp: "V", duration: "Instantaneous", desc: "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see.", scaling: "", lists: "Universal" },
-            { name: "Counterspell", level: "3", school: "Abjuration", activation: "1 Reaction", range: "60 feet", comp: "S", duration: "Instantaneous", desc: "You attempt to interrupt a creature in the process of casting a spell. If the creature is casting a spell of 3rd level or lower, its spell fails and has no effect. If it is casting a spell of 4th level or higher, make an ability check using your spellcasting ability (DC 10 + spell level).", scaling: "The interrupted spell has no effect if its level is less than or equal to the level of the spell slot you used.", lists: "Universal" },
-            { name: "Fireball", level: "3", school: "Evocation", activation: "1 Action", range: "150 feet", comp: "V, S, M (bat guano and sulfur)", duration: "Instantaneous", desc: "A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame. Each creature in a 20-foot-radius sphere must make a Dexterity saving throw, taking 8d6 fire damage on a failed save, or half on a success.", scaling: "Damage increases by 1d6 for each slot level above 3rd.", lists: "Universal" },
-            { name: "Fly", level: "3", school: "Transmutation", activation: "1 Action", range: "Touch", comp: "V, S, M (a wing feather)", duration: "Concentration, up to 10 minutes", desc: "You touch a willing creature. The target gains a flying speed of 60 feet for the duration. When the spell ends, the target falls if it is still aloft, unless it can stop the fall.", scaling: "Target one additional creature for each slot level above 3rd.", lists: "Universal" },
-            { name: "Haste", level: "3", school: "Transmutation", activation: "1 Action", range: "30 feet", comp: "V, S, M (a shaving of licorice root)", duration: "Concentration, up to 1 minute", desc: "Choose a willing creature. The target's speed is doubled, it gains a +2 bonus to AC, advantage on Dexterity saves, and an additional action (Attack - one weapon attack only, Dash, Disengage, Hide, or Use Object). When the spell ends, the target can't move or take actions until after its next turn.", scaling: "", lists: "Universal" },
-            { name: "Banishment", level: "4", school: "Abjuration", activation: "1 Action", range: "60 feet", comp: "V, S, M (an item distasteful to the target)", duration: "Concentration, up to 1 minute", desc: "You attempt to send one creature to another plane. Target must succeed on a Charisma save. If native to your plane, they are banished to a harmless demiplane and incapacitated. If native to a different plane, they are banished with a popping noise returning to their home plane.", scaling: "Target one additional creature for each slot level above 4th.", lists: "Universal" },
-            { name: "Dimension Door", level: "4", school: "Conjuration", activation: "1 Action", range: "500 feet", comp: "V", duration: "Instantaneous", desc: "You teleport yourself from your current location to any other spot within range. You arrive at exactly the spot desired. You can bring one willing creature of your size or smaller.", scaling: "", lists: "Universal" },
-            { name: "Wall of Force", level: "5", school: "Evocation", activation: "1 Action", range: "120 feet", comp: "V, S, M (crushed clear gemstone)", duration: "Concentration, up to 10 minutes", desc: "An invisible wall of force springs into existence. You can form it into a hemispherical dome, a sphere, or a flat surface. Nothing can physically pass through it. Immune to all damage and dispel magic. Disintegrate destroys it instantly.", scaling: "", lists: "Universal" },
-            { name: "Heal", level: "6", school: "Evocation", activation: "1 Action", range: "60 feet", comp: "V, S", duration: "Instantaneous", desc: "A surge of positive energy washes through the creature, causing it to regain 70 hit points. This spell also ends blindness, deafness, and any diseases affecting the target.", scaling: "Healing increases by 10 for each slot level above 6th.", lists: "Universal" },
-            { name: "Teleport", level: "7", school: "Conjuration", activation: "1 Action", range: "10 feet", comp: "V", duration: "Instantaneous", desc: "Instantly transports you and up to eight willing creatures to a destination you select. Your familiarity with the destination determines whether you arrive successfully (roll d100).", scaling: "", lists: "Universal" },
-            { name: "Feeblemind", level: "8", school: "Enchantment", activation: "1 Action", range: "150 feet", comp: "V, S, M (clay/crystal spheres)", duration: "Instantaneous", desc: "Blast the mind of a creature. Target takes 4d6 psychic damage and must make an Intelligence saving throw. On a failure, its Intelligence and Charisma scores become 1. It can't cast spells or communicate intelligibly.", scaling: "", lists: "Universal" },
-            { name: "Wish", level: "9", school: "Conjuration", activation: "1 Action", range: "Self", comp: "V", duration: "Instantaneous", desc: "Wish is the mightiest spell. Basic use is to duplicate any other spell of 8th level or lower with no requirements. Alternatively, create an object up to 25,000 gp, fully heal 20 creatures, grant resistance, or force a reroll. Stress applies if not duplicating a spell.", scaling: "", lists: "Universal" }
-        ];
+        window.openPublishModal = () => {
+            if (activeRole !== 'dm') return;
+            document.getElementById('publish-codex-name').value = '';
+            document.getElementById('publish-codex-vis').value = 'private';
+            document.getElementById('publish-modal').classList.remove('hidden');
+        };
 
-        const SW_POWERS = [
-            { name: "Aim", level: "0", school: "Combat Maneuver", activation: "1 Maneuver", range: "Self", comp: "Weapon", duration: "Next Check", desc: "Gain 1 Boost Die to your next combat check; OR target a specific item or hit location and suffer 1 Setback Die to your next combat check.", scaling: "If you spend 2 consecutive maneuvers to Aim: Gain 2 Boost Dice to your next combat check; OR target a specific item/location and suffer only 1 Setback Die.", lists: "Universal" },
-            { name: "Guarded Stance", level: "0", school: "Combat Maneuver", activation: "1 Maneuver", range: "Self", comp: "Melee", duration: "1 Round", desc: "Add 1 Setback Die to your combat checks until the end of your next turn. You gain +1 Melee Defense.", scaling: "", lists: "Universal" },
-            { name: "Take Cover", level: "0", school: "Combat Maneuver", activation: "1 Maneuver", range: "Self", comp: "None", duration: "1 Round", desc: "Take cover behind an object or terrain. You gain +1 Ranged Defense, but add 1 Setback Die to your Perception checks.", scaling: "", lists: "Universal" },
-            { name: "Drop Prone / Stand", level: "0", school: "Combat Maneuver", activation: "1 Maneuver", range: "Self", comp: "None", duration: "Instantaneous", desc: "Drop prone or stand up. While prone, add 1 Setback Die to ranged attacks targeting you, but add 1 Boost Die to melee attacks targeting you.", scaling: "", lists: "Universal" },
-            { name: "Boost Shields", level: "1", school: "Starship Action", activation: "1 Action", range: "Vehicle", comp: "Mechanics", duration: "1 Turn", desc: "Make a Mechanics check. Suffer 1 system strain to add +1 defense to a defensive zone for 1 turn.", scaling: "", lists: "Vehicle" },
-            { name: "Co-Pilot", level: "1", school: "Starship Action", activation: "1 Action", range: "Vehicle", comp: "Piloting", duration: "1 Turn", desc: "Make a Piloting check to downgrade the difficulty of the pilot's next Piloting check.", scaling: "", lists: "Vehicle" },
-            { name: "Fire Discipline", level: "1", school: "Starship Action", activation: "1 Action", range: "Vehicle", comp: "Leadership / Discipline", duration: "1 Turn", desc: "Make a Leadership or Discipline check to add 1 Boost Die to the next crew member firing a weapon.", scaling: "Additional Advantage can apply the bonus to additional crew members. 3 Advantage + 1 Strain adds +1 damage to the target hit.", lists: "Vehicle" },
-            { name: "Gain Advantage", level: "2", school: "Starship Action", activation: "1 Action", range: "Vehicle (Speed 4+)", comp: "Piloting", duration: "1 Turn", desc: "Pilot Only (Silhouette 1-4). Make a Piloting check to ignore Evasive Action penalties and choose which defense zone is hit by your attack.", scaling: "Cancel Advantage: Make check at +1 Difficulty for each time the opponent has used the maneuver successfully against you.", lists: "Vehicle" },
-            { name: "Jamming", level: "2", school: "Starship Action", activation: "1 Action", range: "Medium", comp: "Computers", duration: "1 Turn", desc: "Make a Computers check. The target must make a Computers check to use their communications system.", scaling: "Spend Advantage to add Setback Dice to the target's Computers check.", lists: "Vehicle" },
-            { name: "Manual Repairs", level: "1", school: "Starship Action", activation: "1 Action", range: "Vehicle", comp: "Athletics", duration: "Instantaneous", desc: "Make an Athletics check (Limit 1/encounter). Recover 1 hull trauma.", scaling: "Spend 2 Advantage to recover an additional 1 hull trauma.", lists: "Vehicle" },
-            { name: "Slice Enemy's Systems", level: "3", school: "Starship Action", activation: "1 Action", range: "Vehicle", comp: "Computers", duration: "1 Turn", desc: "Make a Computers check. Reduce the target's defense by 1 in one defensive zone.", scaling: "Spend 1 Advantage to add +1 strain to target. Spend 2 Advantage to disable a target weapon system for 1 round.", lists: "Vehicle" },
-            { name: "Evasive Action", level: "1", school: "Starship Maneuver", activation: "1 Maneuver", range: "Vehicle (Speed 3+)", comp: "Piloting", duration: "1 Turn", desc: "Pilot Only (Silhouette 1-4). Upgrade the difficulty of all attacks made by your ship, and upgrade the difficulty of all attacks targeting your ship. Lasts until the end of the pilot's next turn.", scaling: "", lists: "Vehicle" },
-            { name: "Stay on Target", level: "1", school: "Starship Maneuver", activation: "1 Maneuver", range: "Vehicle (Speed 3+)", comp: "Piloting", duration: "1 Turn", desc: "Pilot Only (Silhouette 1-4). Upgrade the ability of your ship's combat checks, and upgrade the difficulty of combat checks targeting your ship. Lasts until the end of the pilot's next turn.", scaling: "", lists: "Vehicle" },
-            { name: "Force Power Check", level: "1", school: "Force Ability", activation: "1 Action", range: "Varies", comp: "Force Rating", duration: "Instantaneous", desc: "Roll Force Dice equal to your Force Rating. Generate Force Points (Light or Dark) to activate Force powers. Dark Side results can be used by generating 1 Force Point, suffering 1 strain, and gaining 1 Conflict.", scaling: "", lists: "Force" },
-            { name: "Bacta Tank Recovery", level: "0", school: "Medical", activation: "1 Day", range: "Touch", comp: "Bacta Tank", duration: "Instantaneous", desc: "Heal 1 wound per hour. If incapacitated, heal 1 wound per 6 hours. Once per day, make a Resilience check vs the severity of a Critical Injury; on success, remove the injury.", scaling: "", lists: "Medical" },
-            { name: "Stimpack Application", level: "0", school: "Medical", activation: "1 Maneuver", range: "Engaged", comp: "Stimpack", duration: "Instantaneous", desc: "Apply a stimpack to heal 5 wounds. The effectiveness is reduced by 1 wound for each additional stimpack used on the same patient without a full night's rest (5, then 4, then 3...).", scaling: "", lists: "Medical" }
-        ];
+        window.executePublish = async () => {
+            if (activeRole !== 'dm') return;
+            const name = document.getElementById('publish-codex-name').value.trim();
+            const vis = document.getElementById('publish-codex-vis').value;
+            if (!name) return window.showToast("Codex name is required.");
+            if (scripts.length === 0) return window.showToast("No scripts to publish!");
 
-        // --- STREAMING_CHUNK:Auth and Database Listeners... ---
+            try {
+                const payload = {
+                    name: name,
+                    author: currentUser.username || 'Unknown DM',
+                    authorId: currentUser.uid,
+                    visibility: vis,
+                    scripts: scripts.map(s => {
+                        const { id, ...rest } = s; 
+                        return rest;
+                    }),
+                    createdAt: Date.now()
+                };
+
+                if (vis === 'public') {
+                    await addDoc(collection(db, 'artifacts', 'global_nexus', 'public', 'data', 'compendiums'), payload);
+                } else {
+                    await addDoc(collection(db, 'artifacts', 'global_nexus', 'users', currentUser.uid, 'compendiums'), payload);
+                }
+                
+                window.showToast(`Codex published as ${vis}!`);
+                document.getElementById('publish-modal').classList.add('hidden');
+            } catch(e) {
+                console.error(e);
+                window.showToast("Error publishing codex.");
+            }
+        };
+
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (tokenError) {
+                        console.warn("Custom token failed, falling back to anonymous auth", tokenError);
+                        await signInAnonymously(auth);
+                    }
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth init failed:", error);
+            }
+        };
+        initAuth();
+
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {
@@ -1113,6 +1147,8 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 document.getElementById('btn-create-script')?.classList.toggle('hidden', !isDM);
                 document.getElementById('btn-edit-definitions')?.classList.toggle('hidden', !isDM);
                 document.getElementById('btn-campaign-settings')?.classList.toggle('hidden', !isDM);
+                document.getElementById('btn-import')?.classList.toggle('hidden', !isDM);
+                document.getElementById('btn-publish')?.classList.toggle('hidden', !isDM);
 
                 document.getElementById('initial-loading').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
@@ -1146,17 +1182,23 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                     window.renderDefinitions();
                 }, (err) => console.error("Definitions Sync Error:", err));
 
+                onSnapshot(collection(db, 'artifacts', 'global_nexus', 'public', 'data', 'compendiums'), (snap) => {
+                    publicCompendiums = snap.docs.map(d => ({id: d.id, visibility: 'public', ...d.data()}));
+                });
+
+                if (currentUser && currentUser.uid) {
+                    onSnapshot(collection(db, 'artifacts', 'global_nexus', 'users', currentUser.uid, 'compendiums'), (snap) => {
+                        privateCompendiums = snap.docs.map(d => ({id: d.id, visibility: 'private', ...d.data()}));
+                    });
+                }
+
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION), (snap) => {
                     scripts = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.name > b.name ? 1 : -1));
                     window.renderScripts();
 
-                    // If collection is empty and user is DM, prompt import
                     if(scripts.length === 0 && isDM && !window.importPrompted) {
-                        document.getElementById('btn-import').classList.remove('hidden');
                         window.openImportModal();
                         window.importPrompted = true;
-                    } else if (scripts.length > 0 && isDM) {
-                        document.getElementById('btn-import').classList.add('hidden');
                     }
 
                     const targetScriptId = new URLSearchParams(window.location.search).get('targetScript');
@@ -1186,4 +1228,3 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         });
     </script>
 </body>
-</html>

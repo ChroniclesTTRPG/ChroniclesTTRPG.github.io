@@ -221,7 +221,7 @@
 
     <!-- COMPENDIUM IMPORT MODAL (DM ONLY) -->
     <div id="import-modal" class="modal-overlay hidden z-[960]">
-        <div class="modal-container max-w-4xl text-center bg-wood !border-gray-600 shadow-2xl max-h-[85vh] overflow-y-auto scrollbar-hide">
+        <div class="modal-container max-w-5xl text-center bg-wood !border-gray-600 shadow-2xl max-h-[85vh] overflow-y-auto scrollbar-hide">
             <h2 class="font-heading text-3xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Codex Archives</h2>
             <p class="text-sm font-serif text-gray-400 italic mb-8 mt-4">Browse and import script packs crafted by masters across the realms. <br>Warning: Importing a pack will add its contents to your current codex.</p>
             
@@ -232,6 +232,81 @@
 
             <div class="flex justify-center">
                 <button onclick="window.closeImportModal()" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Close Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PACK DETAILS / MESSAGE BOARD MODAL -->
+    <div id="pack-details-modal" class="modal-overlay hidden z-[965]">
+        <div class="modal-container max-w-5xl bg-wood !border-gray-600 shadow-2xl flex flex-col md:flex-row gap-6 p-6 h-[85vh]">
+            <!-- Left Column: Details & Management -->
+            <div class="w-full md:w-1/2 flex flex-col overflow-y-auto scrollbar-hide pb-4">
+                <div class="flex justify-between items-start mb-4 border-b border-gray-700 pb-4">
+                    <div>
+                        <h2 id="pd-title" class="font-heading text-2xl font-black text-gold uppercase tracking-widest drop-shadow-md">Pack Name</h2>
+                        <p id="pd-author" class="text-xs font-serif text-gray-400 italic mt-1">By Author</p>
+                    </div>
+                    <div class="text-right">
+                        <span id="pd-version" class="bg-indigo-900 text-indigo-200 border border-indigo-700 px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-heading font-black shadow-md">v1</span>
+                    </div>
+                </div>
+                
+                <div class="flex-grow text-sm font-serif text-gray-300">
+                    <h3 class="font-heading text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Description</h3>
+                    <p id="pd-desc" class="mb-6">Description goes here</p>
+                    
+                    <h3 class="font-heading text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Latest Update Notes</h3>
+                    <p id="pd-notes" class="mb-4 bg-black/30 p-3 rounded border border-gray-800 text-xs italic">Initial publication.</p>
+                </div>
+
+                <div id="pd-admin-panel" class="hidden mt-auto border-t border-gray-700 pt-4 space-y-2 pb-4">
+                    <h3 class="font-heading text-xs font-bold text-red-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-crown mr-1"></i> Author Management</h3>
+                    <div class="flex gap-2">
+                        <button onclick="window.openUpdatePackModal()" class="flex-1 bg-indigo-900 hover:bg-indigo-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-indigo-700">Push Update</button>
+                        <button onclick="window.deleteCurrentPack()" class="flex-1 bg-red-900 hover:bg-red-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-red-700">Delete Pack</button>
+                    </div>
+                </div>
+
+                <div class="mt-auto pt-4 border-t border-gray-700">
+                    <button id="pd-btn-import" onclick="window.confirmImportPack()" class="w-full fantasy-btn py-2 rounded text-xs shadow-lg">Inject into Codex</button>
+                    <button onclick="window.closePackDetails()" class="w-full mt-3 text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white py-2">Close Details</button>
+                </div>
+            </div>
+
+            <!-- Right Column: Discussion Board -->
+            <div class="w-full md:w-1/2 flex flex-col border-t md:border-t-0 md:border-l border-gray-700 pt-6 md:pt-0 md:pl-6 h-[40vh] md:h-auto">
+                <h3 class="font-heading text-lg font-bold text-white uppercase tracking-widest mb-4 border-b border-gray-700 pb-2 flex justify-between items-center">
+                    <span><i class="fa-solid fa-comments mr-2 text-gold"></i>Discussion</span>
+                </h3>
+                
+                <div id="pd-messages-container" class="flex-grow overflow-y-auto mb-4 pr-2 space-y-3 scrollbar-hide bg-black/20 rounded p-2 border border-gray-800">
+                    <!-- Messages go here -->
+                </div>
+
+                <div class="mt-auto flex gap-2">
+                    <input type="text" id="pd-new-message" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold text-xs w-full" placeholder="Ask a question or leave feedback...">
+                    <button onclick="window.postPackMessage()" class="bg-gray-800 hover:bg-gray-700 text-gold px-4 py-2 rounded text-xs font-bold uppercase tracking-widest font-heading transition-colors border border-gray-600"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UPDATE PACK MODAL (DM ONLY) -->
+    <div id="pack-update-modal" class="modal-overlay hidden z-[980]">
+        <div class="modal-container max-w-md text-center bg-wood !border-gray-600 shadow-2xl">
+            <h2 class="font-heading text-xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Push Codex Update</h2>
+            <p class="text-xs font-serif text-gray-400 italic mb-6 mt-4">Overwrites the published pack with your current Codex and increments the version.</p>
+            
+            <div class="space-y-4 text-left mb-8">
+                <div>
+                    <label class="tiny-label text-gray-400">Update Notes / Changelog</label>
+                    <textarea id="pack-update-notes" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-24 resize-none" placeholder="What changed in this version?"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-4 font-heading">
+                <button onclick="document.getElementById('pack-update-modal').classList.add('hidden')" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Cancel</button>
+                <button onclick="window.executePackUpdate()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Confirm Update</button>
             </div>
         </div>
     </div>
@@ -270,11 +345,11 @@
     <!-- CUSTOM CONFIRM MODAL -->
     <div id="confirm-modal" class="modal-overlay hidden z-[990]">
         <div class="modal-container !max-w-sm text-center !p-8">
-            <h2 class="font-heading text-2xl font-black text-blood uppercase tracking-widest mb-4">Confirm Deletion</h2>
+            <h2 class="font-heading text-2xl font-black text-blood uppercase tracking-widest mb-4">Confirm Action</h2>
             <p class="text-sm font-serif text-ink mb-8" id="confirm-modal-text">Are you sure you wish to proceed?</p>
             <div class="flex justify-center gap-4 font-heading">
                 <button onclick="window.closeConfirmModal(false)" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink px-4">Cancel</button>
-                <button onclick="window.closeConfirmModal(true)" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg bg-red-800">Erase Record</button>
+                <button onclick="window.closeConfirmModal(true)" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg bg-red-800">Proceed</button>
             </div>
         </div>
     </div>
@@ -509,6 +584,10 @@
         let campaignSettings = { terms: {} };
         let customDefinitions = null;
         let materialComponents = []; 
+        
+        let allFetchedPacks = [];
+        let currentViewingPack = null;
+        let packMessagesUnsubscribe = null;
 
         const VOC_KEYS = [
             { id: 'class_heartbound', default: 'Heartbound', min: 1, max: 5 },
@@ -1026,26 +1105,27 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 const pubSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'public', 'data', 'scriptPacks'));
                 const privSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks'));
                 
-                const allPacks = [
+                allFetchedPacks = [
                     ...pubSnap.docs.map(d => ({id: d.id, isPrivate: false, ...d.data()})),
                     ...privSnap.docs.map(d => ({id: d.id, isPrivate: true, ...d.data()}))
                 ];
 
                 document.getElementById('import-loading').classList.add('hidden');
 
-                if (allPacks.length === 0) {
+                if (allFetchedPacks.length === 0) {
                     grid.innerHTML = `<div class="col-span-full py-8 text-center"><p class="text-gray-400 font-serif italic">No packs found in the archives. Be the first to publish one!</p></div>`;
                     return;
                 }
 
-                grid.innerHTML = allPacks.map(pack => `
-                    <div class="import-card bg-black/60 relative" onclick="window.executeImport('${pack.id}', ${pack.isPrivate})">
+                grid.innerHTML = allFetchedPacks.map(pack => `
+                    <div class="import-card bg-black/60 relative ${pack.isDeleted ? 'opacity-70 grayscale' : ''}" onclick="window.openPackDetails('${pack.id}')">
+                        ${pack.isDeleted ? '<div class="absolute top-2 left-2 bg-red-900 text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md z-10">Archived</div>' : ''}
                         ${pack.isPrivate ? '<div class="absolute top-2 right-2 text-gray-500" title="Private Pack"><i class="fa-solid fa-lock text-xs"></i></div>' : '<div class="absolute top-2 right-2 text-indigo-400" title="Public Pack"><i class="fa-solid fa-globe text-xs"></i></div>'}
-                        <i class="fa-solid fa-book-journal-whills text-3xl mb-3 text-gold"></i>
+                        <i class="fa-solid fa-book-journal-whills text-3xl mb-3 ${pack.isDeleted ? 'text-gray-500' : 'text-gold'}"></i>
                         <h3 class="font-heading text-sm font-bold text-white uppercase mb-1 drop-shadow-md">${pack.name}</h3>
                         <p class="text-xs text-gray-400 mb-3 line-clamp-3 font-serif">${pack.description || 'No description provided.'}</p>
                         <div class="border-t border-gray-700 pt-2 flex justify-between items-center mt-auto">
-                            <span class="text-[9px] text-gold font-bold uppercase tracking-widest">${(pack.scripts || []).length} Scripts</span>
+                            <span class="text-[9px] text-gold font-bold uppercase tracking-widest">v${pack.version || 1} • ${(pack.scripts || []).length} Scripts</span>
                             <span class="text-[9px] text-gray-500 italic">By ${pack.authorName || 'Unknown'}</span>
                         </div>
                     </div>
@@ -1058,28 +1138,99 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        window.closeImportModal = () => {
-            document.getElementById('import-modal').classList.add('hidden');
+        window.closeImportModal = () => document.getElementById('import-modal').classList.add('hidden');
+        
+        window.openPackDetails = (id) => {
+            currentViewingPack = allFetchedPacks.find(p => p.id === id);
+            if (!currentViewingPack) return;
+            
+            if (currentViewingPack.isDeleted) {
+                document.getElementById('pd-title').innerHTML = `${currentViewingPack.name} <span class="text-[10px] bg-red-900 text-white px-2 py-1 rounded ml-2 align-middle shadow-md tracking-widest">ARCHIVED</span>`;
+            } else {
+                document.getElementById('pd-title').innerText = currentViewingPack.name;
+            }
+            
+            document.getElementById('pd-author').innerText = `By ${currentViewingPack.authorName}`;
+            document.getElementById('pd-version').innerText = `v${currentViewingPack.version || 1}`;
+            document.getElementById('pd-desc').innerText = currentViewingPack.description || 'No description provided.';
+            document.getElementById('pd-notes').innerText = currentViewingPack.updateNotes || 'Initial publication.';
+            
+            const isAdmin = currentViewingPack.authorId === currentUser.uid;
+            
+            // Hide admin controls if pack is deleted, even for author
+            if (currentViewingPack.isDeleted) {
+                document.getElementById('pd-admin-panel').classList.add('hidden');
+            } else {
+                document.getElementById('pd-admin-panel').classList.toggle('hidden', !isAdmin);
+            }
+
+            document.getElementById('pack-details-modal').classList.remove('hidden');
+            
+            // Subscribe to Messages
+            const pathArgs = currentViewingPack.isPrivate
+                ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', id, 'messages']
+                : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', id, 'messages'];
+
+            if (packMessagesUnsubscribe) packMessagesUnsubscribe();
+            packMessagesUnsubscribe = onSnapshot(collection(db, ...pathArgs), (snap) => {
+                const msgs = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => a.timestamp - b.timestamp);
+                const container = document.getElementById('pd-messages-container');
+                
+                if (msgs.length === 0) {
+                    container.innerHTML = `<div class="text-center py-4 text-xs italic text-gray-500">No messages yet. Start the discussion!</div>`;
+                } else {
+                    container.innerHTML = msgs.map(m => `
+                        <div class="p-2 bg-black/40 rounded border border-gray-700 relative">
+                            <div class="flex justify-between text-[10px] font-heading mb-1">
+                                <span class="${m.authorId === currentViewingPack.authorId ? 'text-indigo-400' : 'text-gold'} font-bold uppercase">${m.authorName} ${m.authorId === currentViewingPack.authorId ? '<i class="fa-solid fa-crown ml-1"></i>' : ''}</span>
+                                <span class="text-gray-500">${new Date(m.timestamp).toLocaleDateString()}</span>
+                            </div>
+                            <p class="text-sm font-serif text-gray-300 break-words">${m.text}</p>
+                        </div>
+                    `).join('');
+                    container.scrollTop = container.scrollHeight;
+                }
+            });
         };
 
-        window.executeImport = async (packId, isPrivate) => {
-            if (activeRole !== 'dm') return;
+        window.closePackDetails = () => {
+            document.getElementById('pack-details-modal').classList.add('hidden');
+            if (packMessagesUnsubscribe) { packMessagesUnsubscribe(); packMessagesUnsubscribe = null; }
+            currentViewingPack = null;
+        };
+        
+        window.postPackMessage = async () => {
+            const input = document.getElementById('pd-new-message');
+            const text = input.value.trim();
+            if (!text || !currentViewingPack) return;
             
-            window.customConfirm("Are you sure you want to inject this pack into your current Codex?", async (confirmed) => {
+            input.value = '';
+            
+            const pathArgs = currentViewingPack.isPrivate
+                ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id, 'messages']
+                : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id, 'messages'];
+                
+            try {
+                await addDoc(collection(db, ...pathArgs), {
+                    text: text, authorId: currentUser.uid, authorName: currentUser.username, timestamp: Date.now()
+                });
+            } catch (err) {
+                console.error("Failed to post message", err);
+                window.showToast("Failed to send message.");
+            }
+        };
+
+        window.confirmImportPack = () => {
+            if (!currentViewingPack || activeRole !== 'dm') return;
+            window.customConfirm(`Are you sure you want to inject "${currentViewingPack.name}" into your current Codex?`, async (confirmed) => {
                 if (!confirmed) return;
                 
                 window.showToast("Initializing Compendium...");
-                document.getElementById('import-modal').classList.add('hidden');
+                window.closePackDetails();
+                window.closeImportModal();
                 
                 try {
-                    const pathArgs = isPrivate 
-                        ? ['artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks', packId]
-                        : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', packId];
-                    
-                    const packDoc = await getDoc(doc(db, ...pathArgs));
-                    if (!packDoc.exists()) return window.showToast("Pack not found.");
-                    
-                    const dataset = packDoc.data().scripts || [];
+                    const dataset = currentViewingPack.scripts || [];
                     if (dataset.length === 0) return window.showToast("This pack is empty.");
 
                     const batch = writeBatch(db);
@@ -1092,6 +1243,64 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 } catch (e) {
                     console.error(e);
                     window.showToast("Error during import.");
+                }
+            });
+        };
+        
+        window.openUpdatePackModal = () => {
+            document.getElementById('pack-update-notes').value = '';
+            document.getElementById('pack-update-modal').classList.remove('hidden');
+        };
+        
+        window.executePackUpdate = async () => {
+            if (!currentViewingPack || activeRole !== 'dm') return;
+            const notes = document.getElementById('pack-update-notes').value.trim() || 'Minor updates and script adjustments.';
+            const newVersion = (currentViewingPack.version || 1) + 1;
+            
+            const pathArgs = currentViewingPack.isPrivate 
+                ? ['artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks', currentViewingPack.id]
+                : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id];
+                
+            window.showToast("Pushing update...");
+            document.getElementById('pack-update-modal').classList.add('hidden');
+            
+            try {
+                await updateDoc(doc(db, ...pathArgs), {
+                    scripts: scripts.map(s => { const c = {...s}; delete c.id; return c; }),
+                    version: newVersion,
+                    updateNotes: notes,
+                    updatedAt: Date.now()
+                });
+                window.showToast(`Pack updated to v${newVersion}!`);
+                window.closePackDetails();
+                window.openImportModal(); // Refresh the grid
+            } catch (e) {
+                console.error(e);
+                window.showToast("Failed to update pack.");
+            }
+        };
+
+        window.deleteCurrentPack = () => {
+            if (!currentViewingPack || activeRole !== 'dm') return;
+            window.customConfirm("Archive this pack? It will no longer receive updates, but existing campaigns will keep their scripts.", async (confirmed) => {
+                if (!confirmed) return;
+                
+                const pathArgs = currentViewingPack.isPrivate 
+                    ? ['artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks', currentViewingPack.id]
+                    : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id];
+                    
+                try {
+                    await updateDoc(doc(db, ...pathArgs), {
+                        isDeleted: true,
+                        updateNotes: 'Pack archived by author. No longer receiving updates.',
+                        updatedAt: Date.now()
+                    });
+                    window.showToast("Pack archived.");
+                    window.closePackDetails();
+                    window.openImportModal();
+                } catch (e) {
+                    console.error(e);
+                    window.showToast("Failed to archive pack.");
                 }
             });
         };
@@ -1122,6 +1331,8 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 name: name,
                 description: desc,
                 visibility: vis,
+                version: 1,
+                updateNotes: 'Initial publication.',
                 authorId: currentUser.uid,
                 authorName: currentUser.username || 'Unknown DM',
                 scripts: scripts.map(s => {

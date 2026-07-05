@@ -528,26 +528,7 @@
                 try { window.location.href = "index.html"; } catch(e) {}
             });
         };
-
-        // --- AUTH & DATA SYNC ---
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } catch (tokenError) {
-                        console.warn("Custom token failed, falling back to anonymous auth", tokenError);
-                        await signInAnonymously(auth);
-                    }
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Auth init failed:", error);
-            }
-        };
-        initAuth();
-
+ // --- AUTH & DATA SYNC ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {
@@ -612,20 +593,6 @@
                 // Hide loading overlay
                 document.getElementById('initial-loading').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
-
-                // Listen for global compendiums (Public)
-                onSnapshot(collection(db, 'artifacts', 'global_nexus', 'public', 'data', 'compendiums'), (snap) => {
-                    publicCompendiums = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                    updateSystemDropdowns();
-                });
-
-                // Listen for global compendiums (Private)
-                if (currentUser && currentUser.uid) {
-                    onSnapshot(collection(db, 'artifacts', 'global_nexus', 'users', currentUser.uid, 'compendiums'), (snap) => {
-                        privateCompendiums = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                        updateSystemDropdowns();
-                    });
-                }
 
                 // Listen for Campaign updates
                 onSnapshot(collection(db, 'campaigns'), (snap) => {

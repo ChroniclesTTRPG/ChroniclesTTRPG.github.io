@@ -161,10 +161,10 @@
                     </div>
                     
                     <div class="flex items-center gap-3">
-                        <button id="btn-import" onclick="window.openImportModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-download mr-2"></i>Import</button>
-                        <button id="btn-publish" onclick="window.openPublishModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-upload mr-2"></i>Publish</button>
+                        <button id="btn-import" onclick="window.openImportModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-download mr-2"></i>Codex Packs</button>
+                        <button id="btn-publish-pack" onclick="window.openCreatePackModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg border-indigo-700 text-indigo-400 hover:text-white hover:border-indigo-400"><i class="fa-solid fa-upload mr-2"></i>Publish Pack</button>
                         <button onclick="document.getElementById('definitions-modal').classList.remove('hidden')" class="fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-book-open mr-2"></i>Definitions</button>
-                        <button id="btn-create-script" onclick="window.openScriptModal()" class="hidden fantasy-btn px-6 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-plus mr-2"></i>Inscribe</button>
+                        <button id="btn-create-script" onclick="window.openScriptModal()" class="hidden fantasy-btn px-6 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-plus mr-2"></i>Inscribe Script</button>
                     </div>
                 </div>
             </div>
@@ -221,35 +221,48 @@
 
     <!-- COMPENDIUM IMPORT MODAL (DM ONLY) -->
     <div id="import-modal" class="modal-overlay hidden z-[960]">
-        <div class="modal-container max-w-4xl bg-wood !border-gray-600 shadow-2xl flex flex-col max-h-[90vh]">
-            <div class="text-center mb-6">
-                <h2 class="font-heading text-3xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Initialize Codex</h2>
-                <p class="text-sm font-serif text-gray-400 italic mt-4">Select a published codex from the community to import into your realm.</p>
-            </div>
+        <div class="modal-container max-w-4xl text-center bg-wood !border-gray-600 shadow-2xl max-h-[85vh] overflow-y-auto scrollbar-hide">
+            <h2 class="font-heading text-3xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Codex Archives</h2>
+            <p class="text-sm font-serif text-gray-400 italic mb-8 mt-4">Browse and import script packs crafted by masters across the realms. <br>Warning: Importing a pack will add its contents to your current codex.</p>
             
-            <div id="global-compendiums-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6 overflow-y-auto scrollbar-hide flex-grow px-2 py-2">
-                <!-- Populated by JS -->
+            <div id="import-loading" class="hidden text-gold mb-8"><i class="fa-solid fa-spinner fa-spin text-3xl"></i></div>
+            <div id="import-packs-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-left">
+                <!-- Packs populate here -->
             </div>
 
-            <div class="flex justify-center mt-4 pt-4 border-t border-gray-700">
-                <button onclick="window.closeImportModal()" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Cancel</button>
+            <div class="flex justify-center">
+                <button onclick="window.closeImportModal()" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Close Menu</button>
             </div>
         </div>
     </div>
 
-    <!-- PUBLISH CODEX MODAL (DM ONLY) -->
-    <div id="publish-modal" class="modal-overlay hidden z-[960]">
-        <div class="modal-container !max-w-md text-center">
-            <h2 class="font-heading text-2xl font-black text-blood uppercase tracking-widest mb-2 border-b-2 border-gold pb-2">Publish Codex</h2>
-            <p class="text-xs font-serif text-ink italic mb-6">Share this realm's scripts globally for other DMs to use.</p>
-            <input type="text" id="publish-codex-name" class="form-input mb-4 font-heading text-center uppercase font-bold" placeholder="E.g. Voidwalker Magic">
-            <select id="publish-codex-vis" class="form-input mb-6 font-heading text-center uppercase font-bold cursor-pointer">
-                <option value="private">Private (Only You)</option>
-                <option value="public">Public (Community)</option>
-            </select>
+    <!-- PUBLISH PACK MODAL (DM ONLY) -->
+    <div id="create-pack-modal" class="modal-overlay hidden z-[960]">
+        <div class="modal-container max-w-md text-center bg-wood !border-gray-600 shadow-2xl">
+            <h2 class="font-heading text-2xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Publish Script Pack</h2>
+            <p class="text-xs font-serif text-gray-400 italic mb-6 mt-4">Bundle your current codex into a reusable pack for yourself or the public.</p>
+            
+            <div class="space-y-4 text-left mb-8">
+                <div>
+                    <label class="tiny-label text-gray-400">Pack Name</label>
+                    <input type="text" id="pack-name" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold" placeholder="e.g. Dark Fantasy Magic">
+                </div>
+                <div>
+                    <label class="tiny-label text-gray-400 mt-2">Description</label>
+                    <textarea id="pack-desc" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-20 resize-none" placeholder="What kind of scripts does this contain?"></textarea>
+                </div>
+                <div>
+                    <label class="tiny-label text-gray-400 mt-2">Visibility</label>
+                    <select id="pack-vis" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold">
+                        <option value="private">Private (Only usable in your own realms)</option>
+                        <option value="public">Public (Available to all DMs)</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="flex justify-center gap-4 font-heading">
-                <button onclick="document.getElementById('publish-modal').classList.add('hidden')" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink px-4">Cancel</button>
-                <button onclick="window.executePublish()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Publish</button>
+                <button onclick="document.getElementById('create-pack-modal').classList.add('hidden')" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Cancel</button>
+                <button onclick="window.savePack()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Publish Bundle</button>
             </div>
         </div>
     </div>
@@ -419,9 +432,9 @@
 
     <!-- FIREBASE & LOGIC -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, addDoc, deleteDoc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, addDoc, deleteDoc, getDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
         // --- CORE UI FUNCTIONS ---
         window.showToast = (m) => { 
@@ -485,8 +498,6 @@
         let scripts = [];
         let characters = []; 
         let vocationsData = []; 
-        let publicCompendiums = [];
-        let privateCompendiums = [];
         let currentUser = null;
         let activeRole = 'player';
         
@@ -511,6 +522,7 @@
             { id: 'class_fabricator', default: 'Fabricator', min: 0, max: 5 }
         ];
 
+        // --- STREAMING_CHUNK:Render and Filter Logic... ---
         window.renderLevelTabs = () => {
             const container = document.getElementById('level-tabs-container');
             if (!container) return;
@@ -630,6 +642,7 @@
             }
         };
 
+        // --- STREAMING_CHUNK:Definitions Handling... ---
         const DEFAULT_DEFINITIONS = `**Scriptcasting**
 The Eternal Heart saturates Aeonfall with unseen energies. Across the world, these energies can be shaped into precise patterns known as **Scripts**.
 
@@ -699,6 +712,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
+        // --- STREAMING_CHUNK:Campaign Terminology (DM Only)... ---
         window.openCampaignSettings = () => {
             if (activeRole !== 'dm') return;
             const terms = campaignSettings?.terms || {};
@@ -826,6 +840,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }).join('');
         };
 
+        // --- STREAMING_CHUNK:DM Actions and Save Logic... ---
         window.openScriptModal = (id = null) => {
             if (activeRole !== 'dm') return;
             activeScriptId = id;
@@ -921,6 +936,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             });
         };
 
+        // --- STREAMING_CHUNK:Transfer System... ---
         window.openTransferModal = (scriptId) => {
             targetTransferScript = scripts.find(s => s.id === scriptId);
             if (!targetTransferScript) return;
@@ -998,121 +1014,138 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        window.openImportModal = () => {
+        // --- STREAMING_CHUNK:Compendium Import Logic... ---
+        window.openImportModal = async () => {
             if (activeRole !== 'dm') return;
-            const grid = document.getElementById('global-compendiums-grid');
-            grid.innerHTML = '';
-            
-            const allComps = [...privateCompendiums, ...publicCompendiums];
-            
-            if (allComps.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-8 text-center text-gray-500 italic text-sm">No codices found. Create and publish one!</div>`;
-            } else {
-                allComps.forEach(comp => {
-                    const badge = comp.visibility === 'private' 
-                        ? '<span class="bg-gray-800 text-gray-400 border border-gray-600 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md inline-block mb-2"><i class="fa-solid fa-lock text-[7px] mr-1"></i>Private</span>' 
-                        : '<span class="bg-indigo-900 text-indigo-200 border border-indigo-700 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md inline-block mb-2"><i class="fa-solid fa-globe text-[7px] mr-1"></i>Public</span>';
-                        
-                    grid.innerHTML += `
-                        <div class="import-card flex flex-col items-center" onclick="window.executeImport('${comp.id}', '${comp.visibility}')">
-                            ${badge}
-                            <i class="fa-solid fa-book-journal-whills"></i>
-                            <h3 class="font-heading text-lg font-bold text-white uppercase mb-2">${comp.name}</h3>
-                            <p class="text-xs text-gray-400">By ${comp.author}</p>
-                            <p class="text-[10px] text-gray-500 mt-2">${comp.scripts?.length || 0} Scripts</p>
-                        </div>
-                    `;
-                });
-            }
             document.getElementById('import-modal').classList.remove('hidden');
+            document.getElementById('import-loading').classList.remove('hidden');
+            const grid = document.getElementById('import-packs-grid');
+            grid.innerHTML = '';
+
+            try {
+                const pubSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'public', 'data', 'scriptPacks'));
+                const privSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks'));
+                
+                const allPacks = [
+                    ...pubSnap.docs.map(d => ({id: d.id, isPrivate: false, ...d.data()})),
+                    ...privSnap.docs.map(d => ({id: d.id, isPrivate: true, ...d.data()}))
+                ];
+
+                document.getElementById('import-loading').classList.add('hidden');
+
+                if (allPacks.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full py-8 text-center"><p class="text-gray-400 font-serif italic">No packs found in the archives. Be the first to publish one!</p></div>`;
+                    return;
+                }
+
+                grid.innerHTML = allPacks.map(pack => `
+                    <div class="import-card bg-black/60 relative" onclick="window.executeImport('${pack.id}', ${pack.isPrivate})">
+                        ${pack.isPrivate ? '<div class="absolute top-2 right-2 text-gray-500" title="Private Pack"><i class="fa-solid fa-lock text-xs"></i></div>' : '<div class="absolute top-2 right-2 text-indigo-400" title="Public Pack"><i class="fa-solid fa-globe text-xs"></i></div>'}
+                        <i class="fa-solid fa-book-journal-whills text-3xl mb-3 text-gold"></i>
+                        <h3 class="font-heading text-sm font-bold text-white uppercase mb-1 drop-shadow-md">${pack.name}</h3>
+                        <p class="text-xs text-gray-400 mb-3 line-clamp-3 font-serif">${pack.description || 'No description provided.'}</p>
+                        <div class="border-t border-gray-700 pt-2 flex justify-between items-center mt-auto">
+                            <span class="text-[9px] text-gold font-bold uppercase tracking-widest">${(pack.scripts || []).length} Scripts</span>
+                            <span class="text-[9px] text-gray-500 italic">By ${pack.authorName || 'Unknown'}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('import-loading').classList.add('hidden');
+                grid.innerHTML = `<div class="col-span-full py-8 text-center text-red-500 text-sm">Failed to load the archives.</div>`;
+            }
         };
 
         window.closeImportModal = () => {
             document.getElementById('import-modal').classList.add('hidden');
         };
 
-        window.executeImport = async (compId, vis) => {
+        window.executeImport = async (packId, isPrivate) => {
             if (activeRole !== 'dm') return;
-            const list = vis === 'private' ? privateCompendiums : publicCompendiums;
-            const comp = list.find(c => c.id === compId);
-            if (!comp || !comp.scripts || comp.scripts.length === 0) return window.showToast("Codex is empty or invalid.");
-
-            window.showToast("Initializing Compendium...");
-            document.getElementById('import-modal').classList.add('hidden');
             
-            try {
-                const batch = writeBatch(db);
-                comp.scripts.forEach(item => {
-                    const docRef = doc(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION));
-                    batch.set(docRef, { ...item, createdAt: Date.now(), updatedAt: Date.now() });
-                });
-                await batch.commit();
-                window.showToast("Compendium injection successful!");
-            } catch (e) {
-                console.error(e);
-                window.showToast("Error during import.");
-            }
-        };
-
-        window.openPublishModal = () => {
-            if (activeRole !== 'dm') return;
-            document.getElementById('publish-codex-name').value = '';
-            document.getElementById('publish-codex-vis').value = 'private';
-            document.getElementById('publish-modal').classList.remove('hidden');
-        };
-
-        window.executePublish = async () => {
-            if (activeRole !== 'dm') return;
-            const name = document.getElementById('publish-codex-name').value.trim();
-            const vis = document.getElementById('publish-codex-vis').value;
-            if (!name) return window.showToast("Codex name is required.");
-            if (scripts.length === 0) return window.showToast("No scripts to publish!");
-
-            try {
-                const payload = {
-                    name: name,
-                    author: currentUser.username || 'Unknown DM',
-                    authorId: currentUser.uid,
-                    visibility: vis,
-                    scripts: scripts.map(s => {
-                        const { id, ...rest } = s; 
-                        return rest;
-                    }),
-                    createdAt: Date.now()
-                };
-
-                if (vis === 'public') {
-                    await addDoc(collection(db, 'artifacts', 'global_nexus', 'public', 'data', 'compendiums'), payload);
-                } else {
-                    await addDoc(collection(db, 'artifacts', 'global_nexus', 'users', currentUser.uid, 'compendiums'), payload);
-                }
+            window.customConfirm("Are you sure you want to inject this pack into your current Codex?", async (confirmed) => {
+                if (!confirmed) return;
                 
-                window.showToast(`Codex published as ${vis}!`);
-                document.getElementById('publish-modal').classList.add('hidden');
-            } catch(e) {
-                console.error(e);
-                window.showToast("Error publishing codex.");
-            }
-        };
+                window.showToast("Initializing Compendium...");
+                document.getElementById('import-modal').classList.add('hidden');
+                
+                try {
+                    const pathArgs = isPrivate 
+                        ? ['artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks', packId]
+                        : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', packId];
+                    
+                    const packDoc = await getDoc(doc(db, ...pathArgs));
+                    if (!packDoc.exists()) return window.showToast("Pack not found.");
+                    
+                    const dataset = packDoc.data().scripts || [];
+                    if (dataset.length === 0) return window.showToast("This pack is empty.");
 
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } catch (tokenError) {
-                        console.warn("Custom token failed, falling back to anonymous auth", tokenError);
-                        await signInAnonymously(auth);
-                    }
-                } else {
-                    await signInAnonymously(auth);
+                    const batch = writeBatch(db);
+                    dataset.forEach(item => {
+                        const docRef = doc(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION));
+                        batch.set(docRef, { ...item, createdAt: Date.now(), updatedAt: Date.now() });
+                    });
+                    await batch.commit();
+                    window.showToast("Pack injected successfully!");
+                } catch (e) {
+                    console.error(e);
+                    window.showToast("Error during import.");
                 }
-            } catch (error) {
-                console.error("Auth init failed:", error);
+            });
+        };
+
+        window.openCreatePackModal = () => {
+            if (activeRole !== 'dm') return;
+            if (scripts.length === 0) return window.showToast("No scripts to bundle! Inscribe some first.");
+            document.getElementById('pack-name').value = '';
+            document.getElementById('pack-desc').value = '';
+            document.getElementById('pack-vis').value = 'private';
+            document.getElementById('create-pack-modal').classList.remove('hidden');
+        };
+
+        window.savePack = async () => {
+            if (activeRole !== 'dm') return;
+            if (scripts.length === 0) return window.showToast("Codex is empty.");
+            
+            const name = document.getElementById('pack-name').value.trim();
+            const desc = document.getElementById('pack-desc').value.trim();
+            const vis = document.getElementById('pack-vis').value;
+            
+            if (!name) return window.showToast("A pack name is required.");
+            
+            window.showToast("Publishing bundle...");
+            document.getElementById('create-pack-modal').classList.add('hidden');
+
+            const payload = {
+                name: name,
+                description: desc,
+                visibility: vis,
+                authorId: currentUser.uid,
+                authorName: currentUser.username || 'Unknown DM',
+                scripts: scripts.map(s => {
+                    const cleanScript = { ...s };
+                    delete cleanScript.id; // Don't carry over the old doc IDs
+                    return cleanScript;
+                }),
+                createdAt: Date.now()
+            };
+
+            try {
+                if (vis === 'public') {
+                    await addDoc(collection(db, 'artifacts', 'global_codex', 'public', 'data', 'scriptPacks'), payload);
+                } else {
+                    await addDoc(collection(db, 'artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks'), payload);
+                }
+                window.showToast("Pack published to the archives!");
+            } catch (err) {
+                console.error(err);
+                window.showToast("Failed to publish pack.");
             }
         };
-        initAuth();
 
+        // --- STREAMING_CHUNK:Auth and Database Listeners... ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {
@@ -1148,7 +1181,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 document.getElementById('btn-edit-definitions')?.classList.toggle('hidden', !isDM);
                 document.getElementById('btn-campaign-settings')?.classList.toggle('hidden', !isDM);
                 document.getElementById('btn-import')?.classList.toggle('hidden', !isDM);
-                document.getElementById('btn-publish')?.classList.toggle('hidden', !isDM);
+                document.getElementById('btn-publish-pack')?.classList.toggle('hidden', !isDM);
 
                 document.getElementById('initial-loading').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
@@ -1182,24 +1215,9 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                     window.renderDefinitions();
                 }, (err) => console.error("Definitions Sync Error:", err));
 
-                onSnapshot(collection(db, 'artifacts', 'global_nexus', 'public', 'data', 'compendiums'), (snap) => {
-                    publicCompendiums = snap.docs.map(d => ({id: d.id, visibility: 'public', ...d.data()}));
-                });
-
-                if (currentUser && currentUser.uid) {
-                    onSnapshot(collection(db, 'artifacts', 'global_nexus', 'users', currentUser.uid, 'compendiums'), (snap) => {
-                        privateCompendiums = snap.docs.map(d => ({id: d.id, visibility: 'private', ...d.data()}));
-                    });
-                }
-
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION), (snap) => {
                     scripts = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.name > b.name ? 1 : -1));
                     window.renderScripts();
-
-                    if(scripts.length === 0 && isDM && !window.importPrompted) {
-                        window.openImportModal();
-                        window.importPrompted = true;
-                    }
 
                     const targetScriptId = new URLSearchParams(window.location.search).get('targetScript');
                     if (targetScriptId && !window.targetScriptOpened) {
@@ -1228,3 +1246,4 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         });
     </script>
 </body>
+</html>

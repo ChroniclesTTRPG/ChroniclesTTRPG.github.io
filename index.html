@@ -69,7 +69,7 @@
         .pattern-overlay {
             position: absolute;
             inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23c5a059' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23c5a059' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
             z-index: 3;
             pointer-events: none;
         }
@@ -485,29 +485,36 @@
             signOut(auth).then(() => window.location.reload());
         };
 
+        window.isAuthenticating = false;
+
+        window.proceedToCampaigns = async (user) => {
+            try {
+                window.location.href = "campaigns.html";
+            } catch(e) {
+                let display = user.displayName || "Traveler";
+                try {
+                    const snap = await getDoc(doc(db, 'users', user.uid));
+                    if(snap.exists() && snap.data().username) display = snap.data().username;
+                } catch(err) {}
+
+                document.getElementById('initial-loading').classList.add('hidden');
+                document.getElementById('auth-view').innerHTML = `
+                    <div class="parchment-bg p-10 text-center shadow-2xl border-2 border-gold rounded-lg max-w-sm">
+                        <h2 class="text-blood font-heading text-2xl mb-4 font-bold">Welcome Back, ${display}!</h2>
+                        <p class="text-ink font-serif text-sm">Because you are viewing this in a preview window, automatic redirects are disabled.<br><br>Please manually open <b>campaigns.html</b> to continue.</p>
+                        <button onclick="window.logoutAuth()" class="mt-6 text-xs text-blood font-bold uppercase tracking-widest hover:underline font-heading">Switch Account / Log Out</button>
+                    </div>
+                `;
+                document.getElementById('auth-view').classList.remove('hidden');
+                document.getElementById('auth-view').classList.add('fade-in');
+            }
+        };
+
         // --- AUTHENTICATION STATE OBSERVER ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                try {
-                    window.location.href = "campaigns.html";
-                } catch(e) {
-                    let display = user.displayName || "Traveler";
-                    try {
-                        const snap = await getDoc(doc(db, 'users', user.uid));
-                        if(snap.exists() && snap.data().username) display = snap.data().username;
-                    } catch(err) {}
-
-                    document.getElementById('initial-loading').classList.add('hidden');
-                    document.getElementById('auth-view').innerHTML = `
-                        <div class="parchment-bg p-10 text-center shadow-2xl border-2 border-gold rounded-lg max-w-sm">
-                            <h2 class="text-blood font-heading text-2xl mb-4 font-bold">Welcome Back, ${display}!</h2>
-                            <p class="text-ink font-serif text-sm">Because you are viewing this in a preview window, automatic redirects are disabled.<br><br>Please manually open <b>campaigns.html</b> to continue.</p>
-                            <button onclick="window.logoutAuth()" class="mt-6 text-xs text-blood font-bold uppercase tracking-widest hover:underline font-heading">Switch Account / Log Out</button>
-                        </div>
-                    `;
-                    document.getElementById('auth-view').classList.remove('hidden');
-                    document.getElementById('auth-view').classList.add('fade-in');
-                }
+                if (window.isAuthenticating) return; // Wait for manual redirect from the registration script
+                await window.proceedToCampaigns(user);
             } else {
                 document.getElementById('initial-loading').classList.add('hidden');
                 document.getElementById('intro-view').classList.remove('hidden');
@@ -528,14 +535,17 @@
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin mr-2'></i>Opening Gates...";
             submitBtn.disabled = true;
+            window.isAuthenticating = true;
 
             try {
-                await signInAnonymously(auth);
+                const cred = await signInAnonymously(auth);
+                await window.proceedToCampaigns(cred.user);
             } catch (error) {
                 console.error("Guest Auth Error:", error);
                 window.showModal("Error", "Failed to enter as guest. " + error.message);
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
+                window.isAuthenticating = false;
             }
         });
 
@@ -550,8 +560,10 @@
             const submitBtn = document.getElementById('auth-submit-btn');
             submitBtn.innerText = "Entering the Realm...";
             submitBtn.disabled = true;
+            window.isAuthenticating = true;
 
             try {
+                let user;
                 if (window.currentAuthMode === 'register') {
                     const role = document.querySelector('input[name="auth-role"]:checked').value;
                     const dmSecret = document.getElementById('auth-dm-secret').value.trim();
@@ -559,12 +571,14 @@
                     if (role === 'dm' && !dmSecret) {
                         submitBtn.innerText = "Forge Account";
                         submitBtn.disabled = false;
+                        window.isAuthenticating = false;
                         return window.showModal("Hold!", "A Dungeon Master must set a Sanctum password.");
                     }
 
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
+                    user = userCredential.user;
 
+                    // Ensure the document finishes writing BEFORE we redirect
                     await setDoc(doc(db, 'users', user.uid), {
                         username: '',
                         email: email,
@@ -573,10 +587,15 @@
                         createdAt: new Date().toISOString()
                     });
                 } else {
-                    await signInWithEmailAndPassword(auth, email, password);
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    user = userCredential.user;
                 }
+                
+                await window.proceedToCampaigns(user);
+                
             } catch (error) {
                 console.error("Auth Error:", error);
+                window.isAuthenticating = false;
                 submitBtn.disabled = false;
                 submitBtn.innerText = window.currentAuthMode === 'login' ? "Enter the Realm" : "Forge Account";
                 

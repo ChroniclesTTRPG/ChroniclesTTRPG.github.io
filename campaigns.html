@@ -138,6 +138,54 @@
             </div>
             
             <div class="flex justify-end gap-4 mt-8">
+                <button onclick="document.getElementById('create-campaign-modal').classList.add('hidden')" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink font-heading px-4">Cancel</button>
+                <button onclick="window.createCampaign()" class="fantasy-btn px-6 py-2 rounded text-xs">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT CAMPAIGN MODAL -->
+    <div id="edit-campaign-modal" class="modal-overlay hidden z-[800]">
+        <div class="parchment-bg rounded-lg max-w-md w-full p-8 shadow-2xl border-2 border-blood">
+            <h2 class="font-heading text-2xl font-bold text-blood text-center mb-6 border-b border-blood pb-2">Edit Realm</h2>
+            <input type="hidden" id="edit-campaign-id">
+            
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading">Campaign Name</label>
+                    <input type="text" id="edit-campaign-name" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 text-lg font-serif outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Description</label>
+                    <textarea id="edit-campaign-desc" rows="2" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Visibility</label>
+                    <select id="edit-campaign-vis" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none">
+                        <option value="private">Private (Invite Code Only)</option>
+                        <option value="public">Public (Visible to all)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Invite Code</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="edit-campaign-code" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none uppercase font-bold tracking-widest">
+                        <button onclick="document.getElementById('edit-campaign-code').value = Math.random().toString(36).substring(2, 8).toUpperCase()" class="fantasy-btn-alt px-3 py-1 rounded text-xs" title="Generate New Code"><i class="fa-solid fa-arrows-rotate"></i></button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Inject Codex Pack (Optional)</label>
+                    <select id="edit-campaign-pack" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none">
+                        <option value="">No Additional Pack</option>
+                        <!-- Populated dynamically -->
+                    </select>
+                    <div id="edit-campaign-pack-preview" class="hidden mt-3 p-3 bg-black/5 border border-gray-300 rounded text-xs font-serif text-ink italic leading-relaxed shadow-inner">
+                        <!-- Populated on select -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end gap-4 mt-8">
                 <button onclick="document.getElementById('edit-campaign-modal').classList.add('hidden')" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink font-heading px-4">Cancel</button>
                 <button onclick="window.saveCampaignEdit()" class="fantasy-btn px-6 py-2 rounded text-xs">Save</button>
             </div>
@@ -398,6 +446,7 @@
                 document.getElementById('new-campaign-name').value = '';
                 document.getElementById('new-campaign-desc').value = '';
                 document.getElementById('new-campaign-pack').value = '';
+                document.getElementById('new-campaign-pack-preview').classList.add('hidden');
                 window.showToast("Realm Forged Successfully!");
 
             } catch (err) {
@@ -416,6 +465,12 @@
             document.getElementById('edit-campaign-desc').value = camp.description || '';
             document.getElementById('edit-campaign-vis').value = camp.visibility || 'private';
             document.getElementById('edit-campaign-code').value = camp.inviteCode || '';
+            
+            const editPackSelect = document.getElementById('edit-campaign-pack');
+            if (editPackSelect) {
+                editPackSelect.value = '';
+                document.getElementById('edit-campaign-pack-preview').classList.add('hidden');
+            }
 
             document.getElementById('edit-campaign-modal').classList.remove('hidden');
         };
@@ -427,17 +482,40 @@
             const desc = document.getElementById('edit-campaign-desc').value.trim();
             const vis = document.getElementById('edit-campaign-vis').value;
             const code = document.getElementById('edit-campaign-code').value.trim().toUpperCase();
+            const packId = document.getElementById('edit-campaign-pack').value;
 
             if (!name) return window.showToast("Name is required.");
             if (!code) return window.showToast("Invite code is required.");
 
             try {
-                await updateDoc(doc(db, 'campaigns', id), {
+                const updates = {
                     name: name,
                     description: desc,
                     visibility: vis,
                     inviteCode: code
-                });
+                };
+
+                let selectedPack = null;
+                if (packId) {
+                    selectedPack = availablePacks.find(p => p.id === packId);
+                    if (selectedPack) {
+                        updates.packName = selectedPack.name; 
+                        
+                        // Batch inject the new scripts if selected
+                        if (selectedPack.scripts && selectedPack.scripts.length > 0) {
+                            window.showToast("Injecting scripts...");
+                            const batch = writeBatch(db);
+                            const codexRef = collection(db, 'artifacts', id, 'public', 'data', `scriptCodex_${id}`);
+                            selectedPack.scripts.forEach(script => {
+                                const docRef = doc(codexRef);
+                                batch.set(docRef, { ...script, createdAt: Date.now(), updatedAt: Date.now() });
+                            });
+                            await batch.commit();
+                        }
+                    }
+                }
+
+                await updateDoc(doc(db, 'campaigns', id), updates);
                 document.getElementById('edit-campaign-modal').classList.add('hidden');
                 window.showToast("Realm Updated!");
             } catch (err) {
@@ -545,28 +623,34 @@
                             ...privSnap.docs.map(d => ({id: d.id, isPrivate: true, ...d.data()}))
                         ];
                         
-                        const packSelect = document.getElementById('new-campaign-pack');
-                        if (packSelect) {
-                            packSelect.innerHTML = '<option value="">Blank Slate (No Scripts)</option>';
-                            availablePacks.forEach(p => {
-                                const visLabel = p.isPrivate ? '(Private)' : '(Public)';
-                                const arcLabel = p.isDeleted ? '[Archived]' : '';
-                                packSelect.innerHTML += `<option value="${p.id}">${p.name} ${visLabel} ${arcLabel}</option>`;
-                            });
-                            
-                            const packPreview = document.getElementById('new-campaign-pack-preview');
-                            packSelect.addEventListener('change', (e) => {
-                                const pid = e.target.value;
-                                const p = availablePacks.find(x => x.id === pid);
-                                if (p) {
-                                    const arcWarning = p.isDeleted ? `<div class="text-red-600 font-bold mb-2 font-heading uppercase tracking-widest text-[10px]"><i class="fa-solid fa-box-archive mr-1"></i> Archived - No Longer Updating</div>` : '';
-                                    packPreview.innerHTML = `${arcWarning}<b class="font-heading font-black text-blood not-italic uppercase text-[10px] tracking-widest block mb-1">Version ${p.version || 1}</b><span class="font-bold text-gray-800">Latest Update:</span> ${p.updateNotes || 'Initial publication.'}<br><br><span class="text-gray-600">${p.description || 'No description provided.'}</span>`;
-                                    packPreview.classList.remove('hidden');
-                                } else {
-                                    packPreview.classList.add('hidden');
-                                }
-                            });
-                        }
+                        const populatePackSelect = (selectId, previewId, defaultText) => {
+                            const packSelect = document.getElementById(selectId);
+                            if (packSelect) {
+                                packSelect.innerHTML = `<option value="">${defaultText}</option>`;
+                                availablePacks.forEach(p => {
+                                    const visLabel = p.isPrivate ? '(Private)' : '(Public)';
+                                    const arcLabel = p.isDeleted ? '[Archived]' : '';
+                                    packSelect.innerHTML += `<option value="${p.id}">${p.name} ${visLabel} ${arcLabel}</option>`;
+                                });
+                                
+                                const packPreview = document.getElementById(previewId);
+                                packSelect.addEventListener('change', (e) => {
+                                    const pid = e.target.value;
+                                    const p = availablePacks.find(x => x.id === pid);
+                                    if (p) {
+                                        const arcWarning = p.isDeleted ? `<div class="text-red-600 font-bold mb-2 font-heading uppercase tracking-widest text-[10px]"><i class="fa-solid fa-box-archive mr-1"></i> Archived - No Longer Updating</div>` : '';
+                                        packPreview.innerHTML = `${arcWarning}<b class="font-heading font-black text-blood not-italic uppercase text-[10px] tracking-widest block mb-1">Version ${p.version || 1}</b><span class="font-bold text-gray-800">Latest Update:</span> ${p.updateNotes || 'Initial publication.'}<br><br><span class="text-gray-600">${p.description || 'No description provided.'}</span>`;
+                                        packPreview.classList.remove('hidden');
+                                    } else {
+                                        packPreview.classList.add('hidden');
+                                    }
+                                });
+                            }
+                        };
+
+                        populatePackSelect('new-campaign-pack', 'new-campaign-pack-preview', 'Blank Slate (No Scripts)');
+                        populatePackSelect('edit-campaign-pack', 'edit-campaign-pack-preview', 'No Additional Pack');
+                        
                     } catch(err) {
                         console.error("Error fetching packs:", err);
                     }

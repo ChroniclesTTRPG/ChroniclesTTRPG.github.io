@@ -119,12 +119,6 @@
                     <textarea id="new-campaign-desc" rows="2" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none resize-none" placeholder="A brief whisper of the lore..."></textarea>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Game System</label>
-                    <select id="new-campaign-system" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none">
-                        <option value="Custom">Custom</option>
-                    </select>
-                </div>
-                <div>
                     <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Visibility</label>
                     <select id="new-campaign-vis" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none">
                         <option value="private">Private (Invite Code Only)</option>
@@ -156,12 +150,6 @@
                     <textarea id="edit-campaign-desc" rows="2" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none resize-none"></textarea>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Game System</label>
-                    <select id="edit-campaign-system" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none">
-                        <option value="Custom">Custom</option>
-                    </select>
-                </div>
-                <div>
                     <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Visibility</label>
                     <select id="edit-campaign-vis" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none">
                         <option value="private">Private (Invite Code Only)</option>
@@ -186,7 +174,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, getDoc, addDoc, query, where, getDocs, arrayUnion, arrayRemove, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- CORE UI FUNCTIONS ---
@@ -211,8 +199,6 @@
 
         let currentUser = null;
         let allCampaigns = [];
-        let publicCompendiums = [];
-        let privateCompendiums = [];
 
         // Generate Random Invite Code
         function generateCode() {
@@ -242,10 +228,6 @@
             
             if (isDM) badges += `<span class="bg-blood text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading font-black shadow-md">DM</span>`;
             else if (isMine) badges += `<span class="bg-green-700 text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading font-black shadow-md">Joined</span>`;
-
-            // Game System Badge
-            const sysBadge = camp.system || 'D&D 5e';
-            badges += `<span class="bg-indigo-900 text-indigo-200 border border-indigo-700 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md ml-1"><i class="fa-solid fa-dice-d20 text-[7px] mr-1"></i>${sysBadge}</span>`;
 
             if (camp.visibility === 'private') badges += `<span class="bg-gray-800 text-gray-400 border border-gray-600 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md ml-1"><i class="fa-solid fa-lock text-[7px] mr-1"></i>Private</span>`;
 
@@ -312,30 +294,6 @@
             }
         }
 
-        function updateSystemDropdowns() {
-            const createSelect = document.getElementById('new-campaign-system');
-            const editSelect = document.getElementById('edit-campaign-system');
-            
-            const currentCreateVal = createSelect.value;
-            const currentEditVal = editSelect.value;
-
-            let optionsHtml = '<option value="Custom">Custom</option>';
-            
-            privateCompendiums.forEach(comp => {
-                optionsHtml += `<option value="${comp.name}">${comp.name} (Private)</option>`;
-            });
-            
-            publicCompendiums.forEach(comp => {
-                optionsHtml += `<option value="${comp.name}">${comp.name} (by ${comp.author})</option>`;
-            });
-            
-            createSelect.innerHTML = optionsHtml;
-            editSelect.innerHTML = optionsHtml;
-
-            if (currentCreateVal) createSelect.value = currentCreateVal;
-            if (currentEditVal) editSelect.value = currentEditVal;
-        }
-
         // --- ACTIONS ---
 
         // Open Username Modal
@@ -349,6 +307,7 @@
             document.getElementById('username-prompt-modal').classList.remove('hidden');
         };
 
+        // Fix missing username
         window.setUsername = async () => {
             const newName = document.getElementById('missing-username-input').value.trim();
             if (!newName) return window.showToast("Please enter a name.");
@@ -419,7 +378,6 @@
             if (!currentUser || currentUser.role !== 'dm') return;
             const name = document.getElementById('new-campaign-name').value.trim();
             const desc = document.getElementById('new-campaign-desc').value.trim();
-            const sys = document.getElementById('new-campaign-system').value;
             const vis = document.getElementById('new-campaign-vis').value;
             
             if (!name) return window.showToast("Name is required.");
@@ -428,7 +386,6 @@
                 const newRef = await addDoc(collection(db, 'campaigns'), {
                     name: name,
                     description: desc,
-                    system: sys,
                     visibility: vis,
                     dmId: currentUser.uid,
                     dmName: currentUser.username,
@@ -443,7 +400,6 @@
                 document.getElementById('create-campaign-modal').classList.add('hidden');
                 document.getElementById('new-campaign-name').value = '';
                 document.getElementById('new-campaign-desc').value = '';
-                document.getElementById('new-campaign-system').value = 'Custom';
                 window.showToast("Realm Forged Successfully!");
 
             } catch (err) {
@@ -460,7 +416,6 @@
             document.getElementById('edit-campaign-id').value = camp.id;
             document.getElementById('edit-campaign-name').value = camp.name || '';
             document.getElementById('edit-campaign-desc').value = camp.description || '';
-            document.getElementById('edit-campaign-system').value = camp.system || 'Custom';
             document.getElementById('edit-campaign-vis').value = camp.visibility || 'private';
             document.getElementById('edit-campaign-code').value = camp.inviteCode || '';
 
@@ -472,7 +427,6 @@
             const id = document.getElementById('edit-campaign-id').value;
             const name = document.getElementById('edit-campaign-name').value.trim();
             const desc = document.getElementById('edit-campaign-desc').value.trim();
-            const sys = document.getElementById('edit-campaign-system').value;
             const vis = document.getElementById('edit-campaign-vis').value;
             const code = document.getElementById('edit-campaign-code').value.trim().toUpperCase();
 
@@ -483,7 +437,6 @@
                 await updateDoc(doc(db, 'campaigns', id), {
                     name: name,
                     description: desc,
-                    system: sys,
                     visibility: vis,
                     inviteCode: code
                 });
@@ -528,7 +481,8 @@
                 try { window.location.href = "index.html"; } catch(e) {}
             });
         };
- // --- AUTH & DATA SYNC ---
+
+        // --- AUTH & DATA SYNC ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {

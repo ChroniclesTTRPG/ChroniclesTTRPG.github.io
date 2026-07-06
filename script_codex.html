@@ -79,6 +79,7 @@
         .script-props b { font-weight: 700; color: #1a1a1a; border-bottom: 1px dotted rgba(139, 90, 43, 0.4); }
         .script-desc { font-family: 'Lora', serif; font-size: 13px; color: #2c1e16; line-height: 1.6; margin-bottom: 16px; white-space: pre-wrap; flex-grow: 1;}
         .script-desc b { color: #1a1a1a; font-weight: 700; }
+        
         .script-higher { border-top: 1px dashed rgba(139, 90, 43, 0.3); padding-top: 12px; margin-top: auto; font-family: 'Lora', serif; font-size: 12px; color: #2c1e16; line-height: 1.5; margin-bottom: 12px;}
         .script-higher b { font-weight: 700; border-bottom: 1px dotted rgba(139, 90, 43, 0.4); color: #1a1a1a; }
         .script-lists { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 900; color: #555; border-top: 1px solid rgba(139, 90, 43, 0.2); padding-top: 8px; margin-bottom: 16px;}
@@ -160,7 +161,7 @@
                     <div class="flex bg-[rgba(0,0,0,0.5)] p-1 rounded-lg border border-[rgba(139,90,43,0.4)] shadow-inner w-full">
                         <button id="type-toggle-all" onclick="window.setMainTypeFilter('All')" class="type-toggle-btn active" data-term="nav_all_records">All Records</button>
                         <button id="type-toggle-features" onclick="window.setMainTypeFilter('features')" class="type-toggle-btn" data-term="nav_features">Combat Features</button>
-                        <button id="type-toggle-scripts" onclick="window.setMainTypeFilter('scriptcasting')" class="type-toggle-btn" data-term="nav_scripts">Scriptcasting</button>
+                        <button id="type-toggle-scriptcasting" onclick="window.setMainTypeFilter('scriptcasting')" class="type-toggle-btn" data-term="nav_scripts">Scriptcasting</button>
                     </div>
                 </div>
 
@@ -329,9 +330,28 @@
             <h2 class="font-heading text-xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Push Codex Update</h2>
             <p class="text-xs font-serif text-gray-400 italic mb-6 mt-4">Overwrites the published pack with your current Codex and increments the version.</p>
             
-            <div class="space-y-4 text-left mb-8">
+            <div class="space-y-4 text-left mb-8 h-[50vh] overflow-y-auto pr-2 scrollbar-hide">
                 <div>
-                    <label class="tiny-label text-gray-400">Update Notes / Changelog</label>
+                    <label class="tiny-label text-gray-400">Pack Name</label>
+                    <input type="text" id="update-pack-name" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold">
+                </div>
+                <div>
+                    <label class="tiny-label text-gray-400 mt-2">Description</label>
+                    <textarea id="update-pack-desc" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-20 resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="tiny-label text-gray-400 mt-2">Pack Icon</label>
+                    <div class="flex gap-2 justify-between mt-2" id="update-pack-icon-selectors">
+                        <button class="icon-selector-btn active" data-icon="fa-book-journal-whills" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-book-journal-whills"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-dragon" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-dragon"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-wand-sparkles" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-wand-sparkles"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-brands fa-jedi-order" onclick="window.selectUpdatePackIcon(this)"><i class="fa-brands fa-jedi-order"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-khanda" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-khanda"></i></button>
+                    </div>
+                    <input type="hidden" id="update-pack-selected-icon" value="fa-book-journal-whills">
+                </div>
+                <div>
+                    <label class="tiny-label text-gray-400 mt-2">Update Notes / Changelog</label>
                     <textarea id="pack-update-notes" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-24 resize-none" placeholder="What changed in this version?"></textarea>
                 </div>
             </div>
@@ -608,6 +628,24 @@
             confirmCallback = null;
         };
 
+        // --- HORIZONTAL SCROLL FIX ---
+        const enableHScroll = (id) => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('wheel', (e) => {
+                    if (e.deltaY !== 0) {
+                        e.preventDefault();
+                        el.scrollLeft += e.deltaY;
+                    }
+                }, { passive: false });
+            }
+        };
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => { enableHScroll('vocation-tabs-container'); enableHScroll('main-nav'); });
+        } else {
+            enableHScroll('vocation-tabs-container'); enableHScroll('main-nav');
+        }
+
         // --- FIREBASE SETUP ---
         const firebaseConfig = {
             apiKey: "AIzaSyCKRN5dfi4og69_D8ZAvV1BQfwCK_f2uis",
@@ -674,11 +712,17 @@
             { id: 'class_fabricator', default: 'Fabricator', type: 'scripts' }
         ];
 
-        // --- STREAMING_CHUNK:Render and Filter Logic... ---
+        // --- Render and Filter Logic ---
         window.selectPackIcon = (btn) => {
             document.querySelectorAll('.icon-selector-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById('pack-selected-icon').value = btn.dataset.icon;
+        };
+        
+        window.selectUpdatePackIcon = (btn) => {
+            document.getElementById('update-pack-icon-selectors').querySelectorAll('.icon-selector-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('update-pack-selected-icon').value = btn.dataset.icon;
         };
 
         window.setMainTypeFilter = (type) => {
@@ -886,7 +930,7 @@
             }
         };
 
-        // --- STREAMING_CHUNK:Definitions Handling... ---
+        // --- Definitions Handling ---
         const DEFAULT_DEFINITIONS = `**Scriptcasting**
 The Eternal Heart saturates Aeonfall with unseen energies. Across the world, these energies can be shaped into precise patterns known as **Scripts**.
 
@@ -956,7 +1000,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- STREAMING_CHUNK:Campaign Terminology (DM Only)... ---
+        // --- Campaign Terminology (DM Only) ---
         window.openCampaignSettings = () => {
             if (activeRole !== 'dm') return;
             const terms = campaignSettings?.terms || {};
@@ -1104,7 +1148,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }).join('');
         };
 
-        // --- STREAMING_CHUNK:DM Actions and Save Logic... ---
+        // --- DM Actions and Save Logic ---
         window.setScriptFormType = (type) => {
             document.getElementById('script-form-type').value = type;
             const isFeature = type === 'features';
@@ -1244,7 +1288,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             });
         };
 
-        // --- STREAMING_CHUNK:Transfer System... ---
+        // --- Transfer System ---
         window.openTransferModal = (scriptId) => {
             targetTransferScript = scripts.find(s => s.id === scriptId);
             if (!targetTransferScript) return;
@@ -1343,7 +1387,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- STREAMING_CHUNK:Compendium Import Logic... ---
+        // --- Compendium Import Logic ---
         window.openImportModal = async () => {
             if (activeRole !== 'dm') return;
             document.getElementById('import-modal').classList.remove('hidden');
@@ -1420,7 +1464,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             document.getElementById('pd-admin-perm-delete').classList.toggle('hidden', !adminModeActive);
             if(adminModeActive && currentViewingPack.isDeleted) {
                  document.getElementById('pd-admin-panel').classList.remove('hidden');
-                 document.getElementById('pd-btn-archive').classList.add('hidden'); // already archived
+                 document.getElementById('pd-btn-archive')?.classList.add('hidden'); // already archived
             }
 
             document.getElementById('pack-details-modal').classList.remove('hidden');
@@ -1487,19 +1531,21 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
 
         window.deletePackMessage = async (msgId) => {
             if (!currentViewingPack || !adminModeActive) return;
-            if (!confirm("Erase this message from the archives?")) return;
             
-            const pathArgs = currentViewingPack.isPrivate
-                ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id, 'messages', msgId]
-                : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id, 'messages', msgId];
-                
-            try {
-                await deleteDoc(doc(db, ...pathArgs));
-                window.showToast("Message erased.");
-            } catch(e) {
-                console.error("Failed to delete message", e);
-                window.showToast("Failed to erase message.");
-            }
+            window.customConfirm("Erase this message from the archives?", async (confirmed) => {
+                if (!confirmed) return;
+                const pathArgs = currentViewingPack.isPrivate
+                    ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id, 'messages', msgId]
+                    : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id, 'messages', msgId];
+                    
+                try {
+                    await deleteDoc(doc(db, ...pathArgs));
+                    window.showToast("Message erased.");
+                } catch(e) {
+                    console.error("Failed to delete message", e);
+                    window.showToast("Failed to erase message.");
+                }
+            });
         };
 
         window.confirmImportPack = () => {
@@ -1530,6 +1576,22 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         };
         
         window.openUpdatePackModal = () => {
+            if (!currentViewingPack) return;
+            
+            document.getElementById('update-pack-name').value = currentViewingPack.name || '';
+            document.getElementById('update-pack-desc').value = currentViewingPack.description || '';
+            
+            const iconValue = currentViewingPack.icon || 'fa-book-journal-whills';
+            document.getElementById('update-pack-selected-icon').value = iconValue;
+            
+            document.getElementById('update-pack-icon-selectors').querySelectorAll('.icon-selector-btn').forEach(b => {
+                if (b.dataset.icon === iconValue) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+
             document.getElementById('pack-update-notes').value = '';
             document.getElementById('pack-update-modal').classList.remove('hidden');
         };
@@ -1537,8 +1599,13 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         window.executePackUpdate = async () => {
             if (!currentViewingPack || activeRole !== 'dm') return;
             const notes = document.getElementById('pack-update-notes').value.trim() || 'Minor updates and script adjustments.';
+            const newName = document.getElementById('update-pack-name').value.trim();
+            const newDesc = document.getElementById('update-pack-desc').value.trim();
+            const newIcon = document.getElementById('update-pack-selected-icon').value;
             const newVersion = (currentViewingPack.version || 1) + 1;
             
+            if (!newName) return window.showToast("Pack name is required.");
+
             const pathArgs = currentViewingPack.isPrivate 
                 ? ['artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks', currentViewingPack.id]
                 : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id];
@@ -1548,6 +1615,9 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             
             try {
                 await updateDoc(doc(db, ...pathArgs), {
+                    name: newName,
+                    description: newDesc,
+                    icon: newIcon,
                     scripts: scripts.map(s => { const c = {...s}; delete c.id; return c; }),
                     version: newVersion,
                     updateNotes: notes,
@@ -1685,7 +1755,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- STREAMING_CHUNK:Auth and Database Listeners... ---
+        // --- Auth and Database Listeners ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {

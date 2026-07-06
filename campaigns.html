@@ -215,10 +215,14 @@
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Visibility</label>
-                    <select id="new-campaign-vis" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none">
+                    <select id="new-campaign-vis" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none" onchange="document.getElementById('new-campaign-limit-container').classList.toggle('hidden', this.value !== 'public')">
                         <option value="private">Private (Invite Code Only)</option>
                         <option value="public">Public (Visible to all)</option>
                     </select>
+                </div>
+                <div id="new-campaign-limit-container" class="hidden">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Player Limit (Optional)</label>
+                    <input type="number" id="new-campaign-limit" min="1" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none" placeholder="Leave blank for no limit">
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Starting Codex (Optional)</label>
@@ -256,10 +260,14 @@
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Visibility</label>
-                    <select id="edit-campaign-vis" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none">
+                    <select id="edit-campaign-vis" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none" onchange="document.getElementById('edit-campaign-limit-container').classList.toggle('hidden', this.value !== 'public')">
                         <option value="private">Private (Invite Code Only)</option>
                         <option value="public">Public (Visible to all)</option>
                     </select>
+                </div>
+                <div id="edit-campaign-limit-container" class="hidden">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Player Limit (Optional)</label>
+                    <input type="number" id="edit-campaign-limit" min="1" class="w-full bg-transparent border-b-2 border-gray-400 focus:border-blood text-ink py-2 font-serif outline-none" placeholder="Leave blank for no limit">
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold uppercase tracking-widest text-ink mb-1 font-heading mt-4">Invite Code</label>
@@ -395,10 +403,10 @@
             let badges = '';
             
             if (isDM && !adminModeActive) badges += `<span class="bg-blood text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading font-black shadow-md">DM</span>`;
-            else if (adminModeActive) badges += `<span class="bg-red-600 text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading font-black shadow-md"><i class="fa-solid fa-triangle-exclamation mr-1"></i>ADMIN</span>`;
-            else if (isMine) badges += `<span class="bg-green-700 text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading font-black shadow-md">Joined</span>`;
+            if (isMine) badges += `<span class="bg-green-700 text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading font-black shadow-md">Joined</span>`;
 
             if (camp.visibility === 'private') badges += `<span class="bg-gray-800 text-gray-400 border border-gray-600 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md ml-1"><i class="fa-solid fa-lock text-[7px] mr-1"></i>Private</span>`;
+            else if (camp.visibility === 'public' && camp.maxPlayers) badges += `<span class="bg-blue-900 text-blue-200 border border-blue-700 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md ml-1"><i class="fa-solid fa-users text-[7px] mr-1"></i>Max ${camp.maxPlayers}</span>`;
 
             if (camp.packName && camp.packName !== 'Blank Slate') badges += `<span class="bg-indigo-900 text-indigo-200 border border-indigo-700 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md ml-1"><i class="fa-solid fa-book-journal-whills text-[7px] mr-1"></i>${camp.packName}</span>`;
 
@@ -778,6 +786,15 @@
         window.joinPublicCampaign = async (id, name) => {
             if (!currentUser || currentUser.role !== 'player') return;
             try {
+                const camp = allCampaigns.find(c => c.id === id);
+                if (camp && camp.visibility === 'public' && camp.maxPlayers) {
+                    const q = query(collection(db, 'users'), where('joinedCampaigns', 'array-contains', id));
+                    const snap = await getDocs(q);
+                    if (snap.size >= camp.maxPlayers) {
+                        return window.showToast("This public realm has reached its player limit.");
+                    }
+                }
+
                 await updateDoc(doc(db, 'users', currentUser.uid), {
                     joinedCampaigns: arrayUnion(id)
                 });
@@ -810,10 +827,19 @@
                     if (selectedPack) packName = selectedPack.name;
                 }
 
+                let maxPlayers = null;
+                if (vis === 'public') {
+                    const limitVal = document.getElementById('new-campaign-limit').value;
+                    if (limitVal && !isNaN(limitVal)) {
+                        maxPlayers = parseInt(limitVal);
+                    }
+                }
+
                 const newRef = await addDoc(collection(db, 'campaigns'), {
                     name: name,
                     description: desc,
                     visibility: vis,
+                    maxPlayers: maxPlayers,
                     dmId: currentUser.uid,
                     dmName: currentUser.username,
                     inviteCode: generateCode(),
@@ -840,6 +866,9 @@
                 document.getElementById('new-campaign-name').value = '';
                 document.getElementById('new-campaign-desc').value = '';
                 document.getElementById('new-campaign-pack').value = '';
+                document.getElementById('new-campaign-limit').value = '';
+                document.getElementById('new-campaign-vis').value = 'private';
+                document.getElementById('new-campaign-limit-container').classList.add('hidden');
                 document.getElementById('new-campaign-pack-preview').classList.add('hidden');
                 window.showToast("Realm Forged Successfully!");
 
@@ -859,6 +888,9 @@
             document.getElementById('edit-campaign-desc').value = camp.description || '';
             document.getElementById('edit-campaign-vis').value = camp.visibility || 'private';
             document.getElementById('edit-campaign-code').value = camp.inviteCode || '';
+            
+            document.getElementById('edit-campaign-limit-container').classList.toggle('hidden', camp.visibility !== 'public');
+            document.getElementById('edit-campaign-limit').value = camp.maxPlayers || '';
             
             const editPackSelect = document.getElementById('edit-campaign-pack');
             if (editPackSelect) {
@@ -882,10 +914,19 @@
             if (!code) return window.showToast("Invite code is required.");
 
             try {
+                let maxPlayers = null;
+                if (vis === 'public') {
+                    const limitVal = document.getElementById('edit-campaign-limit').value;
+                    if (limitVal && !isNaN(limitVal)) {
+                        maxPlayers = parseInt(limitVal);
+                    }
+                }
+
                 const updates = {
                     name: name,
                     description: desc,
                     visibility: vis,
+                    maxPlayers: maxPlayers,
                     inviteCode: code
                 };
 

@@ -32,6 +32,22 @@
         
         /* Admin specific styles */
         .admin-glow { box-shadow: 0 0 15px rgba(255, 0, 0, 0.6) !important; border-color: #ff4444 !important; }
+        
+        /* Chat Styles */
+        .chat-panel { position: fixed; top: 0; right: -400px; width: 400px; height: 100vh; background-color: #1a110b; border-left: 2px solid #c5a059; box-shadow: -10px 0 30px rgba(0,0,0,0.8); transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; display: flex; flex-direction: column; }
+        .chat-panel.open { right: 0; }
+        .chat-tab { flex: 1; text-align: center; padding: 12px 0; font-family: 'Cinzel', serif; font-size: 12px; font-weight: 900; color: #888; border-bottom: 2px solid #333; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; background: rgba(0,0,0,0.4); }
+        .chat-tab.active { color: #f1e5c5; border-bottom-color: #c5a059; background: rgba(122, 27, 27, 0.2); text-shadow: 0 0 10px rgba(197, 160, 89, 0.5); }
+        .chat-tab:hover:not(.active) { color: #c5a059; background: rgba(255,255,255,0.05); }
+        .chat-msg { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed rgba(139, 90, 43, 0.3); }
+        .chat-msg:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .chat-btn-toggle { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: #f1e5c5; color: #1a110b; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 900; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 2px solid #c5a059; transition: transform 0.2s, box-shadow 0.2s; }
+        .chat-btn-toggle:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.8); }
+        .chat-btn-toggle .unread-badge { position: absolute; top: -4px; right: -4px; background: #7a1b1b; color: white; font-size: 10px; font-family: 'Cinzel', serif; font-weight: 900; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #f1e5c5; }
+        
+        .dm-contact { display: flex; justify-content: space-between; items-center; padding: 10px; border-bottom: 1px dashed rgba(139, 90, 43, 0.3); cursor: pointer; transition: background 0.2s; }
+        .dm-contact:hover { background: rgba(197, 160, 89, 0.1); }
+        .dm-contact.has-unread { background: rgba(122, 27, 27, 0.15); border-left: 3px solid #7a1b1b; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
@@ -103,6 +119,69 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- CHAT TOGGLE BUTTON -->
+    <div id="chat-toggle-btn" class="chat-btn-toggle hidden" onclick="window.toggleChatPanel()">
+        <i class="fa-solid fa-comments"></i>
+        <div id="global-unread-badge" class="unread-badge hidden">!</div>
+    </div>
+
+    <!-- CHAT PANEL -->
+    <div id="global-chat-panel" class="chat-panel">
+        <div class="flex items-center justify-between p-4 border-b border-gold bg-black/40">
+            <h2 class="font-heading text-lg font-black text-gold uppercase tracking-widest"><i class="fa-solid fa-tower-observation mr-2"></i> Communications</h2>
+            <button onclick="window.toggleChatPanel()" class="text-gray-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        
+        <div class="flex border-b border-gray-700">
+            <button id="chat-tab-global" onclick="window.switchChatTab('global')" class="chat-tab active">The Tavern</button>
+            <button id="chat-tab-dms" onclick="window.switchChatTab('dms')" class="chat-tab relative">Whispers <span id="dm-tab-badge" class="absolute top-2 right-2 w-2 h-2 bg-blood rounded-full hidden"></span></button>
+        </div>
+
+        <!-- THE TAVERN (GLOBAL) -->
+        <div id="chat-view-global" class="flex flex-col h-full overflow-hidden">
+            <div id="global-chat-messages" class="flex-grow overflow-y-auto p-4 scrollbar-hide space-y-4">
+                <!-- Global messages populate here -->
+            </div>
+            <div class="p-4 border-t border-gray-700 bg-black/40 shrink-0">
+                <div class="flex gap-2">
+                    <input type="text" id="global-chat-input" class="form-input text-xs w-full font-serif" placeholder="Speak to the realm...">
+                    <button onclick="window.sendGlobalMessage()" class="fantasy-btn px-4 py-2 rounded text-xs"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- WHISPERS (DIRECT MESSAGES) LIST -->
+        <div id="chat-view-dms" class="flex flex-col h-full overflow-hidden hidden">
+            <div class="p-3 border-b border-gray-700 bg-black/20 shrink-0">
+                <p class="text-[10px] text-gray-500 font-serif italic mb-2 text-center">Communicate privately. Find a user to begin.</p>
+                <div class="flex gap-2">
+                    <input type="text" id="dm-search-input" class="form-input text-xs w-full py-1.5" placeholder="Search by name...">
+                    <button onclick="window.searchUsersForDM()" class="bg-gray-800 hover:bg-gray-700 text-gold px-3 py-1.5 rounded text-xs border border-gray-600"><i class="fa-solid fa-search"></i></button>
+                </div>
+            </div>
+            <div id="dm-contacts-list" class="flex-grow overflow-y-auto scrollbar-hide">
+                <!-- DM Contacts populate here -->
+            </div>
+        </div>
+
+        <!-- ACTIVE WHISPER CONVERSATION -->
+        <div id="chat-view-active-dm" class="flex flex-col h-full overflow-hidden hidden">
+            <div class="flex items-center gap-3 p-3 border-b border-gray-700 bg-black/40 shrink-0">
+                <button onclick="window.closeActiveDM()" class="text-gray-500 hover:text-gold transition-colors"><i class="fa-solid fa-arrow-left"></i></button>
+                <h3 id="active-dm-name" class="font-heading text-sm font-bold text-white uppercase tracking-widest truncate">User Name</h3>
+            </div>
+            <div id="active-dm-messages" class="flex-grow overflow-y-auto p-4 scrollbar-hide space-y-4">
+                <!-- Private messages populate here -->
+            </div>
+            <div class="p-4 border-t border-gray-700 bg-black/40 shrink-0">
+                <div class="flex gap-2">
+                    <input type="text" id="active-dm-input" class="form-input text-xs w-full font-serif" placeholder="Whisper privately...">
+                    <button onclick="window.sendDirectMessage()" class="fantasy-btn px-4 py-2 rounded text-xs"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -360,6 +439,14 @@
         let packMessagesUnsubscribe = null;
         let adminModeActive = false;
 
+        // Chat State
+        let globalChatUnsub = null;
+        let dmContactsUnsub = null;
+        let activeDmUnsub = null;
+        let activeChatTargetId = null;
+        let activeChatTargetName = "";
+        let dmUnreadCounts = {};
+
         // Generate Random Invite Code
         function generateCode() {
             return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -491,6 +578,304 @@
                 pubGrid.innerHTML = `<div class="col-span-full py-4 text-center border border-dashed border-gray-800 rounded bg-black bg-opacity-30"><p class="text-gray-500 text-xs italic font-serif">No public realms are currently available.</p></div>`;
             }
         }
+
+        // --- CHAT LOGIC ---
+        window.toggleChatPanel = () => {
+            const panel = document.getElementById('global-chat-panel');
+            panel.classList.toggle('open');
+            if (panel.classList.contains('open')) {
+                document.getElementById('global-unread-badge').classList.add('hidden');
+                setTimeout(() => {
+                    const gContainer = document.getElementById('global-chat-messages');
+                    gContainer.scrollTop = gContainer.scrollHeight;
+                }, 100);
+            }
+        };
+
+        window.switchChatTab = (tab) => {
+            document.querySelectorAll('.chat-tab').forEach(b => b.classList.remove('active'));
+            document.getElementById(`chat-tab-${tab}`).classList.add('active');
+            
+            document.getElementById('chat-view-global').classList.add('hidden');
+            document.getElementById('chat-view-dms').classList.add('hidden');
+            document.getElementById('chat-view-active-dm').classList.add('hidden');
+            
+            if (tab === 'global') {
+                document.getElementById('chat-view-global').classList.remove('hidden');
+                setTimeout(() => {
+                    const gContainer = document.getElementById('global-chat-messages');
+                    gContainer.scrollTop = gContainer.scrollHeight;
+                }, 50);
+            } else {
+                document.getElementById('chat-view-dms').classList.remove('hidden');
+                activeChatTargetId = null;
+                // Clear DM badge when opening the tab
+                document.getElementById('dm-tab-badge').classList.add('hidden');
+            }
+        };
+
+        window.formatChatTime = (ts) => {
+            const d = new Date(ts);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        };
+
+        // GLOBAL CHAT
+        window.initGlobalChat = () => {
+            if (globalChatUnsub) globalChatUnsub();
+            
+            // Limit to last 50 messages to prevent massive load
+            const q = query(collection(db, 'artifacts', 'global_chat', 'public', 'data', 'messages'));
+            
+            globalChatUnsub = onSnapshot(q, (snap) => {
+                const msgs = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => a.timestamp - b.timestamp).slice(-50);
+                const container = document.getElementById('global-chat-messages');
+                
+                if (msgs.length === 0) {
+                    container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">The tavern is quiet...</p>`;
+                } else {
+                    container.innerHTML = msgs.map(m => {
+                        const isMe = m.authorId === currentUser.uid;
+                        const roleColor = m.authorRole === 'dm' ? 'text-blood' : 'text-gold';
+                        const roleIcon = m.authorRole === 'dm' ? '<i class="fa-solid fa-dragon ml-1 text-[8px]" title="Dungeon Master"></i>' : '';
+                        const align = isMe ? 'text-right' : 'text-left';
+                        const bg = isMe ? 'bg-indigo-900/30 border-indigo-800' : 'bg-black/40 border-gray-700';
+                        
+                        return `
+                        <div class="chat-msg ${align}">
+                            <div class="text-[9px] font-heading font-bold uppercase tracking-widest mb-1">
+                                <span class="${roleColor}">${m.authorName}${roleIcon}</span>
+                                <span class="text-gray-600 ml-2">${window.formatChatTime(m.timestamp)}</span>
+                            </div>
+                            <div class="inline-block p-2 rounded text-sm font-serif text-gray-300 border ${bg} text-left max-w-[85%] break-words">
+                                ${m.text}
+                            </div>
+                        </div>
+                        `;
+                    }).join('');
+                    
+                    // Scroll to bottom
+                    container.scrollTop = container.scrollHeight;
+                    
+                    // Show badge if panel is closed
+                    const panel = document.getElementById('global-chat-panel');
+                    if (!panel.classList.contains('open') && msgs.length > 0) {
+                        const lastMsg = msgs[msgs.length - 1];
+                        if (lastMsg.authorId !== currentUser.uid) {
+                            document.getElementById('global-unread-badge').classList.remove('hidden');
+                        }
+                    }
+                }
+            });
+        };
+
+        window.sendGlobalMessage = async () => {
+            const input = document.getElementById('global-chat-input');
+            const text = input.value.trim();
+            if (!text || !currentUser) return;
+            
+            input.value = '';
+            try {
+                await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', 'messages'), {
+                    text: text,
+                    authorId: currentUser.uid,
+                    authorName: currentUser.username,
+                    authorRole: currentUser.role,
+                    timestamp: Date.now()
+                });
+            } catch (err) {
+                console.error("Failed to send message", err);
+                window.showToast("Failed to send message.");
+            }
+            
+            // Listen for 'Enter' key
+            document.getElementById('global-chat-input').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') window.sendGlobalMessage();
+            });
+        };
+
+        // DIRECT MESSAGING (WHISPERS)
+        window.initDirectMessaging = () => {
+            if (dmContactsUnsub) dmContactsUnsub();
+            
+            // We store contact lists under the user's private data
+            dmContactsUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'users', currentUser.uid, 'contacts'), (snap) => {
+                const contacts = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => b.lastUpdated - a.lastUpdated);
+                const list = document.getElementById('dm-contacts-list');
+                
+                dmUnreadCounts = {};
+                let totalUnread = false;
+
+                if (contacts.length === 0) {
+                    list.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">No active whispers.</p>`;
+                } else {
+                    list.innerHTML = contacts.map(c => {
+                        const hasUnread = c.unreadCount > 0;
+                        if (hasUnread) totalUnread = true;
+                        
+                        return `
+                        <div class="dm-contact ${hasUnread ? 'has-unread' : ''}" onclick="window.openDirectMessage('${c.id}', '${c.name.replace(/'/g, "\\'")}')">
+                            <div>
+                                <h4 class="font-heading text-sm font-bold text-gray-300 uppercase tracking-widest">${c.name}</h4>
+                                <p class="text-[10px] text-gray-500 font-serif truncate max-w-[250px]">${c.lastMessage || '...'}</p>
+                            </div>
+                            <div class="text-right flex flex-col items-end justify-center">
+                                <span class="text-[9px] text-gray-600 font-bold mb-1">${window.formatChatTime(c.lastUpdated)}</span>
+                                ${hasUnread ? `<span class="bg-blood text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">${c.unreadCount}</span>` : ''}
+                            </div>
+                        </div>
+                        `;
+                    }).join('');
+                }
+                
+                // Update Tab Badge
+                if (totalUnread && document.getElementById('chat-view-dms').classList.contains('hidden') && document.getElementById('chat-view-active-dm').classList.contains('hidden')) {
+                    document.getElementById('dm-tab-badge').classList.remove('hidden');
+                    if (!document.getElementById('global-chat-panel').classList.contains('open')) {
+                        document.getElementById('global-unread-badge').classList.remove('hidden');
+                    }
+                }
+            });
+        };
+
+        window.searchUsersForDM = async () => {
+            const queryText = document.getElementById('dm-search-input').value.trim().toLowerCase();
+            if (!queryText) return window.showToast("Enter a name to search.");
+            
+            try {
+                // In a real app, this should be a cloud function. We pull all and filter locally due to Firebase limitations on case-insensitive 'like' queries.
+                const snap = await getDocs(collection(db, 'users'));
+                const results = snap.docs
+                    .map(d => ({id: d.id, ...d.data()}))
+                    .filter(u => u.uid !== currentUser.uid && u.username && u.username.toLowerCase().includes(queryText));
+                    
+                const list = document.getElementById('dm-contacts-list');
+                
+                if (results.length === 0) {
+                    list.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">No travelers found by that name.</p>`;
+                } else {
+                    list.innerHTML = `<p class="text-[10px] text-gold font-heading font-bold uppercase tracking-widest p-2 bg-black/40 border-b border-gray-700">Search Results</p>` + 
+                    results.map(u => `
+                        <div class="dm-contact hover:bg-indigo-900/20" onclick="window.openDirectMessage('${u.uid}', '${u.username.replace(/'/g, "\\'")}')">
+                            <div>
+                                <h4 class="font-heading text-sm font-bold text-gray-300 uppercase tracking-widest">${u.username}</h4>
+                                <p class="text-[10px] text-gray-500 font-serif">Start a whisper...</p>
+                            </div>
+                            <div class="flex items-center"><i class="fa-solid fa-chevron-right text-gray-600"></i></div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error(e);
+                window.showToast("Search failed.");
+            }
+        };
+
+        window.openDirectMessage = async (targetId, targetName) => {
+            activeChatTargetId = targetId;
+            activeChatTargetName = targetName;
+            
+            document.getElementById('chat-view-dms').classList.add('hidden');
+            document.getElementById('chat-view-active-dm').classList.remove('hidden');
+            document.getElementById('active-dm-name').innerText = targetName;
+            
+            // Clear unread count for this contact
+            try {
+                await updateDoc(doc(db, 'artifacts', 'global_chat', 'users', currentUser.uid, 'contacts', targetId), { unreadCount: 0 });
+            } catch(e) {} // Ignore if document doesn't exist yet
+
+            // Determine Conversation ID (consistent hash between two UIDs)
+            const convId = [currentUser.uid, targetId].sort().join('_');
+            
+            if (activeDmUnsub) activeDmUnsub();
+            
+            activeDmUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'private', 'conversations', convId, 'messages'), (snap) => {
+                const msgs = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => a.timestamp - b.timestamp);
+                const container = document.getElementById('active-dm-messages');
+                
+                if (msgs.length === 0) {
+                    container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">This is the start of your private history with ${targetName}.</p>`;
+                } else {
+                    container.innerHTML = msgs.map(m => {
+                        const isMe = m.authorId === currentUser.uid;
+                        const align = isMe ? 'text-right' : 'text-left';
+                        const bg = isMe ? 'bg-blood/20 border-blood/50 text-parchment' : 'bg-black/40 border-gray-700 text-gray-300';
+                        
+                        return `
+                        <div class="chat-msg ${align}">
+                            <div class="text-[9px] font-heading font-bold uppercase tracking-widest mb-1">
+                                <span class="text-gray-500">${window.formatChatTime(m.timestamp)}</span>
+                            </div>
+                            <div class="inline-block p-2 rounded text-sm font-serif border ${bg} text-left max-w-[85%] break-words">
+                                ${m.text}
+                            </div>
+                        </div>
+                        `;
+                    }).join('');
+                    
+                    container.scrollTop = container.scrollHeight;
+                }
+            });
+        };
+
+        window.closeActiveDM = () => {
+            activeChatTargetId = null;
+            if (activeDmUnsub) { activeDmUnsub(); activeDmUnsub = null; }
+            document.getElementById('chat-view-active-dm').classList.add('hidden');
+            document.getElementById('chat-view-dms').classList.remove('hidden');
+        };
+
+        window.sendDirectMessage = async () => {
+            const input = document.getElementById('active-dm-input');
+            const text = input.value.trim();
+            if (!text || !currentUser || !activeChatTargetId) return;
+            
+            input.value = '';
+            const convId = [currentUser.uid, activeChatTargetId].sort().join('_');
+            const now = Date.now();
+
+            try {
+                // 1. Add message to shared conversation
+                await addDoc(collection(db, 'artifacts', 'global_chat', 'private', 'conversations', convId, 'messages'), {
+                    text: text,
+                    authorId: currentUser.uid,
+                    timestamp: now
+                });
+
+                // 2. Update My Contact List
+                await setDoc(doc(db, 'artifacts', 'global_chat', 'users', currentUser.uid, 'contacts', activeChatTargetId), {
+                    name: activeChatTargetName,
+                    lastMessage: text,
+                    lastUpdated: now,
+                    unreadCount: 0
+                }, { merge: true });
+
+                // 3. Update Target's Contact List (requires a cloud function for true security, but we do client-side write here for functionality)
+                // Note: The target user's document needs to allow writes from this user for this contact subcollection path.
+                const targetRef = doc(db, 'artifacts', 'global_chat', 'users', activeChatTargetId, 'contacts', currentUser.uid);
+                const targetSnap = await getDoc(targetRef);
+                const currentUnread = targetSnap.exists() ? (targetSnap.data().unreadCount || 0) : 0;
+                
+                await setDoc(targetRef, {
+                    name: currentUser.username,
+                    lastMessage: text,
+                    lastUpdated: now,
+                    unreadCount: currentUnread + 1
+                }, { merge: true });
+
+            } catch (err) {
+                console.error("Failed to send private message", err);
+                window.showToast("Failed to deliver whisper.");
+            }
+        };
+
+        // Attach Enter key for DMs
+        document.getElementById('global-chat-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') window.sendGlobalMessage();
+        });
+        document.getElementById('active-dm-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') window.sendDirectMessage();
+        });
+
 
         // --- CODEX PACKS LOGIC ---
         window.openPacksModal = () => {
@@ -1059,6 +1444,10 @@
                     adminBtn.classList.remove('hidden');
                     playerActions.classList.remove('hidden'); // Ensure Admin can always see invite input
                 }
+
+                document.getElementById('chat-toggle-btn').classList.remove('hidden');
+                window.initGlobalChat();
+                window.initDirectMessaging();
 
                 if (currentUser.role === 'dm') {
                     roleBadge.innerText = 'DM';

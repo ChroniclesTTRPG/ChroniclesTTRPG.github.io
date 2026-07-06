@@ -675,9 +675,9 @@
             { id: 'class_vanguard', default: 'Vanguard', type: 'feature' },
             { id: 'class_warrior', default: 'Warrior', type: 'feature' },
             { id: 'class_scavenger', default: 'Scavenger', type: 'feature' },
+            { id: 'class_peacemaker', default: 'Peacemaker', type: 'feature' },
             
             // Both
-            { id: 'class_peacemaker', default: 'Peacemaker', type: 'both' },
             { id: 'class_heartbound', default: 'Heartbound', type: 'both' },
             { id: 'class_nomad', default: 'Nomad', type: 'both' },
             
@@ -1358,7 +1358,7 @@ Warriors hone their bodies to achieve supernatural feats of strength and agility
                     const newMove = {
                         name: targetTransferScript.name, roll: "", desc: fullDesc,
                         lvl: levelLabel,
-                        type: isFeature ? "feature" : "scriptcasting", 
+                        type: isFeature ? "features" : "scriptcasting", 
                         school: targetTransferScript.school || '', 
                         sType: targetTransferScript.sType || '',
                         activation: targetTransferScript.activation || '', range: targetTransferScript.range || '', comp: targetTransferScript.comp || '',

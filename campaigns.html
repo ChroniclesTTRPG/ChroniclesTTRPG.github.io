@@ -165,6 +165,10 @@
                 </div>
 
                 <div class="mt-4 pt-4 border-t border-gray-700 hidden md:block">
+                    <div id="pd-owner-panel" class="hidden mb-4 border-b border-red-900 pb-4">
+                        <h3 class="font-heading text-xs font-bold text-red-600 uppercase tracking-widest mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Owner Override</h3>
+                        <button onclick="window.initiatePackDeletion()" class="w-full bg-black hover:bg-red-900 text-red-500 hover:text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-red-900 shadow-md">Permanently Delete Pack</button>
+                    </div>
                     <button onclick="window.closePackDetails()" class="w-full text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white py-2 bg-black/40 rounded border border-gray-700 transition-colors">Close Details</button>
                 </div>
             </div>
@@ -283,7 +287,35 @@
         </div>
     </div>
 
-    <!-- SCRIPT INJECTION (The brains!) -->
+    <!-- ADMIN DELETION PROMPT MODAL -->
+    <div id="admin-delete-prompt-modal" class="modal-overlay hidden z-[990]">
+        <div class="modal-container !max-w-md text-center border-2 !border-red-600 !bg-wood">
+            <h2 id="admin-del-title" class="font-heading text-2xl font-black text-red-500 uppercase tracking-widest mb-2 border-b-2 border-red-900 pb-2">Admin Delete Action</h2>
+            <p class="text-xs font-serif text-gray-400 italic mb-6">Leave an optional message for the Dungeon Master explaining why their Realm or Pack is being removed.</p>
+            
+            <textarea id="admin-del-reason" class="w-full bg-black/50 border border-gray-600 focus:border-red-500 text-white py-2 px-3 text-sm font-serif outline-none h-24 mb-6 rounded" placeholder="E.g. Violation of community guidelines, test campaign cleanup..."></textarea>
+            
+            <div class="flex justify-center gap-4 font-heading mt-4">
+                <button onclick="document.getElementById('admin-delete-prompt-modal').classList.add('hidden'); window.pendingAdminDelete = null;" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Cancel</button>
+                <button onclick="window.executeAdminDelete()" class="bg-red-900 hover:bg-red-700 text-white px-6 py-2 rounded text-xs border border-red-500 font-bold uppercase tracking-widest shadow-lg transition-colors">Obliterate Record</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER NOTIFICATIONS MODAL -->
+    <div id="user-notifications-modal" class="modal-overlay hidden z-[995]">
+        <div class="parchment-bg rounded-lg max-w-lg w-full p-8 shadow-2xl border-4 border-blood text-center relative">
+            <i class="fa-solid fa-envelope-open-text text-4xl text-blood mb-4 drop-shadow-md"></i>
+            <h2 class="font-heading text-2xl font-bold text-blood mb-6 border-b border-gray-400 pb-2">Message from the Archives</h2>
+            
+            <div id="notifications-list" class="text-left max-h-60 overflow-y-auto scrollbar-hide space-y-4 mb-6">
+                <!-- Notifications Go Here -->
+            </div>
+            
+            <button onclick="window.dismissNotifications()" class="fantasy-btn w-full py-3 rounded text-sm font-bold shadow-lg">Acknowledge & Dismiss</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -372,7 +404,7 @@
 
             // DM TOOLS (Edit & Delete) AND PLAYER TOOLS (Leave)
             const editBtn = isDM ? `<button onclick="event.stopPropagation(); window.openEditCampaign('${camp.id}')" class="text-gold hover:text-yellow-400 transition-colors ml-3" title="Edit Realm"><i class="fa-solid fa-pen"></i></button>` : '';
-            const deleteBtn = isDM ? `<button onclick="event.stopPropagation(); window.deleteCampaign('${camp.id}', '${camp.name.replace(/'/g, "\\'")}')" class="text-blood hover:text-red-400 transition-colors ml-3" title="Delete Realm"><i class="fa-solid fa-trash-can"></i></button>` : '';
+            const deleteBtn = isDM ? `<button onclick="event.stopPropagation(); window.deleteCampaign('${camp.id}', '${camp.name.replace(/'/g, "\\'")}', '${camp.dmId}')" class="text-blood hover:text-red-400 transition-colors ml-3" title="Delete Realm"><i class="fa-solid fa-trash-can"></i></button>` : '';
             const leaveBtn = (!isDM && isMine && !adminModeActive) ? `<button onclick="event.stopPropagation(); window.leaveCampaign('${camp.id}', '${camp.name.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-parchment transition-colors ml-3" title="Leave Realm"><i class="fa-solid fa-right-from-bracket"></i></button>` : '';
 
             const descText = camp.description ? `<p class="text-xs text-gray-400 font-serif mb-4 line-clamp-2">${camp.description}</p>` : '';
@@ -490,6 +522,11 @@
             document.getElementById('pd-desc').innerText = currentViewingPack.description || 'No description provided.';
             document.getElementById('pd-notes').innerText = currentViewingPack.updateNotes || 'Initial publication.';
             
+            const pdOwnerPanel = document.getElementById('pd-owner-panel');
+            if (pdOwnerPanel) {
+                pdOwnerPanel.classList.toggle('hidden', !adminModeActive);
+            }
+
             // Populate Campaigns
             const campaignsList = document.getElementById('pd-campaigns-list');
             const relatedCamps = allCampaigns.filter(c => c.packName === currentViewingPack.name && c.visibility === 'public');
@@ -540,15 +577,21 @@
                     if (msgs.length === 0) {
                         container.innerHTML = `<div class="text-center py-4 text-xs italic text-gray-500">No messages yet. Start the discussion!</div>`;
                     } else {
-                        container.innerHTML = msgs.map(m => `
-                            <div class="p-3 bg-black/40 rounded border border-gray-700 relative">
-                                <div class="flex justify-between text-[10px] font-heading mb-1 border-b border-gray-700 pb-1">
+                        container.innerHTML = msgs.map(m => {
+                            const deleteBtn = adminModeActive ? `<button onclick="window.deletePackMessage('${m.id}')" class="text-gray-600 hover:text-red-500 transition-colors ml-2" title="Delete Message"><i class="fa-solid fa-trash-can"></i></button>` : '';
+                            return `
+                            <div class="p-3 bg-black/40 rounded border border-gray-700 relative group">
+                                <div class="flex justify-between items-start text-[10px] font-heading mb-1 border-b border-gray-700 pb-1">
                                     <span class="${m.authorId === currentViewingPack.authorId ? 'text-indigo-400' : 'text-gold'} font-bold uppercase">${m.authorName} ${m.authorId === currentViewingPack.authorId ? '<i class="fa-solid fa-crown ml-1" title="Pack Author"></i>' : ''}</span>
-                                    <span class="text-gray-500">${new Date(m.timestamp).toLocaleDateString()}</span>
+                                    <div class="flex items-center">
+                                        <span class="text-gray-500">${new Date(m.timestamp).toLocaleDateString()}</span>
+                                        ${deleteBtn}
+                                    </div>
                                 </div>
                                 <p class="text-sm font-serif text-gray-300 break-words mt-2">${m.text}</p>
                             </div>
-                        `).join('');
+                            `;
+                        }).join('');
                         container.scrollTop = container.scrollHeight;
                     }
                 });
@@ -584,6 +627,81 @@
             } catch (err) {
                 console.error("Failed to post message", err);
                 window.showToast("Failed to send message.");
+            }
+        };
+
+        window.deletePackMessage = async (msgId) => {
+            if (!currentViewingPack || !adminModeActive) return;
+            if (!confirm("Erase this message from the archives?")) return;
+            
+            const pathArgs = currentViewingPack.isPrivate
+                ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id, 'messages', msgId]
+                : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id, 'messages', msgId];
+                
+            try {
+                await deleteDoc(doc(db, ...pathArgs));
+                window.showToast("Message erased.");
+            } catch(e) {
+                console.error("Failed to delete message", e);
+                window.showToast("Failed to erase message.");
+            }
+        };
+
+        window.initiatePackDeletion = () => {
+            if (!currentViewingPack || !adminModeActive) return;
+            window.pendingAdminDelete = { type: 'pack', id: currentViewingPack.id, name: currentViewingPack.name, targetUserId: currentViewingPack.authorId, isPrivate: currentViewingPack.isPrivate };
+            document.getElementById('admin-del-title').innerText = `Delete Pack: ${currentViewingPack.name}`;
+            document.getElementById('admin-del-reason').value = '';
+            document.getElementById('admin-delete-prompt-modal').classList.remove('hidden');
+        };
+
+        window.executeAdminDelete = async () => {
+            if (!window.pendingAdminDelete) return;
+            const { type, id, name, targetUserId, isPrivate } = window.pendingAdminDelete;
+            const reason = document.getElementById('admin-del-reason').value.trim();
+            
+            document.getElementById('admin-delete-prompt-modal').classList.add('hidden');
+            window.showToast("Executing Admin Override...");
+
+            try {
+                // Send Notification to original DM if a reason is provided
+                if (reason && targetUserId) {
+                    await updateDoc(doc(db, 'users', targetUserId), {
+                        notifications: arrayUnion({
+                            type: type === 'campaign' ? 'Realm Deleted' : 'Pack Deleted',
+                            itemName: name,
+                            message: reason,
+                            timestamp: Date.now()
+                        })
+                    });
+                }
+
+                // Actually Delete the Resource
+                if (type === 'campaign') {
+                    await deleteDoc(doc(db, 'campaigns', id));
+                    window.showToast("Realm destroyed.");
+                } else if (type === 'pack') {
+                    const pathArgs = isPrivate 
+                        ? ['artifacts', 'global_codex', 'users', targetUserId, 'scriptPacks', id]
+                        : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', id];
+                    await deleteDoc(doc(db, ...pathArgs));
+                    window.showToast("Pack permanently obliterated.");
+                    window.closePackDetails();
+                }
+            } catch (err) {
+                console.error(err);
+                window.showToast("Admin action failed.");
+            }
+            window.pendingAdminDelete = null;
+        };
+
+        window.dismissNotifications = async () => {
+            if (!currentUser) return;
+            try {
+                await updateDoc(doc(db, 'users', currentUser.uid), { notifications: [] });
+                document.getElementById('user-notifications-modal').classList.add('hidden');
+            } catch(e) {
+                window.showToast("Failed to dismiss notifications.");
             }
         };
 
@@ -798,7 +916,15 @@
         };
 
         // Delete Campaign
-        window.deleteCampaign = async (id, name) => {
+        window.deleteCampaign = async (id, name, dmId) => {
+            if (adminModeActive && dmId !== currentUser.uid) {
+                window.pendingAdminDelete = { type: 'campaign', id, name, targetUserId: dmId };
+                document.getElementById('admin-del-title').innerText = `Delete Realm: ${name}`;
+                document.getElementById('admin-del-reason').value = '';
+                document.getElementById('admin-delete-prompt-modal').classList.remove('hidden');
+                return;
+            }
+
             if (!confirm(`Are you sure you want to permanently destroy the realm of "${name}"? This cannot be undone.`)) return;
             
             try {
@@ -981,6 +1107,19 @@
                         let updatedDisplay = currentUser.username || (u.email ? u.email.split('@')[0] : 'Traveler');
                         document.getElementById('user-display-name').innerText = updatedDisplay;
                         
+                        // Check for Admin Notifications
+                        if (currentUser.notifications && currentUser.notifications.length > 0) {
+                            const notifContainer = document.getElementById('notifications-list');
+                            notifContainer.innerHTML = currentUser.notifications.map(n => `
+                                <div class="bg-parchment border-2 border-blood/50 p-4 rounded mb-3 shadow-inner">
+                                    <h4 class="font-heading font-black text-blood text-sm uppercase tracking-widest">${n.type}: ${n.itemName}</h4>
+                                    <p class="text-[10px] text-gray-500 font-serif mb-2 italic border-b border-gray-300 pb-1">${new Date(n.timestamp).toLocaleString()}</p>
+                                    <p class="text-sm font-serif text-ink mt-2">" ${n.message} "</p>
+                                </div>
+                            `).join('');
+                            document.getElementById('user-notifications-modal').classList.remove('hidden');
+                        }
+
                         renderCampaigns();
                     }
                 });

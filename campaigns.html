@@ -471,6 +471,10 @@
             }
             renderCampaigns(); // Re-render to show everything
             if (window.renderGlobalChat) window.renderGlobalChat(); // Re-render chat to show/hide mod tools
+            if (activeChatTargetId) {
+                // If currently viewing a DM, trigger a re-render to show/hide mod tools there too
+                window.openDirectMessage(activeChatTargetId, activeChatTargetName);
+            }
         };
 
         // Generate Card HTML
@@ -850,10 +854,16 @@
                         const align = isMe ? 'text-right' : 'text-left';
                         const bg = isMe ? 'bg-blood/20 border-blood/50 text-parchment' : 'bg-black/40 border-gray-700 text-gray-300';
                         
+                        let adminTools = '';
+                        if (adminModeActive) {
+                            adminTools = `<button onclick="window.deleteDirectMessage('${m.id}', '${convId}')" class="text-gray-500 hover:text-red-500 ml-2" title="Delete Message"><i class="fa-solid fa-trash-can"></i></button>`;
+                        }
+
                         return `
                         <div class="chat-msg ${align}">
                             <div class="text-[9px] font-heading font-bold uppercase tracking-widest mb-1">
                                 <span class="text-gray-500">${window.formatChatTime(m.timestamp)}</span>
+                                ${adminTools}
                             </div>
                             <div class="inline-block p-2 rounded text-sm font-serif border ${bg} text-left max-w-[85%] break-words">
                                 ${m.text}
@@ -916,6 +926,17 @@
             } catch (err) {
                 console.error("Failed to send private message", err);
                 window.showToast("Failed to deliver whisper.");
+            }
+        };
+
+        window.deleteDirectMessage = async (msgId, convId) => {
+            if (!adminModeActive) return;
+            if (!confirm("Delete this private message?")) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'private', 'conversations', convId, 'messages', msgId));
+                window.showToast("Whisper erased from archives.");
+            } catch(e) {
+                window.showToast("Failed to delete whisper.");
             }
         };
 

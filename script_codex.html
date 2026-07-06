@@ -596,9 +596,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, addDoc, deleteDoc, getDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, addDoc, deleteDoc, getDoc, getDocs, writeBatch, arrayUnion } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-        // --- STREAMING_CHUNK:Core UI Functions... ---
+        // --- CORE UI FUNCTIONS ---
         window.showToast = (m) => { 
             const t = document.getElementById('toast'); 
             if(t){ t.textContent=m; t.style.opacity=1; setTimeout(()=>t.style.opacity=0, 4000); } 
@@ -630,7 +630,7 @@
             confirmCallback = null;
         };
 
-        // --- STREAMING_CHUNK:Scroll Fixes & Event Listeners... ---
+        // --- SCROLL FIXES & EVENT LISTENERS ---
         const initScrollFixes = () => {
             // Mouse wheel scrolling for main nav
             const nav = document.getElementById('main-nav');
@@ -761,7 +761,7 @@
             initScrollFixes();
         }
 
-        // --- STREAMING_CHUNK:Firebase Setup & State... ---
+        // --- FIREBASE SETUP ---
         const firebaseConfig = {
             apiKey: "AIzaSyCKRN5dfi4og69_D8ZAvV1BQfwCK_f2uis",
             authDomain: "dndcampaigns-f3d48.firebaseapp.com",
@@ -827,13 +827,13 @@
             { id: 'class_fabricator', default: 'Fabricator', type: 'scripts' }
         ];
 
-        // --- STREAMING_CHUNK:Render and Filter Logic... ---
+        // --- RENDER AND FILTER LOGIC ---
         window.selectPackIcon = (btn) => {
             document.querySelectorAll('.icon-selector-btn:not(.update-icon-btn)').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById('pack-selected-icon').value = btn.dataset.icon;
         };
-        
+
         window.selectUpdatePackIcon = (btn) => {
             document.querySelectorAll('.update-icon-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -849,7 +849,6 @@
                 if (currentLevelFilter === '0') currentLevelFilter = '1';
             }
             
-            // Check if current vocation is allowed in this new filter
             if (currentVocationFilter !== 'All') {
                 const voc = VOC_KEYS.find(v => v.id === currentVocationFilter);
                 if (voc) {
@@ -1047,7 +1046,7 @@
             }
         };
 
-        // --- STREAMING_CHUNK:Definitions Handling... ---
+        // --- DEFINITIONS HANDLING ---
         const DEFAULT_DEFINITIONS = `**Scriptcasting**
 The Eternal Heart saturates Aeonfall with unseen energies. Across the world, these energies can be shaped into precise patterns known as **Scripts**.
 
@@ -1117,7 +1116,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- STREAMING_CHUNK:Campaign Terminology (DM Only)... ---
+        // --- CAMPAIGN TERMINOLOGY (DM ONLY) ---
         window.openCampaignSettings = () => {
             if (activeRole !== 'dm') return;
             const terms = campaignSettings?.terms || {};
@@ -1265,7 +1264,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }).join('');
         };
 
-        // --- STREAMING_CHUNK:DM Actions and Save Logic... ---
+        // --- DM ACTIONS AND SAVE LOGIC ---
         window.setScriptFormType = (type) => {
             document.getElementById('script-form-type').value = type;
             const isFeature = type === 'features';
@@ -1405,7 +1404,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             });
         };
 
-        // --- STREAMING_CHUNK:Transfer System... ---
+        // --- TRANSFER SYSTEM ---
         window.openTransferModal = (scriptId) => {
             targetTransferScript = scripts.find(s => s.id === scriptId);
             if (!targetTransferScript) return;
@@ -1504,7 +1503,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- STREAMING_CHUNK:Compendium Import Logic... ---
+        // --- COMPENDIUM IMPORT LOGIC ---
         window.openImportModal = async () => {
             if (activeRole !== 'dm') return;
             document.getElementById('import-modal').classList.remove('hidden');
@@ -1865,7 +1864,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- STREAMING_CHUNK:Auth and Database Listeners... ---
+        // --- AUTH AND DATABASE LISTENERS ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {

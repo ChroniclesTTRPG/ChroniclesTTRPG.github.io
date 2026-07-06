@@ -211,8 +211,7 @@
 
                 <div>
                     <h3 class="font-heading text-sm font-bold text-ink uppercase mb-3 border-b border-gray-300 pb-1">Vocations (Classes)</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div><label class="tiny-label">Barbarian</label><input type="text" id="term-class-vanguard" class="form-input" placeholder="Vanguard"></div>
+                    <div><label class="tiny-label">Barbarian</label><input type="text" id="term-class-vanguard" class="form-input" placeholder="Vanguard"></div>
                         <div><label class="tiny-label">Fighter</label><input type="text" id="term-class-warrior" class="form-input" placeholder="Warrior"></div>
                         <div><label class="tiny-label">Monk</label><input type="text" id="term-class-peacemaker" class="form-input" placeholder="Peacemaker"></div>
                         <div><label class="tiny-label">Rouge</label><input type="text" id="term-class-scavenger" class="form-input" placeholder="Scavenger"></div>
@@ -933,7 +932,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 if (el) el.value = val || defaultVal || '';
             };
             
-            safeSetVal('term-filter-all', terms.filter_all, 'All');
+            safeSetVal('term-filter-all', terms.filter_all, 'All Records');
             safeSetVal('term-filter-features', terms.filter_features, 'Combat Features');
             safeSetVal('term-filter-scripts', terms.filter_scripts, 'Scriptcasting');
             
@@ -963,7 +962,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             const getVal = (id) => document.getElementById(id).value.trim();
             
             const newTerms = {
-                filter_all: getVal('term-filter-all') || 'All',
+                filter_all: getVal('term-filter-all') || 'All Records',
                 filter_features: getVal('term-filter-features') || 'Combat Features',
                 filter_scripts: getVal('term-filter-scripts') || 'Scriptcasting',
                 
@@ -1701,7 +1700,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                         campaignSettings = docSnap.data();
                         const safeSet = (id, val) => { const el = document.getElementById(id); if (el && val) el.innerText = val; };
                         
-                        safeSet('type-toggle-all', campaignSettings.terms?.filter_all || 'All');
+                        safeSet('type-toggle-all', campaignSettings.terms?.filter_all || 'All Records');
                         safeSet('type-toggle-features', campaignSettings.terms?.filter_features || 'Combat Features');
                         safeSet('type-toggle-scripts', campaignSettings.terms?.filter_scripts || 'Scriptcasting');
                         

@@ -411,9 +411,9 @@
             if (camp.packName && camp.packName !== 'Blank Slate') badges += `<span class="bg-indigo-900 text-indigo-200 border border-indigo-700 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md ml-1"><i class="fa-solid fa-book-journal-whills text-[7px] mr-1"></i>${camp.packName}</span>`;
 
             // DM TOOLS (Edit & Delete) AND PLAYER TOOLS (Leave)
-            const editBtn = isDM ? `<button onclick="event.stopPropagation(); window.openEditCampaign('${camp.id}')" class="text-gold hover:text-yellow-400 transition-colors ml-3" title="Edit Realm"><i class="fa-solid fa-pen"></i></button>` : '';
-            const deleteBtn = isDM ? `<button onclick="event.stopPropagation(); window.deleteCampaign('${camp.id}', '${camp.name.replace(/'/g, "\\'")}', '${camp.dmId}')" class="text-blood hover:text-red-400 transition-colors ml-3" title="Delete Realm"><i class="fa-solid fa-trash-can"></i></button>` : '';
-            const leaveBtn = (!isDM && isMine && !adminModeActive) ? `<button onclick="event.stopPropagation(); window.leaveCampaign('${camp.id}', '${camp.name.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-parchment transition-colors ml-3" title="Leave Realm"><i class="fa-solid fa-right-from-bracket"></i></button>` : '';
+            const editBtn = isDM ? `<button onclick="event.stopPropagation(); window.openEditCampaign('${camp.id}')" class="text-gold hover:text-yellow-400 transition-colors" title="Edit Realm"><i class="fa-solid fa-pen"></i></button>` : '';
+            const deleteBtn = isDM ? `<button onclick="event.stopPropagation(); window.deleteCampaign('${camp.id}', '${camp.name.replace(/'/g, "\\'")}', '${camp.dmId}')" class="text-blood hover:text-red-400 transition-colors" title="Delete Realm"><i class="fa-solid fa-trash-can"></i></button>` : '';
+            const leaveBtn = (!isDM && isMine && !adminModeActive) ? `<button onclick="event.stopPropagation(); window.leaveCampaign('${camp.id}', '${camp.name.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-parchment transition-colors" title="Leave Realm"><i class="fa-solid fa-right-from-bracket"></i></button>` : '';
 
             const descText = camp.description ? `<p class="text-xs text-gray-400 font-serif mb-4 line-clamp-2">${camp.description}</p>` : '';
 
@@ -426,9 +426,11 @@
             d.innerHTML = `
                 <div>
                     <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-xl font-heading font-bold text-gold drop-shadow">${camp.name}</h3>
-                        <div class="flex items-center">
-                            <div class="flex gap-1">${badges}</div>
+                        <div class="flex flex-wrap items-center gap-2 pr-4">
+                            <h3 class="text-xl font-heading font-bold text-gold drop-shadow leading-tight m-0">${camp.name}</h3>
+                            <div class="flex flex-wrap gap-1 items-center">${badges}</div>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0 pt-1">
                             ${editBtn}
                             ${deleteBtn}
                             ${leaveBtn}

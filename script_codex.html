@@ -57,7 +57,11 @@
         .nav-link.active { color: #c5a059; border-bottom: 2px solid #c5a059; padding-bottom: 4px; text-shadow: 0 0 10px rgba(197, 160, 89, 0.5); }
         .nav-link:hover { color: #f1e5c5; }
 
-        .vocation-tab { background: rgba(0,0,0,0.5); border: 1px solid #444; color: #888; font-family: 'Cinzel', serif; font-size: 10px; font-weight: 900; text-transform: uppercase; padding: 6px 12px; border-radius: 4px; transition: all 0.2s; cursor: pointer; letter-spacing: 1px; white-space: nowrap; }
+        .type-toggle-btn { font-size: 11px; font-weight: 900; text-transform: uppercase; background: transparent; color: #888; transition: all 0.2s; font-family: 'Cinzel', serif; border: 1px solid transparent;}
+        .type-toggle-btn.active { background: #7a1b1b; color: #f1e5c5; border-color: #c5a059; box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.2); text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+        .type-toggle-btn:hover:not(.active) { color: #c5a059; background: rgba(255,255,255,0.05); border-color: rgba(197, 160, 89, 0.3);}
+
+        .vocation-tab { background: rgba(0,0,0,0.5); border: 1px solid #444; color: #888; font-family: 'Cinzel', serif; font-size: 10px; font-weight: 900; text-transform: uppercase; padding: 6px 12px; border-radius: 4px; transition: all 0.2s; cursor: pointer; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; }
         .vocation-tab:hover { border-color: #c5a059; color: #c5a059; background: rgba(0,0,0,0.7); }
         .vocation-tab.active { background: #c5a059; color: #1a110b; border-color: #e8cd87; box-shadow: 0 0 15px rgba(197, 160, 89, 0.4); transform: scale(1.05); z-index: 10;}
 
@@ -96,15 +100,9 @@
         .form-input:focus { border-color: #7a1b1b; }
         .tiny-label { font-size: 9px; text-transform: uppercase; color: #555; font-weight: 900; display: block; margin-bottom: 2px; font-family: 'Cinzel', serif;}
         
-        .type-toggle-btn { flex: 1; padding: 8px 0; font-size: 10px; font-weight: 900; text-transform: uppercase; background: rgba(255,255,255,0.5); color: #555; transition: all 0.2s; border: 1px solid rgba(139, 90, 43, 0.3); font-family: 'Cinzel', serif; }
-        .type-toggle-btn.active { background: #7a1b1b; color: #f1e5c5; border-color: #4a1010; }
-        .type-toggle-btn:first-child { border-radius: 4px 0 0 4px; }
-        .type-toggle-btn:last-child { border-radius: 0 4px 4px 0; }
-        
-        /* Icon Selector Styles */
-        .icon-btn { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #666; border-radius: 4px; background: rgba(0,0,0,0.4); color: #888; font-size: 1.25rem; transition: all 0.2s; cursor: pointer; }
-        .icon-btn:hover { border-color: #c5a059; color: #c5a059; transform: translateY(-2px); }
-        .icon-btn.active { border-color: #c5a059; background: rgba(197, 160, 89, 0.2); color: #c5a059; box-shadow: 0 0 10px rgba(197, 160, 89, 0.3); transform: scale(1.05); }
+        .icon-selector-btn { border: 2px solid transparent; border-radius: 4px; padding: 8px; font-size: 24px; color: #888; transition: all 0.2s; cursor: pointer; }
+        .icon-selector-btn:hover { color: #c5a059; background: rgba(255,255,255,0.05); }
+        .icon-selector-btn.active { color: #gold; border-color: #gold; background: rgba(197, 160, 89, 0.2); }
     </style>
 </head>
 <body class="min-h-screen">
@@ -157,27 +155,29 @@
             <!-- FILTERS & ACTIONS -->
             <div class="mb-8 space-y-6">
                 <!-- Top Type Toggles -->
-                <div class="flex max-w-sm mx-auto md:mx-0">
-                    <button id="type-toggle-all" onclick="window.setMainTypeFilter('All')" class="type-toggle-btn active">All</button>
-                    <button id="type-toggle-features" onclick="window.setMainTypeFilter('features')" class="type-toggle-btn">Combat Features</button>
-                    <button id="type-toggle-scripts" onclick="window.setMainTypeFilter('scriptcasting')" class="type-toggle-btn">Scriptcasting</button>
+                <div class="flex justify-start md:justify-start mb-6">
+                    <div class="flex bg-[rgba(0,0,0,0.5)] p-1 rounded-lg border border-[rgba(139,90,43,0.4)] shadow-inner w-full md:w-auto">
+                        <button id="type-toggle-all" onclick="window.setMainTypeFilter('All')" class="flex-1 md:flex-none type-toggle-btn active rounded-md px-4 md:px-6 py-2">All Records</button>
+                        <button id="type-toggle-features" onclick="window.setMainTypeFilter('features')" class="flex-1 md:flex-none type-toggle-btn rounded-md px-4 md:px-6 py-2">Combat Features</button>
+                        <button id="type-toggle-scripts" onclick="window.setMainTypeFilter('scriptcasting')" class="flex-1 md:flex-none type-toggle-btn rounded-md px-4 md:px-6 py-2">Scriptcasting</button>
+                    </div>
                 </div>
 
                 <!-- Vocation Tabs -->
-                <div class="flex flex-wrap gap-2 justify-center md:justify-start" id="vocation-tabs-container">
+                <div class="flex overflow-x-auto scrollbar-hide gap-2 justify-start pb-2 border-b border-[rgba(139,90,43,0.2)]" id="vocation-tabs-container">
                     <!-- Populated by JS -->
                 </div>
                 
-                <!-- Title & Levels -->
-                <div class="flex flex-col md:flex-row justify-between items-center border-b border-gray-700 pb-4 gap-4">
-                    <div class="flex flex-col md:flex-row items-center gap-4">
-                        <h2 id="view-title" class="text-2xl font-heading text-gold font-bold uppercase tracking-widest drop-shadow whitespace-nowrap">All Scripts</h2>
-                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 ml-0 md:ml-4" id="level-tabs-container">
+                <!-- Title, Levels, & Actions -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 pt-2">
+                    <div class="flex flex-col md:flex-row md:items-center gap-4 w-full lg:w-auto">
+                        <h2 id="view-title" class="text-2xl md:text-3xl font-heading text-gold font-bold uppercase tracking-widest drop-shadow whitespace-nowrap">All Scripts</h2>
+                        <div class="flex flex-wrap items-center gap-2" id="level-tabs-container">
                             <!-- Populated by JS based on Vocation -->
                         </div>
                     </div>
                     
-                    <div class="flex flex-wrap justify-center items-center gap-3">
+                    <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-start lg:justify-end">
                         <button id="btn-import" onclick="window.openImportModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-download mr-2"></i>Codex Packs</button>
                         <button id="btn-publish-pack" onclick="window.openCreatePackModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg border-indigo-700 text-indigo-400 hover:text-white hover:border-indigo-400"><i class="fa-solid fa-upload mr-2"></i>Publish Pack</button>
                         <button onclick="document.getElementById('definitions-modal').classList.remove('hidden')" class="fantasy-btn-alt px-4 py-2.5 rounded text-xs shadow-lg"><i class="fa-solid fa-book-open mr-2"></i>Definitions</button>
@@ -195,35 +195,46 @@
 
     <!-- CAMPAIGN TERMINOLOGY MODAL (DM ONLY) -->
     <div id="campaign-settings-modal" class="modal-overlay hidden z-[970]">
-        <div class="modal-container max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide">
+        <div class="modal-container max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide p-8">
             <h2 class="font-heading text-2xl font-black text-blood uppercase tracking-widest mb-2 border-b-2 border-gold pb-2 text-center">Campaign Terminology</h2>
             <p class="text-xs font-serif text-ink italic mb-6 text-center">Rename the core pillars of your world. These names will update across all ledgers and navigation links.</p>
             
-            <div class="space-y-6">
+            <div class="space-y-8">
                 <div>
                     <h3 class="font-heading text-sm font-bold text-ink uppercase mb-3 border-b border-gray-300 pb-1">Core Classifications</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div><label class="tiny-label">All Records</label><input type="text" id="term-filter-all" class="form-input" placeholder="All"></div>
-                        <div><label class="tiny-label">Combat Features</label><input type="text" id="term-filter-features" class="form-input" placeholder="Combat Features"></div>
-                        <div><label class="tiny-label">Scriptcasting</label><input type="text" id="term-filter-scripts" class="form-input" placeholder="Scriptcasting"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div><label class="tiny-label">All Records</label><input type="text" id="term-nav_all_records" class="form-input" placeholder="All Records"></div>
+                        <div><label class="tiny-label">Combat Features</label><input type="text" id="term-nav_features" class="form-input" placeholder="Combat Features"></div>
+                        <div><label class="tiny-label">Scriptcasting</label><input type="text" id="term-nav_scripts" class="form-input" placeholder="Scriptcasting"></div>
                     </div>
                 </div>
 
                 <div>
                     <h3 class="font-heading text-sm font-bold text-ink uppercase mb-3 border-b border-gray-300 pb-1">Vocations (Classes)</h3>
-                    <div><label class="tiny-label">Barbarian</label><input type="text" id="term-class-vanguard" class="form-input" placeholder="Vanguard"></div>
-                        <div><label class="tiny-label">Fighter</label><input type="text" id="term-class-warrior" class="form-input" placeholder="Warrior"></div>
-                        <div><label class="tiny-label">Monk</label><input type="text" id="term-class-peacemaker" class="form-input" placeholder="Peacemaker"></div>
-                        <div><label class="tiny-label">Rouge</label><input type="text" id="term-class-scavenger" class="form-input" placeholder="Scavenger"></div>
-                        <div><label class="tiny-label">Paladin</label><input type="text" id="term-class-heartbound" class="form-input" placeholder="Heartbound"></div>
-                        <div><label class="tiny-label">Ranger</label><input type="text" id="term-class-nomad" class="form-input" placeholder="Nomad"></div>
-                        <div><label class="tiny-label">Druid</label><input type="text" id="term-class-warden" class="form-input" placeholder="Wilderness Warden"></div>
-                        <div><label class="tiny-label">Cleric</label><input type="text" id="term-class-chronicler" class="form-input" placeholder="Chronicler"></div>
-                        <div><label class="tiny-label">Bard</label><input type="text" id="term-class-orator" class="form-input" placeholder="Orator"></div>
-                        <div><label class="tiny-label">Sorcerer</label><input type="text" id="term-class-scriptweaver" class="form-input" placeholder="Scriptweaver"></div>
-                        <div><label class="tiny-label">Warlock</label><input type="text" id="term-class-wartouched" class="form-input" placeholder="War-Touched"></div>
-                        <div><label class="tiny-label">Wizard</label><input type="text" id="term-class-archivist" class="form-input" placeholder="Archivist"></div>
-                        <div><label class="tiny-label">Artificer</label><input type="text" id="term-class-fabricator" class="form-input" placeholder="Fabricator"></div>
+                    
+                    <h4 class="text-[10px] font-bold text-gray-500 uppercase font-heading mb-2">Combat & Strategy (Features Only)</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                        <div><label class="tiny-label">Barbarian</label><input type="text" id="term-class_vanguard" class="form-input" placeholder="Vanguard"></div>
+                        <div><label class="tiny-label">Fighter</label><input type="text" id="term-class_warrior" class="form-input" placeholder="Warrior"></div>
+                        <div><label class="tiny-label">Rogue</label><input type="text" id="term-class_scavenger" class="form-input" placeholder="Scavenger"></div>
+                        <div><label class="tiny-label">Monk</label><input type="text" id="term-class_peacemaker" class="form-input" placeholder="Peacemaker"></div>
+                    </div>
+
+                    <h4 class="text-[10px] font-bold text-gray-500 uppercase font-heading mb-2">Hybrid Paths (Features & Scripts)</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                        <div><label class="tiny-label">Paladin</label><input type="text" id="term-class_heartbound" class="form-input" placeholder="Heartbound"></div>
+                        <div><label class="tiny-label">Ranger</label><input type="text" id="term-class_nomad" class="form-input" placeholder="Nomad"></div>
+                    </div>
+
+                    <h4 class="text-[10px] font-bold text-gray-500 uppercase font-heading mb-2">Pure Scriptcasting</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div><label class="tiny-label">Druid</label><input type="text" id="term-class_warden" class="form-input" placeholder="Wilderness Warden"></div>
+                        <div><label class="tiny-label">Cleric</label><input type="text" id="term-class_chronicler" class="form-input" placeholder="Chronicler"></div>
+                        <div><label class="tiny-label">Bard</label><input type="text" id="term-class_orator" class="form-input" placeholder="Orator"></div>
+                        <div><label class="tiny-label">Sorcerer</label><input type="text" id="term-class_scriptweaver" class="form-input" placeholder="Scriptweaver"></div>
+                        <div><label class="tiny-label">Warlock</label><input type="text" id="term-class_wartouched" class="form-input" placeholder="War-Touched"></div>
+                        <div><label class="tiny-label">Wizard</label><input type="text" id="term-class_archivist" class="form-input" placeholder="Archivist"></div>
+                        <div><label class="tiny-label">Artificer</label><input type="text" id="term-class_fabricator" class="form-input" placeholder="Fabricator"></div>
                     </div>
                 </div>
             </div>
@@ -278,9 +289,8 @@
                 <div id="pd-admin-panel" class="hidden mt-auto border-t border-gray-700 pt-4 space-y-2 pb-4">
                     <h3 class="font-heading text-xs font-bold text-red-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-crown mr-1"></i> Author Management</h3>
                     <div class="flex gap-2">
-                        <button id="btn-pd-update" onclick="window.openUpdatePackModal()" class="flex-1 bg-indigo-900 hover:bg-indigo-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-indigo-700">Push Update</button>
-                        <button id="btn-pd-archive" onclick="window.deleteCurrentPack()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-gray-600">Archive Pack</button>
-                        <button id="btn-pd-destroy" onclick="window.initiatePackDeletion()" class="hidden flex-1 bg-red-900 hover:bg-red-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-red-700" title="Admin Override: Permanently Delete"><i class="fa-solid fa-triangle-exclamation"></i> Destroy</button>
+                        <button onclick="window.openUpdatePackModal()" class="flex-1 bg-indigo-900 hover:bg-indigo-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-indigo-700">Push Update</button>
+                        <button onclick="window.deleteCurrentPack()" class="flex-1 bg-red-900 hover:bg-red-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-red-700">Archive Pack</button>
                     </div>
                 </div>
 
@@ -344,20 +354,15 @@
                     <textarea id="pack-desc" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-20 resize-none" placeholder="What kind of scripts does this contain?"></textarea>
                 </div>
                 <div>
-                    <label class="tiny-label text-gray-400 mt-2 mb-2">Pack Icon</label>
-                    <div class="flex flex-wrap gap-2 justify-center bg-black/30 p-3 rounded border border-gray-700" id="pack-icon-selector">
-                        <button class="icon-btn active" data-icon="fa-solid fa-book-journal-whills"><i class="fa-solid fa-book-journal-whills"></i></button>
-                        <button class="icon-btn" data-icon="fa-solid fa-dragon"><i class="fa-solid fa-dragon"></i></button>
-                        <button class="icon-btn" data-icon="fa-solid fa-wand-sparkles"><i class="fa-solid fa-wand-sparkles"></i></button>
-                        <button class="icon-btn" data-icon="fa-brands fa-jedi-order"><i class="fa-brands fa-jedi-order"></i></button>
-                        <button class="icon-btn" data-icon="fa-brands fa-galactic-republic"><i class="fa-brands fa-galactic-republic"></i></button>
-                        <button class="icon-btn" data-icon="fa-brands fa-sith"><i class="fa-brands fa-sith"></i></button>
-                        <button class="icon-btn" data-icon="fa-solid fa-khanda"><i class="fa-solid fa-khanda"></i></button>
-                        <button class="icon-btn" data-icon="fa-solid fa-book-skull"><i class="fa-solid fa-book-skull"></i></button>
-                        <button class="icon-btn" data-icon="fa-solid fa-bolt"><i class="fa-solid fa-bolt"></i></button>
-                        <button class="icon-btn" data-icon="fa-solid fa-shield-halved"><i class="fa-solid fa-shield-halved"></i></button>
+                    <label class="tiny-label text-gray-400 mt-2">Pack Icon</label>
+                    <div class="flex gap-2 justify-between mt-2" id="pack-icon-selectors">
+                        <button class="icon-selector-btn active" data-icon="fa-book-journal-whills" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-book-journal-whills"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-dragon" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-dragon"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-wand-sparkles" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-wand-sparkles"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-brands fa-jedi-order" onclick="window.selectPackIcon(this)"><i class="fa-brands fa-jedi-order"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-khanda" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-khanda"></i></button>
                     </div>
-                    <input type="hidden" id="pack-icon" value="fa-solid fa-book-journal-whills">
+                    <input type="hidden" id="pack-selected-icon" value="fa-book-journal-whills">
                 </div>
                 <div>
                     <label class="tiny-label text-gray-400 mt-2">Visibility</label>
@@ -386,76 +391,59 @@
             </div>
         </div>
     </div>
-    
-    <!-- ADMIN DELETION PROMPT MODAL -->
-    <div id="admin-delete-prompt-modal" class="modal-overlay hidden z-[990]">
-        <div class="modal-container !max-w-md text-center border-2 !border-red-600 !bg-wood">
-            <h2 id="admin-del-title" class="font-heading text-2xl font-black text-red-500 uppercase tracking-widest mb-2 border-b-2 border-red-900 pb-2">Admin Delete Action</h2>
-            <p class="text-xs font-serif text-gray-400 italic mb-6">Leave an optional message for the Dungeon Master explaining why their Realm or Pack is being removed.</p>
-            
-            <textarea id="admin-del-reason" class="w-full bg-black/50 border border-gray-600 focus:border-red-500 text-white py-2 px-3 text-sm font-serif outline-none h-24 mb-6 rounded" placeholder="E.g. Violation of community guidelines, test campaign cleanup..."></textarea>
-            
-            <div class="flex justify-center gap-4 font-heading mt-4">
-                <button onclick="document.getElementById('admin-delete-prompt-modal').classList.add('hidden'); window.pendingAdminDelete = null;" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Cancel</button>
-                <button onclick="window.executeAdminDelete()" class="bg-red-900 hover:bg-red-700 text-white px-6 py-2 rounded text-xs border border-red-500 font-bold uppercase tracking-widest shadow-lg transition-colors">Obliterate Record</button>
-            </div>
-        </div>
-    </div>
 
     <!-- SCRIPT EDIT/CREATE MODAL (DM ONLY) -->
     <div id="script-modal" class="modal-overlay hidden z-[950]">
         <div class="modal-container max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide">
-            <h2 id="script-modal-title" class="font-heading text-2xl font-black text-blood uppercase tracking-widest mb-4 border-b-2 border-gold pb-2 text-center">Inscribe Script</h2>
+            <h2 id="script-modal-title" class="font-heading text-2xl font-black text-blood uppercase tracking-widest mb-4 border-b-2 border-gold pb-2 text-center">Inscribe Entry</h2>
             <input type="hidden" id="script-id">
             
-            <div class="flex max-w-sm mx-auto mb-6">
-                <button id="toggle-type-script" onclick="window.setCreateType('scriptcasting')" class="type-toggle-btn active">Arcane Script</button>
-                <button id="toggle-type-feature" onclick="window.setCreateType('features')" class="type-toggle-btn">Combat Feature</button>
+            <div class="flex justify-center gap-2 mb-6" id="script-modal-type-toggle">
+                <button onclick="window.setScriptFormType('scriptcasting')" id="btn-form-script" class="px-4 py-1.5 rounded-l text-[10px] font-bold uppercase tracking-widest font-heading transition-colors bg-blood text-parchment border border-gold">Arcane Script</button>
+                <button onclick="window.setScriptFormType('features')" id="btn-form-feature" class="px-4 py-1.5 rounded-r text-[10px] font-bold uppercase tracking-widest font-heading transition-colors bg-[rgba(255,255,255,0.4)] border border-[rgba(139,90,43,0.4)] text-ink hover:bg-[rgba(197,160,89,0.2)]">Combat Feature</button>
             </div>
             
+            <input type="hidden" id="script-form-type" value="scriptcasting">
+
             <div class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="tiny-label">Name</label><input type="text" id="script-name" class="form-input font-heading font-bold text-blood uppercase" placeholder="E.g. Aegis of Light"></div>
+                    <div><label id="label-name" class="tiny-label">Script Name</label><input type="text" id="script-name" class="form-input font-heading font-bold text-blood uppercase" placeholder="E.g. Aegis of Light"></div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="tiny-label">Level</label>
-                            <input type="number" id="script-level" class="form-input text-center" placeholder="1" min="0" max="20">
-                            <p id="script-level-hint" class="text-[8px] text-gray-500 italic mt-0.5 text-center">0 = Trick. Max 9.</p>
-                        </div>
-                        <div id="script-school-container"><label class="tiny-label">School</label><input type="text" id="script-school" class="form-input" placeholder="Evocation"></div>
+                        <div><label id="label-level" class="tiny-label">Level (0 = Trick)</label><input type="number" id="script-level" class="form-input text-center" placeholder="1" min="0" max="20"></div>
+                        <div id="field-school"><label class="tiny-label">School</label><input type="text" id="script-school" class="form-input" placeholder="Evocation"></div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div id="script-type-container"><label class="tiny-label">Type (Optional)</label><input type="text" id="script-type" class="form-input" placeholder="Ritual"></div>
-                    <div><label id="script-activation-label" class="tiny-label">Activation</label><input type="text" id="script-activation" class="form-input" placeholder="1 Action"></div>
+                    <div id="field-type"><label class="tiny-label">Type (Optional)</label><input type="text" id="script-type" class="form-input" placeholder="Ritual"></div>
+                    <div><label id="label-activation" class="tiny-label">Activation</label><input type="text" id="script-activation" class="form-input" placeholder="1 Action"></div>
                     <div><label class="tiny-label">Range</label><input type="text" id="script-range" class="form-input" placeholder="60 feet"></div>
                     <div><label class="tiny-label">Duration</label><input type="text" id="script-duration" class="form-input" placeholder="Instantaneous"></div>
                 </div>
 
-                <div id="script-comp-container">
+                <div id="field-comp">
                     <label class="tiny-label">Components</label>
                     <input type="text" id="script-comp" class="form-input" placeholder="V, S, M (a pinch of ash)">
                 </div>
 
                 <div>
-                    <label class="tiny-label">Description (Use **bold** for emphasis)</label>
+                    <label id="label-desc" class="tiny-label">Description (Use **bold** for emphasis)</label>
                     <textarea id="script-desc" class="form-input h-48 leading-relaxed font-serif" placeholder="Describe the effects here..."></textarea>
                 </div>
 
-                <div id="script-scaling-container">
+                <div id="field-scaling">
                     <label class="tiny-label">At Higher Levels (Optional)</label>
                     <textarea id="script-scaling" class="form-input h-20 leading-relaxed font-serif" placeholder="When you cast this at 2nd level or higher..."></textarea>
                 </div>
 
                 <div>
-                    <label class="tiny-label">Authorized Vocations / Lists</label>
+                    <label id="label-lists" class="tiny-label">Authorized Vocations / Lists</label>
                     <input type="text" id="script-lists" class="form-input italic text-gray-600" placeholder="Heartbound, Chronicler...">
                 </div>
             </div>
 
             <div class="flex justify-between items-center mt-8 pt-4 border-t border-gold font-heading">
-                <button id="script-delete-btn" onclick="window.requestDeleteScript()" class="hidden text-[10px] font-black uppercase text-blood hover:text-red-700 underline tracking-widest">Erase</button>
+                <button id="script-delete-btn" onclick="window.requestDeleteScript()" class="hidden text-[10px] font-black uppercase text-blood hover:text-red-700 underline tracking-widest">Erase Entry</button>
                 <div class="flex gap-4 ml-auto">
                     <button onclick="window.closeScriptModal()" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink">Cancel</button>
                     <button onclick="window.saveScript()" class="fantasy-btn px-8 py-2 rounded text-xs shadow-lg">Save Record</button>
@@ -475,10 +463,10 @@
                 <p id="view-modal-meta" class="font-serif italic text-sm text-ink/80 font-bold">Level 1 — Evocation</p>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-[rgba(139,90,43,0.05)] rounded border border-gold/30 text-sm font-serif shadow-inner">
-                <div><b class="block text-blood font-heading uppercase text-[10px] mb-1" id="view-modal-activation-label">Activation</b><span id="view-modal-time">1 Action</span></div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-[rgba(139,90,43,0.05)] rounded border border-gold/30 text-sm font-serif shadow-inner" id="view-modal-grid">
+                <div><b id="view-modal-label-time" class="block text-blood font-heading uppercase text-[10px] mb-1">Activation</b><span id="view-modal-time">1 Action</span></div>
                 <div><b class="block text-blood font-heading uppercase text-[10px] mb-1">Range / Area</b><span id="view-modal-range">120 ft</span></div>
-                <div id="view-modal-comp-box"><b class="block text-blood font-heading uppercase text-[10px] mb-1">Components</b><span id="view-modal-comp">V, S</span></div>
+                <div id="view-modal-comp-container"><b class="block text-blood font-heading uppercase text-[10px] mb-1">Components</b><span id="view-modal-comp">V, S</span></div>
                 <div><b class="block text-blood font-heading uppercase text-[10px] mb-1">Duration</b><span id="view-modal-duration">Instantaneous</span></div>
             </div>
 
@@ -504,7 +492,7 @@
             <div class="sticky top-0 bg-[#f1e5c5] p-6 border-b-2 border-gold z-10 flex justify-between items-center shadow-md">
                 <div>
                     <h2 class="font-heading text-2xl font-black text-blood uppercase tracking-widest leading-none">Codex Definitions</h2>
-                    <p class="text-xs font-serif text-ink italic mt-1">Foundational rules of magic and abilities.</p>
+                    <p class="text-xs font-serif text-ink italic mt-1">Foundational rules of magic and spellcasting.</p>
                 </div>
                 <div class="flex items-center gap-4">
                     <button id="btn-edit-definitions" onclick="window.toggleDefinitionsEditMode(true)" class="hidden text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink"><i class="fa-solid fa-pen mr-1"></i>Edit</button>
@@ -557,7 +545,7 @@
 
             <div class="flex justify-center gap-4 font-heading">
                 <button onclick="document.getElementById('transfer-modal').classList.add('hidden')" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink px-4">Cancel</button>
-                <button onclick="window.executeTransfer()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Inject Entry</button>
+                <button onclick="window.executeTransfer()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Inject Record</button>
             </div>
         </div>
     </div>
@@ -610,7 +598,6 @@
             appId: "1:1074491536795:web:56211729489be776d79d3e"
         };
 
-        // ** REPLACE THIS WITH YOUR EMAIL TO GAIN ADMIN OVERRIDE **
         const ADMIN_OWNER_EMAIL = "admin@chronicles.com";
 
         const app = initializeApp(firebaseConfig);
@@ -635,9 +622,8 @@
         let vocationsData = []; 
         let currentUser = null;
         let activeRole = 'player';
-        let adminModeActive = false;
         
-        let currentMainTypeFilter = 'All'; // All | features | scriptcasting
+        let mainTypeFilter = 'All'; // 'All', 'features', 'scriptcasting'
         let currentLevelFilter = '0';
         let currentVocationFilter = 'All'; 
         
@@ -652,33 +638,32 @@
         let packMessagesUnsubscribe = null;
 
         const VOC_KEYS = [
-            { id: 'class_vanguard', default: 'Vanguard', type: 'features', min: 1, max: 20 },
-            { id: 'class_warrior', default: 'Warrior', type: 'features', min: 1, max: 20 },
-            { id: 'class_peacemaker', default: 'Peacemaker', type: 'features', min: 1, max: 20 },
-            { id: 'class_scavenger', default: 'Scavenger', type: 'features', min: 1, max: 20 },
-            { id: 'class_heartbound', default: 'Heartbound', type: 'both', sMin: 1, sMax: 5, fMin: 1, fMax: 20 },
-            { id: 'class_nomad', default: 'Nomad', type: 'both', sMin: 1, sMax: 5, fMin: 1, fMax: 20 },
-            { id: 'class_warden', default: 'Wilderness Warden', type: 'scripts', min: 0, max: 9 },
-            { id: 'class_chronicler', default: 'Chronicler', type: 'scripts', min: 0, max: 9 },
-            { id: 'class_orator', default: 'Orator', type: 'scripts', min: 0, max: 9 },
-            { id: 'class_scriptweaver', default: 'Scriptweaver', type: 'scripts', min: 0, max: 9 },
-            { id: 'class_wartouched', default: 'War-Touched', type: 'scripts', min: 0, max: 9 },
-            { id: 'class_archivist', default: 'Archivist', type: 'scripts', min: 0, max: 9 },
-            { id: 'class_fabricator', default: 'Fabricator', type: 'scripts', min: 0, max: 5 }
+            { id: 'class_vanguard', default: 'Vanguard', type: 'features' },
+            { id: 'class_warrior', default: 'Warrior', type: 'features' },
+            { id: 'class_peacemaker', default: 'Peacemaker', type: 'features' },
+            { id: 'class_scavenger', default: 'Scavenger', type: 'features' },
+            { id: 'class_heartbound', default: 'Heartbound', type: 'both' },
+            { id: 'class_nomad', default: 'Nomad', type: 'both' },
+            { id: 'class_warden', default: 'Wilderness Warden', type: 'scripts' },
+            { id: 'class_chronicler', default: 'Chronicler', type: 'scripts' },
+            { id: 'class_orator', default: 'Orator', type: 'scripts' },
+            { id: 'class_scriptweaver', default: 'Scriptweaver', type: 'scripts' },
+            { id: 'class_wartouched', default: 'War-Touched', type: 'scripts' },
+            { id: 'class_archivist', default: 'Archivist', type: 'scripts' },
+            { id: 'class_fabricator', default: 'Fabricator', type: 'scripts' }
         ];
 
         // --- STREAMING_CHUNK:Render and Filter Logic... ---
+        
         window.setMainTypeFilter = (type) => {
-            currentMainTypeFilter = type;
-            document.querySelectorAll('.type-toggle-btn').forEach(b => b.classList.remove('active'));
-            if (type === 'All') document.getElementById('type-toggle-all').classList.add('active');
-            if (type === 'features') document.getElementById('type-toggle-features').classList.add('active');
-            if (type === 'scriptcasting') document.getElementById('type-toggle-scripts').classList.add('active');
-
-            if (type === 'features' && currentLevelFilter === '0') {
-                currentLevelFilter = '1';
+            mainTypeFilter = type;
+            document.querySelectorAll('.type-toggle-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`type-toggle-${type.toLowerCase()}`).classList.add('active');
+            
+            if (type === 'features') {
+                if (currentLevelFilter === '0') currentLevelFilter = '1';
             }
-
+            
             window.renderVocationTabs();
             window.renderLevelTabs();
             window.setLevelFilter(currentLevelFilter);
@@ -688,33 +673,33 @@
             const container = document.getElementById('level-tabs-container');
             if (!container) return;
 
-            let min = 1; let max = 20;
-            
-            if (currentMainTypeFilter === 'scriptcasting' || (currentMainTypeFilter === 'All' && currentVocationFilter === 'All')) {
-                min = 0; max = 9;
-            }
-
+            let isFeatureMode = mainTypeFilter === 'features';
             if (currentVocationFilter !== 'All') {
                 const voc = VOC_KEYS.find(v => v.id === currentVocationFilter);
-                if (voc) {
-                    if (voc.type === 'both') {
-                        if (currentMainTypeFilter === 'scriptcasting') { min = voc.sMin; max = voc.sMax; }
-                        else { min = voc.fMin; max = voc.fMax; }
-                    } else {
-                        min = voc.min; max = voc.max;
-                    }
-                }
+                if (voc && voc.type === 'features') isFeatureMode = true;
             }
 
-            let currLvlInt = parseInt(currentLevelFilter) || 0;
-            if (currLvlInt < min) currentLevelFilter = min.toString();
-            if (currLvlInt > max) currentLevelFilter = max.toString();
-
             let html = '';
-            for (let i = min; i <= max; i++) {
-                const isActive = currentLevelFilter === i.toString() ? 'active' : '';
-                const label = i === 0 ? 'T' : i; 
-                html += `<button onclick="window.setLevelFilter('${i}')" class="level-tab ${isActive}" id="tab-lvl-${i}">${label}</button>`;
+            
+            if (isFeatureMode) {
+                let currLvlInt = parseInt(currentLevelFilter) || 1;
+                if (currLvlInt < 1) currentLevelFilter = '1';
+                if (currLvlInt > 20) currentLevelFilter = '20';
+
+                for (let i = 1; i <= 20; i++) {
+                    const isActive = currentLevelFilter === i.toString() ? 'active' : '';
+                    html += `<button onclick="window.setLevelFilter('${i}')" class="level-tab ${isActive}" id="tab-lvl-${i}">${i}</button>`;
+                }
+            } else {
+                let currLvlInt = parseInt(currentLevelFilter) || 0;
+                if (currLvlInt < 0) currentLevelFilter = '0';
+                if (currLvlInt > 9) currentLevelFilter = '9';
+
+                for (let i = 0; i <= 9; i++) {
+                    const isActive = currentLevelFilter === i.toString() ? 'active' : '';
+                    const label = i === 0 ? 'T' : i; 
+                    html += `<button onclick="window.setLevelFilter('${i}')" class="level-tab ${isActive}" id="tab-lvl-${i}">${label}</button>`;
+                }
             }
             container.innerHTML = html;
         };
@@ -727,16 +712,25 @@
             
             const vt = document.getElementById('view-title');
             if (vt) {
-                let vocTxt = currentMainTypeFilter === 'features' ? (campaignSettings?.terms?.filter_features || 'Combat Features') : (currentMainTypeFilter === 'scriptcasting' ? (campaignSettings?.terms?.filter_scripts || 'Scriptcasting') : (campaignSettings?.terms?.filter_all || 'All Records'));
+                let prefixTxt = campaignSettings?.terms?.nav_all_records || 'All Records';
+                if (mainTypeFilter === 'features') prefixTxt = campaignSettings?.terms?.nav_features || 'Combat Features';
+                if (mainTypeFilter === 'scriptcasting') prefixTxt = campaignSettings?.terms?.nav_scripts || 'Scriptcasting';
+
                 if (currentVocationFilter !== 'All') {
                     const voc = VOC_KEYS.find(v => v.id === currentVocationFilter);
-                    if (voc) vocTxt = campaignSettings?.terms?.[voc.id] || voc.default;
+                    if (voc) prefixTxt = campaignSettings?.terms?.[voc.id] || voc.default;
                 }
                 
-                let lvlTxt = `Lv. ${lvl}`;
-                if (lvl === '0') lvlTxt = 'Tricks';
-                
-                vt.textContent = `${vocTxt} — ${lvlTxt}`;
+                let isFeatureMode = mainTypeFilter === 'features' || (currentVocationFilter !== 'All' && VOC_KEYS.find(v => v.id === currentVocationFilter)?.type === 'features');
+
+                let lvlTxt = "";
+                if (isFeatureMode) {
+                    lvlTxt = `Level ${lvl}`;
+                } else {
+                    lvlTxt = lvl === '0' ? 'Tricks' : `Lv. ${lvl}`;
+                }
+
+                vt.textContent = `${prefixTxt} — ${lvlTxt}`;
             }
             window.renderScripts();
         };
@@ -747,12 +741,11 @@
             if (vocId !== 'All') {
                 const voc = VOC_KEYS.find(v => v.id === vocId);
                 if (voc) {
-                    if (voc.type === 'features') window.setMainTypeFilter('features');
-                    else if (voc.type === 'scripts') window.setMainTypeFilter('scriptcasting');
-                    // If 'both', we leave the current main filter alone, or default to All if it was All.
+                    if (voc.type === 'features' && mainTypeFilter !== 'features') window.setMainTypeFilter('features');
+                    if (voc.type === 'scripts' && mainTypeFilter !== 'scriptcasting') window.setMainTypeFilter('scriptcasting');
                 }
             }
-            
+
             window.renderVocationTabs();
             window.renderLevelTabs();
             window.setLevelFilter(currentLevelFilter); 
@@ -761,27 +754,18 @@
         window.renderVocationTabs = () => {
             const container = document.getElementById('vocation-tabs-container');
             if (!container) return;
+            
             let html = `<button onclick="window.setVocationFilter('All')" class="vocation-tab ${currentVocationFilter === 'All' ? 'active' : ''}" id="tab-voc-All">ALL</button>`;
             
             VOC_KEYS.forEach(v => {
-                // Filter tabs based on top-level filter
-                if (currentMainTypeFilter === 'features' && v.type === 'scripts') return;
-                if (currentMainTypeFilter === 'scriptcasting' && v.type === 'features') return;
-                
+                if (mainTypeFilter === 'features' && v.type === 'scripts') return;
+                if (mainTypeFilter === 'scriptcasting' && v.type === 'features') return;
+
                 const displayName = campaignSettings?.terms?.[v.id] || v.default;
                 html += `<button onclick="window.setVocationFilter('${v.id}')" class="vocation-tab ${currentVocationFilter === v.id ? 'active' : ''}" id="tab-voc-${v.id}">${displayName.toUpperCase()}</button>`;
             });
             container.innerHTML = html;
         };
-
-        // Icon Selector Logic
-        document.querySelectorAll('.icon-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
-                e.currentTarget.classList.add('active');
-                document.getElementById('pack-icon').value = e.currentTarget.dataset.icon;
-            });
-        });
 
         window.parseAeonfallContent = (text) => {
             if (!text) return '';
@@ -806,11 +790,17 @@
             const s = scripts.find(x => x.id === id);
             if (!s) return;
             
-            const isFeature = s.sType === "Feature" || s.type === "features";
-            
-            let lvlTxt = s.level === '0' ? 'Trick' : `Level ${s.level}`;
-            let typeTxt = isFeature ? '[Combat Feature]' : (s.sType ? `[${s.sType}]` : '');
-            let metaTxt = `${lvlTxt} — ${s.school || 'Universal'} ${typeTxt}`;
+            const isFeature = s.entryType === 'features';
+
+            let lvlTxt = "";
+            if (isFeature) {
+                lvlTxt = `Level ${s.level || '1'}`;
+            } else {
+                lvlTxt = s.level === '0' ? 'Trick' : `Level ${s.level}`;
+            }
+
+            let typeTxt = s.sType ? `[${s.sType}]` : '';
+            let metaTxt = `${lvlTxt} — ${s.school || (isFeature ? 'Combat Maneuver' : 'Universal')} ${typeTxt}`;
 
             let compHtml = (s.comp || '--').replace(/\((.*?)\)/g, (match, p1) => {
                 const safeStr = p1.replace(/'/g, "\\'").replace(/"/g, "&quot;");
@@ -819,18 +809,26 @@
 
             document.getElementById('view-modal-title').textContent = s.name || 'Unnamed Entry';
             document.getElementById('view-modal-meta').textContent = metaTxt;
-            document.getElementById('view-modal-activation-label').textContent = isFeature ? "Action Cost" : "Activation";
-            document.getElementById('view-modal-time').textContent = s.activation || '--';
-            document.getElementById('view-modal-range').textContent = s.range || '--';
             
+            document.getElementById('view-modal-label-time').textContent = isFeature ? "Action Cost" : "Activation";
+            document.getElementById('view-modal-time').textContent = s.activation || '--';
+            
+            document.getElementById('view-modal-range').textContent = s.range || '--';
+            document.getElementById('view-modal-duration').textContent = s.duration || '--';
+            
+            const compContainer = document.getElementById('view-modal-comp-container');
+            const grid = document.getElementById('view-modal-grid');
             if (isFeature) {
-                document.getElementById('view-modal-comp-box').classList.add('hidden');
+                compContainer.classList.add('hidden');
+                grid.classList.remove('md:grid-cols-4');
+                grid.classList.add('md:grid-cols-3');
             } else {
-                document.getElementById('view-modal-comp-box').classList.remove('hidden');
+                compContainer.classList.remove('hidden');
+                grid.classList.remove('md:grid-cols-3');
+                grid.classList.add('md:grid-cols-4');
                 document.getElementById('view-modal-comp').innerHTML = compHtml;
             }
-            
-            document.getElementById('view-modal-duration').textContent = s.duration || '--';
+
             document.getElementById('view-modal-desc').innerHTML = window.parseAeonfallContent(s.desc);
             
             const higherContainer = document.getElementById('view-modal-higher-container');
@@ -932,23 +930,23 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 if (el) el.value = val || defaultVal || '';
             };
             
-            safeSetVal('term-filter-all', terms.filter_all, 'All Records');
-            safeSetVal('term-filter-features', terms.filter_features, 'Combat Features');
-            safeSetVal('term-filter-scripts', terms.filter_scripts, 'Scriptcasting');
+            safeSetVal('term-nav_all_records', terms.nav_all_records, 'All Records');
+            safeSetVal('term-nav_features', terms.nav_features, 'Combat Features');
+            safeSetVal('term-nav_scripts', terms.nav_scripts, 'Scriptcasting');
             
-            safeSetVal('term-class-vanguard', terms.class_vanguard, 'Vanguard');
-            safeSetVal('term-class-warrior', terms.class_warrior, 'Warrior');
-            safeSetVal('term-class-peacemaker', terms.class_peacemaker, 'Peacemaker');
-            safeSetVal('term-class-scavenger', terms.class_scavenger, 'Scavenger');
-            safeSetVal('term-class-heartbound', terms.class_heartbound, 'Heartbound');
-            safeSetVal('term-class-nomad', terms.class_nomad, 'Nomad');
-            safeSetVal('term-class-warden', terms.class_warden, 'Wilderness Warden');
-            safeSetVal('term-class-chronicler', terms.class_chronicler, 'Chronicler');
-            safeSetVal('term-class-orator', terms.class_orator, 'Orator');
-            safeSetVal('term-class-scriptweaver', terms.class_scriptweaver, 'Scriptweaver');
-            safeSetVal('term-class-wartouched', terms.class_wartouched, 'War-Touched');
-            safeSetVal('term-class-archivist', terms.class_archivist, 'Archivist');
-            safeSetVal('term-class-fabricator', terms.class_fabricator, 'Fabricator');
+            safeSetVal('term-class_vanguard', terms.class_vanguard, 'Vanguard');
+            safeSetVal('term-class_warrior', terms.class_warrior, 'Warrior');
+            safeSetVal('term-class_peacemaker', terms.class_peacemaker, 'Peacemaker');
+            safeSetVal('term-class_scavenger', terms.class_scavenger, 'Scavenger');
+            safeSetVal('term-class_heartbound', terms.class_heartbound, 'Heartbound');
+            safeSetVal('term-class_nomad', terms.class_nomad, 'Nomad');
+            safeSetVal('term-class_warden', terms.class_warden, 'Wilderness Warden');
+            safeSetVal('term-class_chronicler', terms.class_chronicler, 'Chronicler');
+            safeSetVal('term-class_orator', terms.class_orator, 'Orator');
+            safeSetVal('term-class_scriptweaver', terms.class_scriptweaver, 'Scriptweaver');
+            safeSetVal('term-class_wartouched', terms.class_wartouched, 'War-Touched');
+            safeSetVal('term-class_archivist', terms.class_archivist, 'Archivist');
+            safeSetVal('term-class_fabricator', terms.class_fabricator, 'Fabricator');
 
             document.getElementById('campaign-settings-modal').classList.remove('hidden');
         };
@@ -962,23 +960,23 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             const getVal = (id) => document.getElementById(id).value.trim();
             
             const newTerms = {
-                filter_all: getVal('term-filter-all') || 'All Records',
-                filter_features: getVal('term-filter-features') || 'Combat Features',
-                filter_scripts: getVal('term-filter-scripts') || 'Scriptcasting',
+                nav_all_records: getVal('term-nav_all_records') || 'All Records',
+                nav_features: getVal('term-nav_features') || 'Combat Features',
+                nav_scripts: getVal('term-nav_scripts') || 'Scriptcasting',
                 
-                class_vanguard: getVal('term-class-vanguard') || 'Vanguard',
-                class_warrior: getVal('term-class-warrior') || 'Warrior',
-                class_peacemaker: getVal('term-class-peacemaker') || 'Peacemaker',
-                class_scavenger: getVal('term-class-scavenger') || 'Scavenger',
-                class_heartbound: getVal('term-class-heartbound') || 'Heartbound',
-                class_nomad: getVal('term-class-nomad') || 'Nomad',
-                class_warden: getVal('term-class-warden') || 'Wilderness Warden',
-                class_chronicler: getVal('term-class-chronicler') || 'Chronicler',
-                class_orator: getVal('term-class-orator') || 'Orator',
-                class_scriptweaver: getVal('term-class-scriptweaver') || 'Scriptweaver',
-                class_wartouched: getVal('term-class-wartouched') || 'War-Touched',
-                class_archivist: getVal('term-class-archivist') || 'Archivist',
-                class_fabricator: getVal('term-class-fabricator') || 'Fabricator'
+                class_vanguard: getVal('term-class_vanguard') || 'Vanguard',
+                class_warrior: getVal('term-class_warrior') || 'Warrior',
+                class_peacemaker: getVal('term-class_peacemaker') || 'Peacemaker',
+                class_scavenger: getVal('term-class_scavenger') || 'Scavenger',
+                class_heartbound: getVal('term-class_heartbound') || 'Heartbound',
+                class_nomad: getVal('term-class_nomad') || 'Nomad',
+                class_warden: getVal('term-class_warden') || 'Wilderness Warden',
+                class_chronicler: getVal('term-class_chronicler') || 'Chronicler',
+                class_orator: getVal('term-class_orator') || 'Orator',
+                class_scriptweaver: getVal('term-class_scriptweaver') || 'Scriptweaver',
+                class_wartouched: getVal('term-class_wartouched') || 'War-Touched',
+                class_archivist: getVal('term-class_archivist') || 'Archivist',
+                class_fabricator: getVal('term-class_fabricator') || 'Fabricator'
             };
 
             try {
@@ -999,18 +997,13 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             const grid = document.getElementById('scripts-grid');
             if (!grid) return;
 
-            let visibleScripts = scripts;
-
-            if (currentMainTypeFilter !== 'All') {
-                visibleScripts = visibleScripts.filter(s => {
-                    const isFeature = s.sType === "Feature" || s.type === "features";
-                    if (currentMainTypeFilter === 'features') return isFeature;
-                    if (currentMainTypeFilter === 'scriptcasting') return !isFeature;
-                    return true;
-                });
+            let visibleScripts = scripts.filter(s => (s.level || '0') === currentLevelFilter);
+            
+            if (mainTypeFilter === 'features') {
+                visibleScripts = visibleScripts.filter(s => s.entryType === 'features');
+            } else if (mainTypeFilter === 'scriptcasting') {
+                visibleScripts = visibleScripts.filter(s => s.entryType !== 'features');
             }
-
-            visibleScripts = visibleScripts.filter(s => (s.level || '0') === currentLevelFilter);
 
             if (currentVocationFilter !== 'All') {
                 const targetVoc = VOC_KEYS.find(v => v.id === currentVocationFilter);
@@ -1024,30 +1017,42 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
 
             if (visibleScripts.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-16 text-center border-2 border-dashed border-gray-700 rounded-lg bg-black/40"><i class="fa-solid fa-scroll text-4xl text-gray-600 mb-4"></i><p class="text-gray-500 text-sm italic font-serif">No entries found for this criteria.</p></div>`;
+                grid.innerHTML = `<div class="col-span-full py-16 text-center border-2 border-dashed border-gray-700 rounded-lg bg-black/40"><i class="fa-solid fa-scroll text-4xl text-gray-600 mb-4"></i><p class="text-gray-500 text-sm italic font-serif">No records found for this criteria.</p></div>`;
                 return;
             }
 
             grid.innerHTML = visibleScripts.map(s => {
-                const isFeature = s.sType === "Feature" || s.type === "features";
-                let lvlTxt = s.level === '0' ? 'Trick' : `Level ${s.level}`;
-                let typeTxt = isFeature ? '[Combat Feature]' : (s.sType ? `[${s.sType}]` : '');
-                let metaTxt = `${lvlTxt} — ${s.school || 'Universal'} ${typeTxt}`;
-                let compHtml = (s.comp || '--').replace(/\((.*?)\)/g, (match, p1) => {
-                    const safeStr = p1.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                    return `(<a href="#" onclick="event.stopPropagation(); window.checkAndRouteMaterial('${safeStr}'); return false;" class="text-blood hover:text-red-700 underline font-bold transition-colors cursor-pointer" title="Search in Artifacts">${p1}</a>)`;
-                });
+                const isFeature = s.entryType === 'features';
+                
+                let lvlTxt = "";
+                if (isFeature) {
+                    lvlTxt = `Level ${s.level || '1'}`;
+                } else {
+                    lvlTxt = s.level === '0' ? 'Trick' : `Level ${s.level}`;
+                }
+
+                let typeTxt = s.sType ? `[${s.sType}]` : '';
+                let metaTxt = `${lvlTxt} — ${s.school || (isFeature ? 'Combat Maneuver' : 'Universal')} ${typeTxt}`;
+                
+                let compHtml = "";
+                if (!isFeature) {
+                    compHtml = `<li><b>Components:</b> ${(s.comp || '--').replace(/\((.*?)\)/g, (match, p1) => {
+                        const safeStr = p1.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                        return `(<a href="#" onclick="event.stopPropagation(); window.checkAndRouteMaterial('${safeStr}'); return false;" class="text-blood hover:text-red-700 underline font-bold transition-colors cursor-pointer" title="Search in Artifacts">${p1}</a>)`;
+                    })}</li>`;
+                }
+
                 let dmControls = isDM ? `<button onclick="event.stopPropagation(); window.openScriptModal('${s.id}')" class="absolute top-4 right-4 text-gold hover:text-white transition-colors z-10"><i class="fa-solid fa-pen"></i></button>` : '';
 
                 return `
-                    <div class="script-card cursor-pointer ${isFeature ? '!border-blood/40' : ''}" onclick="window.viewScript('${s.id}')">
+                    <div class="script-card cursor-pointer" onclick="window.viewScript('${s.id}')">
                         ${dmControls}
                         <h3 class="script-title pr-8">${s.name || 'Unnamed Entry'}</h3>
                         <p class="script-meta">${metaTxt}</p>
                         <ul class="script-props">
                             <li><b>${isFeature ? 'Action Cost' : 'Activation'}:</b> ${s.activation || '--'}</li>
                             <li><b>Range/Area:</b> ${s.range || '--'}</li>
-                            ${!isFeature ? `<li><b>Components:</b> ${compHtml}</li>` : ''}
+                            ${compHtml}
                             <li><b>Duration:</b> ${s.duration || '--'}</li>
                         </ul>
                         <div class="script-desc line-clamp-4 relative">
@@ -1065,30 +1070,31 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         };
 
         // --- STREAMING_CHUNK:DM Actions and Save Logic... ---
-        window.setCreateType = (type) => {
-            document.querySelectorAll('.type-toggle-btn').forEach(b => b.classList.remove('active'));
-            if (type === 'features') {
-                document.getElementById('toggle-type-feature').classList.add('active');
-                document.getElementById('script-school-container').classList.add('hidden');
-                document.getElementById('script-type-container').classList.add('hidden');
-                document.getElementById('script-comp-container').classList.add('hidden');
-                document.getElementById('script-activation-label').textContent = "Action Cost";
-                document.getElementById('script-level-hint').textContent = "Feature Level 1-20";
-                
-                // Switch global type to save correctly
-                document.getElementById('script-type').value = "Feature";
+        window.setScriptFormType = (type) => {
+            document.getElementById('script-form-type').value = type;
+            const isFeature = type === 'features';
+            
+            document.getElementById('btn-form-script').className = isFeature ? "px-4 py-1.5 rounded-l text-[10px] font-bold uppercase tracking-widest font-heading transition-colors bg-[rgba(255,255,255,0.4)] border border-[rgba(139,90,43,0.4)] text-ink hover:bg-[rgba(197,160,89,0.2)]" : "px-4 py-1.5 rounded-l text-[10px] font-bold uppercase tracking-widest font-heading transition-colors bg-blood text-parchment border border-gold";
+            document.getElementById('btn-form-feature').className = isFeature ? "px-4 py-1.5 rounded-r text-[10px] font-bold uppercase tracking-widest font-heading transition-colors bg-blood text-parchment border border-gold" : "px-4 py-1.5 rounded-r text-[10px] font-bold uppercase tracking-widest font-heading transition-colors bg-[rgba(255,255,255,0.4)] border border-[rgba(139,90,43,0.4)] text-ink hover:bg-[rgba(197,160,89,0.2)]";
+
+            document.getElementById('label-name').textContent = isFeature ? "Feature Name" : "Script Name";
+            document.getElementById('label-level').textContent = isFeature ? "Level (1-20)" : "Level (0 = Trick)";
+            document.getElementById('label-activation').textContent = isFeature ? "Action Cost" : "Activation";
+            document.getElementById('label-desc').textContent = isFeature ? "Effect / Rules" : "Description (Use **bold** for emphasis)";
+            document.getElementById('label-lists').textContent = isFeature ? "Authorized Vocations" : "Authorized Vocations / Lists";
+
+            document.getElementById('field-school').classList.toggle('hidden', isFeature);
+            document.getElementById('field-type').classList.toggle('hidden', isFeature);
+            document.getElementById('field-comp').classList.toggle('hidden', isFeature);
+            document.getElementById('field-scaling').classList.toggle('hidden', isFeature);
+
+            const lvlInput = document.getElementById('script-level');
+            if (isFeature) {
+                lvlInput.min = 1; lvlInput.max = 20;
+                if (parseInt(lvlInput.value) < 1 || !lvlInput.value) lvlInput.value = 1;
             } else {
-                document.getElementById('toggle-type-script').classList.add('active');
-                document.getElementById('script-school-container').classList.remove('hidden');
-                document.getElementById('script-type-container').classList.remove('hidden');
-                document.getElementById('script-comp-container').classList.remove('hidden');
-                document.getElementById('script-activation-label').textContent = "Activation";
-                document.getElementById('script-level-hint').textContent = "0 = Trick. Max 9.";
-                
-                // Clear type so it doesn't get saved as Feature
-                if (document.getElementById('script-type').value === "Feature") {
-                    document.getElementById('script-type').value = "";
-                }
+                lvlInput.min = 0; lvlInput.max = 9;
+                if (parseInt(lvlInput.value) > 9) lvlInput.value = 9;
             }
         };
 
@@ -1096,18 +1102,18 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             if (activeRole !== 'dm') return;
             activeScriptId = id;
             const titleEl = document.getElementById('script-modal-title');
+            const typeToggle = document.getElementById('script-modal-type-toggle');
             
             if (id) {
                 const s = scripts.find(x => x.id === id);
                 titleEl.textContent = "Edit Entry";
-                
-                const isFeature = s.sType === "Feature" || s.type === "features";
-                window.setCreateType(isFeature ? "features" : "scriptcasting");
+                typeToggle.classList.add('hidden'); // Lock type when editing
+                window.setScriptFormType(s.entryType || 'scriptcasting');
 
                 document.getElementById('script-name').value = s.name || '';
                 document.getElementById('script-level').value = s.level || '0';
                 document.getElementById('script-school').value = s.school || '';
-                document.getElementById('script-type').value = s.sType || (isFeature ? "Feature" : "");
+                document.getElementById('script-type').value = s.sType || '';
                 document.getElementById('script-activation').value = s.activation || '';
                 document.getElementById('script-range').value = s.range || '';
                 document.getElementById('script-comp').value = s.comp || '';
@@ -1118,11 +1124,16 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 document.getElementById('script-delete-btn').classList.remove('hidden');
             } else {
                 titleEl.textContent = "Inscribe New Entry";
-                window.setCreateType(currentMainTypeFilter === 'features' ? 'features' : 'scriptcasting');
+                typeToggle.classList.remove('hidden');
                 
+                let targetType = 'scriptcasting';
+                if (mainTypeFilter === 'features') targetType = 'features';
+                window.setScriptFormType(targetType);
+
                 document.getElementById('script-name').value = '';
-                document.getElementById('script-level').value = currentLevelFilter;
+                document.getElementById('script-level').value = currentLevelFilter === '0' && targetType === 'features' ? '1' : currentLevelFilter;
                 document.getElementById('script-school').value = '';
+                document.getElementById('script-type').value = '';
                 document.getElementById('script-activation').value = '';
                 document.getElementById('script-range').value = '';
                 document.getElementById('script-comp').value = '';
@@ -1146,53 +1157,53 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
 
         window.saveScript = async () => {
             if (activeRole !== 'dm') return;
-            
-            const isFeatureToggleActive = document.getElementById('toggle-type-feature').classList.contains('active');
-            const saveType = isFeatureToggleActive ? "features" : "scriptcasting";
-            const saveSType = isFeatureToggleActive ? "Feature" : document.getElementById('script-type').value.trim();
+            const entryType = document.getElementById('script-form-type').value;
 
             const payload = {
+                entryType: entryType,
                 name: document.getElementById('script-name').value.trim() || 'Unnamed Entry',
                 level: document.getElementById('script-level').value.toString(),
-                type: saveType,
-                school: isFeatureToggleActive ? '' : document.getElementById('script-school').value.trim(),
-                sType: saveSType,
                 activation: document.getElementById('script-activation').value.trim(),
                 range: document.getElementById('script-range').value.trim(),
-                comp: isFeatureToggleActive ? '' : document.getElementById('script-comp').value.trim(),
                 duration: document.getElementById('script-duration').value.trim(),
                 desc: document.getElementById('script-desc').value.trim(),
-                scaling: document.getElementById('script-scaling').value.trim(),
                 lists: document.getElementById('script-lists').value.trim(),
                 updatedAt: Date.now()
             };
 
+            if (entryType === 'scriptcasting') {
+                payload.school = document.getElementById('script-school').value.trim();
+                payload.sType = document.getElementById('script-type').value.trim();
+                payload.comp = document.getElementById('script-comp').value.trim();
+                payload.scaling = document.getElementById('script-scaling').value.trim();
+            }
+
             try {
                 if (activeScriptId) {
                     await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, activeScriptId), payload);
-                    window.showToast("Entry updated.");
+                    window.showToast("Record updated.");
                 } else {
                     payload.createdAt = Date.now();
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION), payload);
-                    window.showToast("New Entry Inscribed.");
+                    window.showToast("New Record Inscribed.");
                 }
                 window.closeScriptModal();
             } catch (err) {
                 console.error(err);
-                window.showToast("Error saving entry.");
+                window.showToast("Error saving record.");
             }
         };
 
         window.requestDeleteScript = () => {
-            window.customConfirm("Permanently erase this entry from the codex?", async (confirmed) => {
+            window.customConfirm("Permanently erase this record from the codex?", async (confirmed) => {
                 if(confirmed) {
                     if (activeRole !== 'dm' || !activeScriptId) return;
                     try {
                         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION, activeScriptId));
                         window.closeScriptModal();
-                        window.showToast("Entry erased.");
+                        window.showToast("Record erased.");
                     } catch (e) {
-                        window.showToast("Error deleting entry.");
+                        window.showToast("Error deleting record.");
                     }
                 }
             });
@@ -1234,9 +1245,9 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             const isDM = activeRole === 'dm';
             
             if (!charId && !vocId) return window.showToast("Select a target first.");
-            if (!targetTransferScript) return window.showToast("No entry selected.");
+            if (!targetTransferScript) return window.showToast("No record selected.");
 
-            const isFeature = targetTransferScript.sType === "Feature" || targetTransferScript.type === "features";
+            const isFeature = targetTransferScript.entryType === 'features';
 
             let fullDesc = `**${isFeature ? 'Action Cost' : 'Cast Time'}:** ${targetTransferScript.activation || '--'}\n**Range:** ${targetTransferScript.range || '--'}\n**Duration:** ${targetTransferScript.duration || '--'}`;
             if (!isFeature) fullDesc += `\n**Components:** ${targetTransferScript.comp || '--'}`;
@@ -1278,14 +1289,14 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                     } else {
                         targetLevelStr = targetTransferScript.level === '0' ? 'Tricks' : `Tier ${targetTransferScript.level}`;
                     }
-                    
+
                     let tiers = JSON.parse(voc.scriptTiers || '[]');
                     let tierIndex = tiers.findIndex(t => (t.title || '').toLowerCase().includes(targetLevelStr.toLowerCase()) || (t.title || '').toLowerCase().includes(`level ${targetTransferScript.level}`));
-                    const listEntry = `\n- <a href="#" onclick="event.preventDefault(); const cid = new URLSearchParams(window.location.search).get('id'); window.location.href = 'script_codex.html?targetScript=${targetTransferScript.id}' + (cid ? '&id=' + cid : '');" class="text-blood hover:text-red-700 underline font-bold transition-colors cursor-pointer" title="View Entry" contenteditable="false">**${targetTransferScript.name.toUpperCase()}**</a> [${targetTransferScript.school || 'Feature'}]: ${targetTransferScript.activation}, ${targetTransferScript.range}, ${targetTransferScript.duration}`;
+                    const listEntry = `\n- <a href="#" onclick="event.preventDefault(); const cid = new URLSearchParams(window.location.search).get('id'); window.location.href = 'script_codex.html?targetScript=${targetTransferScript.id}' + (cid ? '&id=' + cid : '');" class="text-blood hover:text-red-700 underline font-bold transition-colors cursor-pointer" title="View Details" contenteditable="false">**${targetTransferScript.name.toUpperCase()}**</a> [${targetTransferScript.school || 'Universal'}]: ${targetTransferScript.activation}, ${targetTransferScript.range}, ${targetTransferScript.duration}`;
                     if (tierIndex >= 0) tiers[tierIndex].list = (tiers[tierIndex].list || '') + listEntry;
                     else tiers.push({ title: `${targetLevelStr} ${isFeature ? 'Features' : 'Scripts'}`, list: listEntry.trim() });
                     await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', VOCATIONS_COLLECTION, vocId), { scriptTiers: JSON.stringify(tiers) });
-                    window.showToast(`Entry injected into ${voc.name}'s Terminal!`);
+                    window.showToast(`Record injected into ${voc.name}'s Terminal!`);
                 }
                 document.getElementById('transfer-modal').classList.add('hidden');
                 targetTransferScript = null;
@@ -1362,24 +1373,12 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             document.getElementById('pd-desc').innerText = currentViewingPack.description || 'No description provided.';
             document.getElementById('pd-notes').innerText = currentViewingPack.updateNotes || 'Initial publication.';
             
-            const isAdmin = currentViewingPack.authorId === currentUser.uid;
+            const isAdmin = currentViewingPack.authorId === currentUser.uid || currentUser.email === ADMIN_OWNER_EMAIL;
             
-            // Hide admin controls if pack is deleted, even for author
-            if (currentViewingPack.isDeleted) {
+            if (currentViewingPack.isDeleted && currentUser.email !== ADMIN_OWNER_EMAIL) {
                 document.getElementById('pd-admin-panel').classList.add('hidden');
             } else {
-                document.getElementById('pd-admin-panel').classList.toggle('hidden', !isAdmin && !adminModeActive);
-            }
-            
-            if (adminModeActive) {
-                document.getElementById('btn-pd-update').classList.add('hidden');
-                document.getElementById('btn-pd-archive').classList.add('hidden');
-                document.getElementById('btn-pd-destroy').classList.remove('hidden');
-                document.getElementById('pd-admin-panel').classList.remove('hidden');
-            } else {
-                document.getElementById('btn-pd-update').classList.remove('hidden');
-                document.getElementById('btn-pd-archive').classList.remove('hidden');
-                document.getElementById('btn-pd-destroy').classList.add('hidden');
+                document.getElementById('pd-admin-panel').classList.toggle('hidden', !isAdmin);
             }
 
             document.getElementById('pack-details-modal').classList.remove('hidden');
@@ -1398,7 +1397,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                     container.innerHTML = `<div class="text-center py-4 text-xs italic text-gray-500">No messages yet. Start the discussion!</div>`;
                 } else {
                     container.innerHTML = msgs.map(m => {
-                        const deleteBtn = adminModeActive ? `<button onclick="window.deletePackMessage('${m.id}')" class="text-gray-600 hover:text-red-500 transition-colors ml-2" title="Delete Message"><i class="fa-solid fa-trash-can"></i></button>` : '';
+                        const deleteBtn = currentUser.email === ADMIN_OWNER_EMAIL ? `<button onclick="window.deletePackMessage('${m.id}')" class="text-gray-600 hover:text-red-500 transition-colors ml-2" title="Delete Message"><i class="fa-solid fa-trash-can"></i></button>` : '';
                         return `
                         <div class="p-2 bg-black/40 rounded border border-gray-700 relative group">
                             <div class="flex justify-between text-[10px] font-heading mb-1 border-b border-gray-700 pb-1">
@@ -1410,7 +1409,8 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                             </div>
                             <p class="text-sm font-serif text-gray-300 break-words mt-1">${m.text}</p>
                         </div>
-                    `}).join('');
+                        `;
+                    }).join('');
                     container.scrollTop = container.scrollHeight;
                 }
             });
@@ -1425,7 +1425,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         window.postPackMessage = async () => {
             const input = document.getElementById('pd-new-message');
             const text = input.value.trim();
-            if (!text || !currentViewingPack || currentUser.role !== 'dm') return;
+            if (!text || !currentViewingPack) return;
             
             input.value = '';
             
@@ -1444,7 +1444,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         };
 
         window.deletePackMessage = async (msgId) => {
-            if (!currentViewingPack || !adminModeActive) return;
+            if (!currentViewingPack || currentUser.email !== ADMIN_OWNER_EMAIL) return;
             if (!confirm("Erase this message from the archives?")) return;
             
             const pathArgs = currentViewingPack.isPrivate
@@ -1458,50 +1458,6 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 console.error("Failed to delete message", e);
                 window.showToast("Failed to erase message.");
             }
-        };
-
-        window.initiatePackDeletion = () => {
-            if (!currentViewingPack || !adminModeActive) return;
-            window.pendingAdminDelete = { type: 'pack', id: currentViewingPack.id, name: currentViewingPack.name, targetUserId: currentViewingPack.authorId, isPrivate: currentViewingPack.isPrivate };
-            document.getElementById('admin-del-title').innerText = `Delete Pack: ${currentViewingPack.name}`;
-            document.getElementById('admin-del-reason').value = '';
-            document.getElementById('admin-delete-prompt-modal').classList.remove('hidden');
-        };
-
-        window.executeAdminDelete = async () => {
-            if (!window.pendingAdminDelete) return;
-            const { type, id, name, targetUserId, isPrivate } = window.pendingAdminDelete;
-            const reason = document.getElementById('admin-del-reason').value.trim();
-            
-            document.getElementById('admin-delete-prompt-modal').classList.add('hidden');
-            window.showToast("Executing Admin Override...");
-
-            try {
-                if (reason && targetUserId) {
-                    await updateDoc(doc(db, 'users', targetUserId), {
-                        notifications: arrayUnion({
-                            type: 'Pack Deleted',
-                            itemName: name,
-                            message: reason,
-                            timestamp: Date.now()
-                        })
-                    });
-                }
-
-                if (type === 'pack') {
-                    const pathArgs = isPrivate 
-                        ? ['artifacts', 'global_codex', 'users', targetUserId, 'scriptPacks', id]
-                        : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', id];
-                    await deleteDoc(doc(db, ...pathArgs));
-                    window.showToast("Pack permanently obliterated.");
-                    window.closePackDetails();
-                    window.openImportModal();
-                }
-            } catch (err) {
-                console.error(err);
-                window.showToast("Admin action failed.");
-            }
-            window.pendingAdminDelete = null;
         };
 
         window.confirmImportPack = () => {
@@ -1542,7 +1498,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             const newVersion = (currentViewingPack.version || 1) + 1;
             
             const pathArgs = currentViewingPack.isPrivate 
-                ? ['artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks', currentViewingPack.id]
+                ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id]
                 : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id];
                 
             window.showToast("Pushing update...");
@@ -1565,7 +1521,37 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         };
 
         window.deleteCurrentPack = () => {
-            if (!currentViewingPack || activeRole !== 'dm') return;
+            if (!currentViewingPack || (activeRole !== 'dm' && currentUser.email !== ADMIN_OWNER_EMAIL)) return;
+            
+            if (currentUser.email === ADMIN_OWNER_EMAIL && !currentViewingPack.isDeleted) {
+                const reason = prompt("ADMIN DELETE: Leave a reason for the author (optional):", "Violation of community guidelines.");
+                if (reason !== null) {
+                    const pathArgs = currentViewingPack.isPrivate 
+                        ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id]
+                        : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id];
+                        
+                    deleteDoc(doc(db, ...pathArgs)).then(() => {
+                        if (reason) {
+                            updateDoc(doc(db, 'users', currentViewingPack.authorId), {
+                                notifications: arrayUnion({
+                                    type: 'Pack Deleted',
+                                    itemName: currentViewingPack.name,
+                                    message: reason,
+                                    timestamp: Date.now()
+                                })
+                            }).catch(console.error);
+                        }
+                        window.showToast("Pack permanently obliterated.");
+                        window.closePackDetails();
+                        window.openImportModal();
+                    }).catch(e => {
+                        console.error(e);
+                        window.showToast("Failed to delete pack.");
+                    });
+                }
+                return;
+            }
+
             window.customConfirm("Archive this pack? It will no longer receive updates, but existing campaigns will keep their scripts.", async (confirmed) => {
                 if (!confirmed) return;
                 
@@ -1589,16 +1575,21 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             });
         };
 
+        window.selectPackIcon = (btn) => {
+            document.querySelectorAll('.icon-selector-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('pack-selected-icon').value = btn.dataset.icon;
+        };
+
         window.openCreatePackModal = () => {
             if (activeRole !== 'dm') return;
             if (scripts.length === 0) return window.showToast("No scripts to bundle! Inscribe some first.");
             document.getElementById('pack-name').value = '';
             document.getElementById('pack-desc').value = '';
             document.getElementById('pack-vis').value = 'private';
-            document.getElementById('pack-icon').value = 'fa-solid fa-book-journal-whills';
-            document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector('.icon-btn[data-icon="fa-solid fa-book-journal-whills"]').classList.add('active');
-            
+            document.getElementById('pack-selected-icon').value = 'fa-book-journal-whills';
+            document.querySelectorAll('.icon-selector-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('[data-icon="fa-book-journal-whills"]').classList.add('active');
             document.getElementById('create-pack-modal').classList.remove('hidden');
         };
 
@@ -1609,7 +1600,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             const name = document.getElementById('pack-name').value.trim();
             const desc = document.getElementById('pack-desc').value.trim();
             const vis = document.getElementById('pack-vis').value;
-            const icon = document.getElementById('pack-icon').value;
+            const icon = document.getElementById('pack-selected-icon').value;
             
             if (!name) return window.showToast("A pack name is required.");
             
@@ -1660,15 +1651,11 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                     currentUser = { uid: u.uid, username: "Guest Traveler", role: 'player' };
                 } else {
                     const userDoc = await getDoc(doc(db, 'users', u.uid));
-                    if (userDoc.exists()) currentUser = { uid: u.uid, ...userDoc.data() };
-                    else currentUser = { uid: u.uid, username: u.displayName || 'Traveler', role: 'player' };
+                    if (userDoc.exists()) currentUser = { uid: u.uid, ...userDoc.data(), email: u.email };
+                    else currentUser = { uid: u.uid, username: u.displayName || 'Traveler', role: 'player', email: u.email };
                 }
 
                 activeRole = currentUser.role || 'player';
-                
-                if (u.email === ADMIN_OWNER_EMAIL) {
-                    adminModeActive = true;
-                }
 
                 if (appId !== "demo_campaign") {
                     const campDoc = await getDoc(doc(db, 'campaigns', appId));
@@ -1698,24 +1685,22 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'campaignConfig', 'settings'), (docSnap) => {
                     if (docSnap.exists()) {
                         campaignSettings = docSnap.data();
+                        const terms = campaignSettings.terms || {};
                         const safeSet = (id, val) => { const el = document.getElementById(id); if (el && val) el.innerText = val; };
                         
-                        safeSet('type-toggle-all', campaignSettings.terms?.filter_all || 'All Records');
-                        safeSet('type-toggle-features', campaignSettings.terms?.filter_features || 'Combat Features');
-                        safeSet('type-toggle-scripts', campaignSettings.terms?.filter_scripts || 'Scriptcasting');
+                        safeSet('nav-party', terms.nav_party);
+                        safeSet('nav-npcs', terms.nav_npcs);
+                        safeSet('nav-beasts', terms.nav_beasts);
+                        safeSet('nav-backpack', terms.nav_backpack);
+                        safeSet('nav-handbook', terms.nav_handbook);
+                        safeSet('nav-graveyard', terms.nav_graveyard);
                         
-                        safeSet('toggle-type-feature', campaignSettings.terms?.filter_features || 'Combat Feature');
-                        safeSet('toggle-type-script', campaignSettings.terms?.filter_scripts || 'Arcane Script');
+                        safeSet('type-toggle-all', terms.nav_all_records);
+                        safeSet('type-toggle-features', terms.nav_features);
+                        safeSet('type-toggle-scripts', terms.nav_scripts);
 
-                        safeSet('nav-party', campaignSettings.terms?.nav_party);
-                        safeSet('nav-npcs', campaignSettings.terms?.nav_npcs);
-                        safeSet('nav-beasts', campaignSettings.terms?.nav_beasts);
-                        safeSet('nav-backpack', campaignSettings.terms?.nav_backpack);
-                        safeSet('nav-handbook', campaignSettings.terms?.nav_handbook);
-                        safeSet('nav-graveyard', campaignSettings.terms?.nav_graveyard);
-                        
                         const titleEl = document.getElementById('main-campaign-title-label');
-                        if (titleEl) titleEl.innerText = campaignSettings.terms?.book_scriptcodex || 'Script Codex';
+                        if (titleEl) titleEl.innerText = terms.book_scriptcodex || 'Script Codex';
                         
                         window.renderVocationTabs();
                         window.setLevelFilter(currentLevelFilter);

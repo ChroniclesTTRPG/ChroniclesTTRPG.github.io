@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chronicles - Script Codex</title>
+    <title>Chronicles - Codex</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
@@ -165,11 +165,11 @@
                 </div>
 
                 <!-- VOCATION TABS (Scrollable) -->
-                <div class="flex overflow-x-auto scrollbar-hide gap-2 justify-start pb-2 mb-2" id="vocation-tabs-container">
+                <div class="flex overflow-x-auto scrollbar-hide gap-2 justify-start pb-2 mb-2 w-full snap-x" id="vocation-tabs-container">
                     <!-- Populated by JS -->
                 </div>
                 
-                <hr class="border-t border-[rgba(139,90,43,0.2)] mb-4">
+                <hr class="border-t border-[rgba(139,90,43,0.2)] mb-4 mt-2">
 
                 <!-- Title, Levels & Action Buttons -->
                 <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
@@ -294,7 +294,7 @@
                     <h3 class="font-heading text-xs font-bold text-red-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-crown mr-1"></i> Author Management</h3>
                     <div class="flex gap-2">
                         <button onclick="window.openUpdatePackModal()" class="flex-1 bg-indigo-900 hover:bg-indigo-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-indigo-700">Push Update</button>
-                        <button onclick="window.deleteCurrentPack(false)" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-gray-600">Archive</button>
+                        <button id="pd-btn-archive" onclick="window.deleteCurrentPack(false)" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-gray-600">Archive</button>
                         <button id="pd-admin-perm-delete" onclick="window.deleteCurrentPack(true)" class="hidden flex-1 bg-red-900 hover:bg-red-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-red-700">Delete</button>
                     </div>
                 </div>
@@ -574,7 +574,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, addDoc, deleteDoc, getDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, addDoc, deleteDoc, getDoc, getDocs, writeBatch, arrayUnion } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
         // --- CORE UI FUNCTIONS ---
         window.showToast = (m) => { 
@@ -790,14 +790,14 @@
             const container = document.getElementById('vocation-tabs-container');
             if (!container) return;
             
-            let html = `<button onclick="window.setVocationFilter('All')" class="vocation-tab ${currentVocationFilter === 'All' ? 'active' : ''}" id="tab-voc-All">ALL</button>`;
+            let html = `<button onclick="window.setVocationFilter('All')" class="vocation-tab shrink-0 snap-start ${currentVocationFilter === 'All' ? 'active' : ''}" id="tab-voc-All">ALL</button>`;
             
             VOC_KEYS.forEach(v => {
                 if (mainTypeFilter === 'features' && v.type === 'scripts') return;
                 if (mainTypeFilter === 'scriptcasting' && v.type === 'features') return;
 
                 const displayName = campaignSettings?.terms?.[v.id] || v.default;
-                html += `<button onclick="window.setVocationFilter('${v.id}')" class="vocation-tab ${currentVocationFilter === v.id ? 'active' : ''}" id="tab-voc-${v.id}">${displayName.toUpperCase()}</button>`;
+                html += `<button onclick="window.setVocationFilter('${v.id}')" class="vocation-tab shrink-0 snap-start ${currentVocationFilter === v.id ? 'active' : ''}" id="tab-voc-${v.id}">${displayName.toUpperCase()}</button>`;
             });
             container.innerHTML = html;
         };

@@ -150,8 +150,8 @@
 
             <div class="flex justify-center mb-6">
                 <div class="flex bg-[rgba(255,255,255,0.4)] p-1 rounded border border-gold w-full max-w-sm">
-                    <button id="inscribe-type-arcane" onclick="window.toggleInscribeType('scriptcasting')" class="flex-1 py-1 text-xs font-bold font-heading uppercase text-f1e5c5 bg-blood rounded shadow-inner transition-all">Arcane Script</button>
-                    <button id="inscribe-type-feature" onclick="window.toggleInscribeType('features')" class="flex-1 py-1 text-xs font-bold font-heading uppercase text-ink hover:text-blood transition-all">Combat Feature</button>
+                    <button id="inscribe-type-arcane" onclick="window.toggleInscribeType('scriptcasting')" class="flex-1 py-1 text-xs font-bold font-heading uppercase text-f1e5c5 bg-blood rounded shadow-inner transition-all dyn-term" data-term="codex_scripts">Arcane Script</button>
+                    <button id="inscribe-type-feature" onclick="window.toggleInscribeType('features')" class="flex-1 py-1 text-xs font-bold font-heading uppercase text-ink hover:text-blood transition-all dyn-term" data-term="codex_features">Combat Feature</button>
                 </div>
             </div>
 
@@ -395,7 +395,7 @@
 
     <!-- CAMPAIGN TERMINOLOGY SETTINGS MODAL (DM ONLY) -->
     <div id="settings-modal" class="modal-overlay hidden z-[900]">
-        <div class="modal-container !max-w-2xl text-center">
+        <div class="modal-container !max-w-3xl text-center">
             <h2 class="font-heading text-2xl font-black text-blood uppercase tracking-widest border-b-2 border-gold pb-2 mb-4">Campaign Terminology</h2>
             <p class="text-xs font-serif text-ink mb-6 italic">Rename the core pillars of your world. These names will update across all ledgers and navigation links.</p>
             
@@ -412,23 +412,13 @@
 
                 <div>
                     <h3 class="font-heading text-blood font-bold border-b border-blood/30 pb-1 mb-4">Vocations (Classes)</h3>
-                    
-                    <h4 class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-2">Combat & Strategy (Features Only)</h4>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                         <div><label class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-1 block">Barbarian</label><input type="text" id="term-class_vanguard" class="form-input text-sm"></div>
                         <div><label class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-1 block">Fighter</label><input type="text" id="term-class_warrior" class="form-input text-sm"></div>
                         <div><label class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-1 block">Monk</label><input type="text" id="term-class_peacekeeper" class="form-input text-sm"></div>
                         <div><label class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-1 block">Rogue</label><input type="text" id="term-class_scavenger" class="form-input text-sm"></div>
-                    </div>
-                    
-                    <h4 class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-2">Hybrid Paths (Features & Scripts)</h4>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                         <div><label class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-1 block">Paladin</label><input type="text" id="term-class_heartbound" class="form-input text-sm"></div>
                         <div><label class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-1 block">Ranger</label><input type="text" id="term-class_nomad" class="form-input text-sm"></div>
-                    </div>
-                    
-                    <h4 class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-2">Pure Scriptcasting</h4>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <div><label class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-1 block">Druid</label><input type="text" id="term-class_warden" class="form-input text-sm"></div>
                         <div><label class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-1 block">Cleric</label><input type="text" id="term-class_chronicler" class="form-input text-sm"></div>
                         <div><label class="text-[9px] font-black text-gray-500 uppercase tracking-widest font-heading mb-1 block">Bard</label><input type="text" id="term-class_orator" class="form-input text-sm"></div>
@@ -502,7 +492,6 @@
         const db = getFirestore(app);
         
         // --- DRAG TO SCROLL LOGIC ---
-        // Ensure the script attaches to the container after the DOM is ready
         const initDragScroll = () => {
             const slider = document.getElementById('vocation-tabs-container');
             if(!slider) return;
@@ -522,7 +511,7 @@
                 if (!isDown) return;
                 e.preventDefault();
                 const x = e.pageX - slider.offsetLeft;
-                const walk = (x - startX) * 2; // Scroll-fast
+                const walk = (x - startX) * 2;
                 slider.scrollLeft = scrollLeft - walk;
             });
         };
@@ -539,7 +528,7 @@
         // --- STATE ---
         let currentUser = null, activeRole = 'player', isDM = false, adminModeActive = false;
         let scripts = [];
-        let characters = []; // For injection targeting
+        let characters = []; 
         let campaignSettings = { terms: {} };
 
         // Codex Filtering State
@@ -555,8 +544,8 @@
         const CORE_VOCATIONS = [
             { id: 'vanguard', type: 'features' },
             { id: 'warrior', type: 'features' },
-            { id: 'peacekeeper', type: 'features' },
             { id: 'scavenger', type: 'features' },
+            { id: 'peacekeeper', type: 'features' },
             { id: 'heartbound', type: 'both' },
             { id: 'nomad', type: 'both' },
             { id: 'warden', type: 'scripts' },
@@ -568,7 +557,7 @@
             { id: 'fabricator', type: 'scripts' }
         ];
 
-        // --- STREAMING_CHUNK:Terminology & Filters... ---
+        // --- Terminology & Settings ---
         window.getTerm = (key, defaultVal) => campaignSettings?.terms?.[key] || defaultVal;
 
         const applyTerminology = (terms) => {
@@ -633,7 +622,7 @@
             }
         };
 
-        // --- STREAMING_CHUNK:Render and Filter Logic... ---
+        // --- Filter Logic & Rendering ---
         window.selectPackIcon = (btn) => {
             document.querySelectorAll('.icon-selector-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -647,17 +636,15 @@
             const btnId = type === 'All' ? 'type-toggle-all' : type === 'features' ? 'type-toggle-features' : 'type-toggle-scriptcasting';
             const activeBtn = document.getElementById(btnId);
             if (activeBtn) activeBtn.classList.add('active');
-            
-            // Validate current vocation against new main type
+
             if (currentVocationFilter !== 'All') {
-                const vocObj = CORE_VOCATIONS.find(v => window.getTerm(`class_${v.id}`, v.id).toLowerCase() === currentVocationFilter.toLowerCase());
+                const vocObj = CORE_VOCATIONS.find(v => window.getTerm(`class_${v.id}`, v.id.toUpperCase()) === currentVocationFilter);
                 if (vocObj) {
                     if (type === 'features' && vocObj.type === 'scripts') currentVocationFilter = 'All';
                     if (type === 'scriptcasting' && vocObj.type === 'features') currentVocationFilter = 'All';
                 }
             }
 
-            // Fix Level overlap
             if (type === 'features' && currentLevelFilter === '0') currentLevelFilter = '1';
             
             window.renderVocationTabs();
@@ -668,15 +655,23 @@
         window.setVocationFilter = (vocName) => {
             currentVocationFilter = vocName;
             
-            // Auto-adjust main type if needed
             if (vocName !== 'All') {
-                const vocObj = CORE_VOCATIONS.find(v => window.getTerm(`class_${v.id}`, v.id) === vocName);
+                const vocObj = CORE_VOCATIONS.find(v => window.getTerm(`class_${v.id}`, v.id.toUpperCase()) === vocName);
                 if (vocObj) {
-                    if (vocObj.type === 'features' && mainTypeFilter === 'scriptcasting') window.setMainTypeFilter('features');
-                    if (vocObj.type === 'scripts' && mainTypeFilter === 'features') window.setMainTypeFilter('scriptcasting');
+                    if (vocObj.type === 'features' && mainTypeFilter === 'scriptcasting') {
+                        mainTypeFilter = 'features';
+                        document.querySelectorAll('.type-toggle-btn').forEach(b => b.classList.remove('active'));
+                        document.getElementById('type-toggle-features').classList.add('active');
+                    }
+                    if (vocObj.type === 'scripts' && mainTypeFilter === 'features') {
+                        mainTypeFilter = 'scriptcasting';
+                        document.querySelectorAll('.type-toggle-btn').forEach(b => b.classList.remove('active'));
+                        document.getElementById('type-toggle-scriptcasting').classList.add('active');
+                    }
                 }
             }
             
+            window.renderLevelTabs();
             window.renderVocationTabs();
             window.renderScripts();
         };
@@ -692,7 +687,6 @@
             container.innerHTML = `<button onclick="window.setVocationFilter('All')" class="vocation-tab ${currentVocationFilter === 'All' ? 'active' : ''}">ALL</button>`;
             
             CORE_VOCATIONS.forEach(voc => {
-                // Filter logic for main tabs
                 if (mainTypeFilter === 'features' && voc.type === 'scripts') return;
                 if (mainTypeFilter === 'scriptcasting' && voc.type === 'features') return;
                 
@@ -708,7 +702,7 @@
             
             let isFeatures = mainTypeFilter === 'features';
             if (mainTypeFilter === 'All' && currentVocationFilter !== 'All') {
-                const vocObj = CORE_VOCATIONS.find(v => window.getTerm(`class_${v.id}`, v.id) === currentVocationFilter);
+                const vocObj = CORE_VOCATIONS.find(v => window.getTerm(`class_${v.id}`, v.id.toUpperCase()) === currentVocationFilter);
                 if (vocObj && vocObj.type === 'features') isFeatures = true;
             }
 
@@ -730,19 +724,30 @@
             const grid = document.getElementById('scripts-grid');
             const emptyState = document.getElementById('empty-state');
             grid.innerHTML = '';
+
+            const termAll = window.getTerm('codex_all', 'All Records');
+            const termFeatures = window.getTerm('codex_features', 'Combat Features');
+            const termScripts = window.getTerm('codex_scripts', 'Scriptcasting');
+
+            let titlePrefix = "";
+            if (currentVocationFilter !== 'All') titlePrefix = currentVocationFilter + " — ";
+            else if (mainTypeFilter === 'All') titlePrefix = termAll + " — ";
+            else if (mainTypeFilter === 'features') titlePrefix = termFeatures + " — ";
+            else titlePrefix = termScripts + " — ";
+
+            let titleSuffix = `Level ${currentLevelFilter}`;
+            if (currentLevelFilter === '0') titleSuffix = "Tricks";
+
+            document.getElementById('view-title').innerText = titlePrefix + titleSuffix;
             
             let filtered = scripts.filter(s => {
-                // Filter by Main Type
                 if (mainTypeFilter === 'features' && s.type !== 'features') return false;
                 if (mainTypeFilter === 'scriptcasting' && s.type === 'features') return false;
 
-                // Filter by Vocation
                 if (currentVocationFilter !== 'All') {
                     const vocArr = s.classes.split(',').map(c => c.trim().toLowerCase());
                     if (!vocArr.includes(currentVocationFilter.toLowerCase())) return false;
                 }
-
-                // Filter by Level
                 return s.level === currentLevelFilter;
             });
 
@@ -816,21 +821,16 @@
             }
         };
 
-        // --- STREAMING_CHUNK:Inscribe Logic... ---
+        // --- Inscribe & Transfer Logic ---
         window.openCreateModal = (id = null) => {
             const m = document.getElementById('create-modal');
-            const lvlSelect = document.getElementById('script-level');
-            const inscribeTypeArcane = document.getElementById('inscribe-type-arcane');
-            const inscribeTypeFeature = document.getElementById('inscribe-type-feature');
             
             if (id) {
                 const s = scripts.find(x => x.id === id);
                 if (s) {
                     document.getElementById('edit-script-id').value = s.id;
                     document.getElementById('modal-form-title').innerText = "Edit Record";
-                    
                     window.toggleInscribeType(s.type === 'features' ? 'features' : 'scriptcasting');
-                    
                     document.getElementById('script-name').value = s.name;
                     document.getElementById('script-classes').value = s.classes;
                     document.getElementById('script-level').value = s.level;
@@ -887,20 +887,18 @@
             lvlSelect.innerHTML = '';
 
             if (type === 'features') {
-                btnFeature.className = "flex-1 py-1 text-xs font-bold font-heading uppercase text-f1e5c5 bg-blood rounded shadow-inner transition-all";
-                btnArcane.className = "flex-1 py-1 text-xs font-bold font-heading uppercase text-ink hover:text-blood transition-all";
+                btnFeature.className = "flex-1 py-1 text-xs font-bold font-heading uppercase text-f1e5c5 bg-blood rounded shadow-inner transition-all dyn-term";
+                btnArcane.className = "flex-1 py-1 text-xs font-bold font-heading uppercase text-ink hover:text-blood transition-all dyn-term";
                 fFeature.classList.remove('hidden');
                 fArcane.classList.add('hidden');
                 fScaling.classList.add('hidden');
-                
                 for(let i = 1; i <= 20; i++) lvlSelect.innerHTML += `<option value="${i}">Level ${i}</option>`;
             } else {
-                btnArcane.className = "flex-1 py-1 text-xs font-bold font-heading uppercase text-f1e5c5 bg-blood rounded shadow-inner transition-all";
-                btnFeature.className = "flex-1 py-1 text-xs font-bold font-heading uppercase text-ink hover:text-blood transition-all";
+                btnArcane.className = "flex-1 py-1 text-xs font-bold font-heading uppercase text-f1e5c5 bg-blood rounded shadow-inner transition-all dyn-term";
+                btnFeature.className = "flex-1 py-1 text-xs font-bold font-heading uppercase text-ink hover:text-blood transition-all dyn-term";
                 fArcane.classList.remove('hidden');
                 fFeature.classList.add('hidden');
                 fScaling.classList.remove('hidden');
-                
                 lvlSelect.innerHTML += `<option value="0">Trick (0)</option>`;
                 for(let i = 1; i <= 9; i++) lvlSelect.innerHTML += `<option value="${i}">Level ${i}</option>`;
             }
@@ -947,50 +945,38 @@
                 }
                 document.getElementById('create-modal').classList.add('hidden');
             } catch (err) {
-                console.error(err);
                 window.showToast("Failed to save record.");
             }
         };
 
         window.deleteScript = async (id) => {
             if (!isDM || !confirm("Erase this record from the Codex?")) return;
-            try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', `scriptCodex_${appId}`, id));
-                window.showToast("Record Erased");
-            } catch (e) {
-                window.showToast("Failed to erase.");
-            }
+            try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', `scriptCodex_${appId}`, id)); window.showToast("Record Erased"); } 
+            catch (e) { window.showToast("Failed to erase."); }
         };
 
-        // --- STREAMING_CHUNK:Transfer & Character Inject... ---
         let targetTransferScript = null;
         window.initTransfer = (scriptId) => {
             targetTransferScript = scripts.find(s => s.id === scriptId);
             if (!targetTransferScript) return;
-
             const list = document.getElementById('transfer-target-list');
             list.innerHTML = '';
-            
             const pcs = characters.filter(c => c.type === 'PC' && !c.isDeleted);
-            if (pcs.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-500 italic font-serif">No active adventurers in this realm.</p>`;
-            } else {
-                pcs.forEach(pc => {
-                    list.innerHTML += `
-                        <div class="flex justify-between items-center bg-[rgba(255,255,255,0.4)] border border-gold p-3 rounded hover:bg-[rgba(197,160,89,0.2)] transition-colors cursor-pointer" onclick="window.executeTransfer('${pc.id}')">
-                            <span class="font-bold text-ink font-heading text-sm">${pc.name}</span>
-                            <span class="text-[10px] text-555 font-bold uppercase tracking-widest">${pc.class || 'Unknown'} Lvl ${pc.level || 1}</span>
-                        </div>
-                    `;
-                });
-            }
+            if (pcs.length === 0) list.innerHTML = `<p class="text-xs text-gray-500 italic font-serif">No active adventurers in this realm.</p>`;
+            else pcs.forEach(pc => {
+                list.innerHTML += `
+                    <div class="flex justify-between items-center bg-[rgba(255,255,255,0.4)] border border-gold p-3 rounded hover:bg-[rgba(197,160,89,0.2)] transition-colors cursor-pointer" onclick="window.executeTransfer('${pc.id}')">
+                        <span class="font-bold text-ink font-heading text-sm">${pc.name}</span>
+                        <span class="text-[10px] text-555 font-bold uppercase tracking-widest">${pc.class || 'Unknown'} Lvl ${pc.level || 1}</span>
+                    </div>
+                `;
+            });
             document.getElementById('transfer-modal').classList.remove('hidden');
         };
 
         window.executeTransfer = async (charId) => {
             if (!targetTransferScript) return;
             document.getElementById('transfer-modal').classList.add('hidden');
-            
             const isFeature = targetTransferScript.type === 'features';
             let fullDesc = `**${isFeature ? 'Action Cost' : 'Cast Time'}:** ${targetTransferScript.activation || '--'}\n**Range:** ${targetTransferScript.range || '--'}\n**Duration:** ${targetTransferScript.duration || '--'}`;
             if (!isFeature) fullDesc += `\n**Components:** ${targetTransferScript.comp || '--'}`;
@@ -1022,12 +1008,11 @@
                     window.showToast(`Record injected into ${char.name}'s ledger!`);
                 } 
             } catch (err) {
-                console.error(err);
                 window.showToast("Transfer failed.");
             }
         };
 
-        // --- STREAMING_CHUNK:Pack Management & Admin Tools... ---
+        // --- Pack Management ---
         window.openPublishModal = () => {
             document.getElementById('pack-name').value = `Codex of ${appId}`;
             document.getElementById('pack-desc').value = '';
@@ -1043,34 +1028,19 @@
 
             if (!name) return window.showToast("Pack name required.");
             if (scripts.length === 0) return window.showToast("Cannot publish an empty codex.");
-
             window.showToast("Publishing Pack...");
 
             const packData = {
-                name: name,
-                description: desc,
-                authorId: currentUser.uid,
-                authorName: currentUser.username,
-                sourceCampaignId: appId,
-                scripts: scripts,
-                icon: icon,
-                createdAt: Date.now(),
-                version: 1,
-                updateNotes: "Initial publication from realm."
+                name: name, description: desc, authorId: currentUser.uid, authorName: currentUser.username,
+                sourceCampaignId: appId, scripts: scripts, icon: icon, createdAt: Date.now(), version: 1, updateNotes: "Initial publication from realm."
             };
 
             try {
-                if (vis === 'public') {
-                    await addDoc(collection(db, 'artifacts', 'global_codex', 'public', 'data', 'scriptPacks'), packData);
-                } else {
-                    await addDoc(collection(db, 'artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks'), packData);
-                }
+                if (vis === 'public') await addDoc(collection(db, 'artifacts', 'global_codex', 'public', 'data', 'scriptPacks'), packData);
+                else await addDoc(collection(db, 'artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks'), packData);
                 document.getElementById('publish-pack-modal').classList.add('hidden');
                 window.showToast("Pack Published to Archives!");
-            } catch (err) {
-                console.error(err);
-                window.showToast("Publishing failed.");
-            }
+            } catch (err) { window.showToast("Publishing failed."); }
         };
 
         window.openPacksModal = async () => {
@@ -1081,9 +1051,7 @@
             try {
                 const pubSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'public', 'data', 'scriptPacks'));
                 let privSnap = { docs: [] };
-                if (currentUser && activeRole === 'dm') {
-                    privSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks'));
-                }
+                if (currentUser && activeRole === 'dm') privSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks'));
                 
                 allFetchedPacks = [
                     ...pubSnap.docs.map(d => ({id: d.id, isPrivate: false, ...d.data()})),
@@ -1110,18 +1078,13 @@
                         `;
                     }).join('');
                 }
-            } catch (err) {
-                console.error(err);
-                grid.innerHTML = `<div class="col-span-full py-8 text-center text-red-500 font-bold uppercase tracking-widest text-xs font-heading">Failed to load archives.</div>`;
-            }
+            } catch (err) { grid.innerHTML = `<div class="col-span-full py-8 text-center text-red-500 font-bold uppercase tracking-widest text-xs font-heading">Failed to load archives.</div>`; }
         };
 
         window.openPackDetails = (id) => {
             currentViewingPack = allFetchedPacks.find(p => p.id === id);
             if (!currentViewingPack) return;
-            
             document.getElementById('packs-modal').classList.add('hidden');
-
             document.getElementById('pd-title').innerHTML = currentViewingPack.isDeleted ? `${currentViewingPack.name} <span class="text-[10px] bg-red-900 text-white px-2 py-1 rounded ml-2 align-middle shadow-md tracking-widest">ARCHIVED</span>` : currentViewingPack.name;
             document.getElementById('pd-author').innerText = `By ${currentViewingPack.authorName}`;
             document.getElementById('pd-version').innerText = `v${currentViewingPack.version || 1}`;
@@ -1130,43 +1093,27 @@
             document.getElementById('pd-notes').innerText = currentViewingPack.updateNotes || 'Initial publication.';
             
             const injectBtn = document.getElementById('pd-inject-btn');
-            if (isDM && !currentViewingPack.isDeleted) {
-                injectBtn.classList.remove('hidden');
-            } else {
-                injectBtn.classList.add('hidden');
-            }
-
+            if (isDM && !currentViewingPack.isDeleted) injectBtn.classList.remove('hidden'); else injectBtn.classList.add('hidden');
             const pdOwnerPanel = document.getElementById('pd-owner-panel');
-            if (pdOwnerPanel) {
-                pdOwnerPanel.classList.toggle('hidden', !adminModeActive);
-            }
+            if (pdOwnerPanel) pdOwnerPanel.classList.toggle('hidden', !adminModeActive);
 
             if (isDM) {
                 document.getElementById('pd-right-col').classList.remove('hidden');
                 document.getElementById('pd-right-col-player').classList.add('hidden');
-                
-                const pathArgs = currentViewingPack.isPrivate
-                    ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', id, 'messages']
-                    : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', id, 'messages'];
-
+                const pathArgs = currentViewingPack.isPrivate ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', id, 'messages'] : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', id, 'messages'];
                 if (packMessagesUnsubscribe) packMessagesUnsubscribe();
                 packMessagesUnsubscribe = onSnapshot(collection(db, ...pathArgs), (snap) => {
                     const msgs = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => a.timestamp - b.timestamp);
                     const container = document.getElementById('pd-messages-container');
-                    
-                    if (msgs.length === 0) {
-                        container.innerHTML = `<div class="text-center py-4 text-xs italic text-gray-500">No messages yet. Start the discussion!</div>`;
-                    } else {
+                    if (msgs.length === 0) container.innerHTML = `<div class="text-center py-4 text-xs italic text-gray-500">No messages yet. Start the discussion!</div>`;
+                    else {
                         container.innerHTML = msgs.map(m => {
                             const deleteBtn = adminModeActive ? `<button onclick="window.deletePackMessage('${m.id}')" class="text-gray-500 hover:text-red-500 transition-colors ml-2" title="Delete Message"><i class="fa-solid fa-trash-can text-[10px]"></i></button>` : '';
                             return `
                             <div class="p-3 bg-black/40 rounded border border-gray-700 relative group">
                                 <div class="flex justify-between items-start text-[10px] font-heading mb-1 border-b border-gray-700 pb-1">
                                     <span class="${m.authorId === currentViewingPack.authorId ? 'text-indigo-400' : 'text-gold'} font-bold uppercase">${m.authorName} ${m.authorId === currentViewingPack.authorId ? '<i class="fa-solid fa-crown ml-1" title="Pack Author"></i>' : ''}</span>
-                                    <div class="flex items-center">
-                                        <span class="text-gray-500">${new Date(m.timestamp).toLocaleDateString()}</span>
-                                        ${deleteBtn}
-                                    </div>
+                                    <div class="flex items-center"><span class="text-gray-500">${new Date(m.timestamp).toLocaleDateString()}</span>${deleteBtn}</div>
                                 </div>
                                 <p class="text-sm font-serif text-gray-300 break-words mt-2">${m.text}</p>
                             </div>
@@ -1179,51 +1126,23 @@
                 document.getElementById('pd-right-col').classList.add('hidden');
                 document.getElementById('pd-right-col-player').classList.remove('hidden');
             }
-
             document.getElementById('pack-details-modal').classList.remove('hidden');
         };
 
-        window.closePackDetails = () => {
-            document.getElementById('pack-details-modal').classList.add('hidden');
-            if (packMessagesUnsubscribe) { packMessagesUnsubscribe(); packMessagesUnsubscribe = null; }
-            currentViewingPack = null;
-        };
+        window.closePackDetails = () => { document.getElementById('pack-details-modal').classList.add('hidden'); if (packMessagesUnsubscribe) { packMessagesUnsubscribe(); packMessagesUnsubscribe = null; } currentViewingPack = null; };
 
         window.postPackMessage = async () => {
-            const input = document.getElementById('pd-new-message');
-            const text = input.value.trim();
-            if (!text || !currentViewingPack || !isDM) return;
-            
+            const input = document.getElementById('pd-new-message'); const text = input.value.trim(); if (!text || !currentViewingPack || !isDM) return;
             input.value = '';
-            
-            const pathArgs = currentViewingPack.isPrivate
-                ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id, 'messages']
-                : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id, 'messages'];
-                
-            try {
-                await addDoc(collection(db, ...pathArgs), {
-                    text: text, authorId: currentUser.uid, authorName: currentUser.username, timestamp: Date.now()
-                });
-            } catch (err) {
-                console.error("Failed to post message", err);
-                window.showToast("Failed to send message.");
-            }
+            const pathArgs = currentViewingPack.isPrivate ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id, 'messages'] : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id, 'messages'];
+            try { await addDoc(collection(db, ...pathArgs), { text: text, authorId: currentUser.uid, authorName: currentUser.username, timestamp: Date.now() }); } 
+            catch (err) { window.showToast("Failed to send message."); }
         };
 
         window.deletePackMessage = async (msgId) => {
-            if (!currentViewingPack || !adminModeActive) return;
-            if (!confirm("Erase this message from the archives?")) return;
-            
-            const pathArgs = currentViewingPack.isPrivate
-                ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id, 'messages', msgId]
-                : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id, 'messages', msgId];
-                
-            try {
-                await deleteDoc(doc(db, ...pathArgs));
-                window.showToast("Message erased.");
-            } catch(e) {
-                window.showToast("Failed to erase message.");
-            }
+            if (!currentViewingPack || !adminModeActive || !confirm("Erase this message from the archives?")) return;
+            const pathArgs = currentViewingPack.isPrivate ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id, 'messages', msgId] : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id, 'messages', msgId];
+            try { await deleteDoc(doc(db, ...pathArgs)); window.showToast("Message erased."); } catch(e) { window.showToast("Failed to erase message."); }
         };
 
         window.initiatePackDeletion = () => {
@@ -1238,99 +1157,53 @@
             if (!window.pendingAdminDelete) return;
             const { type, id, name, targetUserId, isPrivate } = window.pendingAdminDelete;
             const reason = document.getElementById('admin-del-reason').value.trim();
-            
             document.getElementById('admin-delete-prompt-modal').classList.add('hidden');
             window.showToast("Executing Admin Override...");
-
             try {
-                if (reason && targetUserId) {
-                    await updateDoc(doc(db, 'users', targetUserId), {
-                        notifications: [{
-                            type: 'Pack Deleted',
-                            itemName: name,
-                            message: reason,
-                            timestamp: Date.now()
-                        }]
-                    });
-                }
-
+                if (reason && targetUserId) await updateDoc(doc(db, 'users', targetUserId), { notifications: [{ type: 'Pack Deleted', itemName: name, message: reason, timestamp: Date.now() }] });
                 if (type === 'pack') {
-                    const pathArgs = isPrivate 
-                        ? ['artifacts', 'global_codex', 'users', targetUserId, 'scriptPacks', id]
-                        : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', id];
+                    const pathArgs = isPrivate ? ['artifacts', 'global_codex', 'users', targetUserId, 'scriptPacks', id] : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', id];
                     await deleteDoc(doc(db, ...pathArgs));
                     window.showToast("Pack permanently obliterated.");
                     window.closePackDetails();
                 }
-            } catch (err) {
-                console.error(err);
-                window.showToast("Admin action failed.");
-            }
+            } catch (err) { window.showToast("Admin action failed."); }
             window.pendingAdminDelete = null;
         };
 
         window.injectPackToCodex = async () => {
-            if (!isDM || !currentViewingPack || !currentViewingPack.scripts) return;
-            if (!confirm(`Inject ${(currentViewingPack.scripts || []).length} records into this realm's codex?`)) return;
-            
-            window.showToast("Injecting records...");
-            document.getElementById('pack-details-modal').classList.add('hidden');
-
+            if (!isDM || !currentViewingPack || !currentViewingPack.scripts || !confirm(`Inject ${(currentViewingPack.scripts || []).length} records into this realm's codex?`)) return;
+            window.showToast("Injecting records..."); document.getElementById('pack-details-modal').classList.add('hidden');
             try {
                 const batch = [];
-                currentViewingPack.scripts.forEach(s => {
-                    const cleanObj = { ...s };
-                    delete cleanObj.id;
-                    cleanObj.createdAt = Date.now();
-                    batch.push(addDoc(collection(db, 'artifacts', appId, 'public', 'data', `scriptCodex_${appId}`), cleanObj));
-                });
-                await Promise.all(batch);
-                window.showToast("Injection Complete!");
-            } catch (err) {
-                console.error(err);
-                window.showToast("Injection failed.");
-            }
+                currentViewingPack.scripts.forEach(s => { const cleanObj = { ...s }; delete cleanObj.id; cleanObj.createdAt = Date.now(); batch.push(addDoc(collection(db, 'artifacts', appId, 'public', 'data', `scriptCodex_${appId}`), cleanObj)); });
+                await Promise.all(batch); window.showToast("Injection Complete!");
+            } catch (err) { window.showToast("Injection failed."); }
         };
 
-        window.dismissNotifications = async () => {
-            if (!currentUser) return;
-            try {
-                await updateDoc(doc(db, 'users', currentUser.uid), { notifications: [] });
-                document.getElementById('user-notifications-modal').classList.add('hidden');
-            } catch(e) {}
-        };
+        window.dismissNotifications = async () => { if (!currentUser) return; try { await updateDoc(doc(db, 'users', currentUser.uid), { notifications: [] }); document.getElementById('user-notifications-modal').classList.add('hidden'); } catch(e) {} };
 
         // --- AUTH AND SYNC ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
-                try { window.location.href = "index.html"; } catch(e) {
-                    document.getElementById('initial-loading').innerHTML = `<h2 class="font-heading text-2xl text-blood">Authentication Required</h2>`;
-                }
+                try { window.location.href = "index.html"; } catch(e) { document.getElementById('initial-loading').innerHTML = `<h2 class="font-heading text-2xl text-blood">Authentication Required</h2>`; }
                 return;
             }
             
             try {
-                if (u.isAnonymous) {
-                    currentUser = { uid: u.uid, username: "Guest Traveler", role: 'player' };
-                } else {
+                if (u.isAnonymous) currentUser = { uid: u.uid, username: "Guest Traveler", role: 'player' };
+                else {
                     const userDoc = await getDoc(doc(db, 'users', u.uid));
-                    if (userDoc.exists()) {
-                        currentUser = { uid: u.uid, ...userDoc.data() };
-                    } else {
-                        currentUser = { uid: u.uid, username: u.displayName || 'Traveler', role: 'player' };
-                    }
+                    if (userDoc.exists()) currentUser = { uid: u.uid, ...userDoc.data() };
+                    else currentUser = { uid: u.uid, username: u.displayName || 'Traveler', role: 'player' };
                 }
 
-                activeRole = currentUser.role || 'player';
-                isDM = activeRole === 'dm';
+                activeRole = currentUser.role || 'player'; isDM = activeRole === 'dm';
                 if (u.email === ADMIN_OWNER_EMAIL) adminModeActive = true;
 
                 if (appId !== "demo_campaign") {
                     const campDoc = await getDoc(doc(db, 'campaigns', appId));
-                    if (campDoc.exists()) {
-                        document.getElementById('main-campaign-title').innerText = campDoc.data().name;
-                        document.title = `${campDoc.data().name} - Script Codex`;
-                    }
+                    if (campDoc.exists()) { document.getElementById('main-campaign-title').innerText = campDoc.data().name; document.title = `${campDoc.data().name} - Script Codex`; }
                 }
 
                 document.getElementById('user-display-name').innerText = currentUser.username;
@@ -1353,38 +1226,22 @@
                     document.getElementById('user-notifications-modal').classList.remove('hidden');
                 }
 
-                // Fetch targets for injection
-                if (isDM) {
-                    onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'characters'), (snap) => {
-                        characters = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                    });
-                }
+                if (isDM) onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'characters'), (snap) => { characters = snap.docs.map(d => ({id: d.id, ...d.data()})); });
 
-                // Settings sync
                 onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'campaignConfig', 'settings'), (docSnap) => {
-                    if (docSnap.exists()) {
-                        campaignSettings = docSnap.data();
-                        applyTerminology(campaignSettings.terms);
-                        window.setMainTypeFilter(mainTypeFilter); // Force re-render with new terms
-                    }
+                    if (docSnap.exists()) { campaignSettings = docSnap.data(); applyTerminology(campaignSettings.terms); window.setMainTypeFilter(mainTypeFilter); }
                 });
 
-                // Scripts sync
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', `scriptCodex_${appId}`), (snap) => {
-                    scripts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    window.renderScripts();
+                    scripts = snap.docs.map(d => ({ id: d.id, ...d.data() })); window.renderScripts();
                 });
 
                 document.getElementById('initial-loading').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
-                initDragScroll(); // Initialize mouse drag scrolling for the Vocation tabs
-                
-                window.setMainTypeFilter('All'); // Initial state
+                initDragScroll(); 
+                window.setMainTypeFilter('All'); 
 
-            } catch (error) {
-                console.error(error);
-                document.getElementById('initial-loading').innerHTML = `<h2 class="font-heading text-2xl text-blood">Database Connection Failed</h2>`;
-            }
+            } catch (error) { document.getElementById('initial-loading').innerHTML = `<h2 class="font-heading text-2xl text-blood">Database Connection Failed</h2>`; }
         });
     </script>
 </body>

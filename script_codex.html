@@ -79,7 +79,6 @@
         .script-props b { font-weight: 700; color: #1a1a1a; border-bottom: 1px dotted rgba(139, 90, 43, 0.4); }
         .script-desc { font-family: 'Lora', serif; font-size: 13px; color: #2c1e16; line-height: 1.6; margin-bottom: 16px; white-space: pre-wrap; flex-grow: 1;}
         .script-desc b { color: #1a1a1a; font-weight: 700; }
-        
         .script-higher { border-top: 1px dashed rgba(139, 90, 43, 0.3); padding-top: 12px; margin-top: auto; font-family: 'Lora', serif; font-size: 12px; color: #2c1e16; line-height: 1.5; margin-bottom: 12px;}
         .script-higher b { font-weight: 700; border-bottom: 1px dotted rgba(139, 90, 43, 0.4); color: #1a1a1a; }
         .script-lists { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 900; color: #555; border-top: 1px solid rgba(139, 90, 43, 0.2); padding-top: 8px; margin-bottom: 16px;}
@@ -103,7 +102,7 @@
         
         .icon-selector-btn { border: 2px solid transparent; border-radius: 4px; padding: 8px; font-size: 24px; color: #888; transition: all 0.2s; cursor: pointer; }
         .icon-selector-btn:hover { color: #c5a059; background: rgba(255,255,255,0.05); }
-        .icon-selector-btn.active { color: #gold; border-color: #gold; background: rgba(197, 160, 89, 0.2); }
+        .icon-selector-btn.active { color: #c5a059; border-color: #c5a059; background: rgba(197, 160, 89, 0.2); }
     </style>
 </head>
 <body class="min-h-screen">
@@ -166,11 +165,14 @@
                 </div>
 
                 <!-- VOCATION TABS (Scrollable) -->
-                <div class="flex overflow-x-auto scrollbar-hide gap-2 justify-start pb-2 mb-2" id="vocation-tabs-container">
+                <div class="flex overflow-x-auto scrollbar-hide gap-2 justify-start pb-2 mb-2 select-none" id="vocation-tabs-container">
                     <!-- Populated by JS -->
                 </div>
                 
-                <hr class="border-t border-[rgba(139,90,43,0.2)] mb-4">
+                <!-- CUSTOM INTERACTIVE SCROLLBAR TRACK -->
+                <div id="voc-scroll-track" class="w-full h-[4px] bg-[rgba(139,90,43,0.1)] border-y border-[rgba(139,90,43,0.2)] rounded cursor-pointer relative mb-4 group transition-all">
+                    <div id="voc-scroll-thumb" class="absolute top-[-1px] left-0 h-[6px] bg-gold rounded cursor-grab hover:bg-parchment transition-colors shadow-[0_0_8px_rgba(197,160,89,0.5)] hidden group-hover:h-[8px] group-hover:top-[-2px] duration-200"></div>
+                </div>
 
                 <!-- Title, Levels & Action Buttons -->
                 <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
@@ -330,25 +332,25 @@
             <h2 class="font-heading text-xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Push Codex Update</h2>
             <p class="text-xs font-serif text-gray-400 italic mb-6 mt-4">Overwrites the published pack with your current Codex and increments the version.</p>
             
-            <div class="space-y-4 text-left mb-8 h-[50vh] overflow-y-auto pr-2 scrollbar-hide">
+            <div class="space-y-4 text-left mb-8">
                 <div>
                     <label class="tiny-label text-gray-400">Pack Name</label>
-                    <input type="text" id="update-pack-name" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold">
+                    <input type="text" id="pack-update-name" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold">
                 </div>
                 <div>
                     <label class="tiny-label text-gray-400 mt-2">Description</label>
-                    <textarea id="update-pack-desc" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-20 resize-none"></textarea>
+                    <textarea id="pack-update-desc" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-20 resize-none"></textarea>
                 </div>
                 <div>
                     <label class="tiny-label text-gray-400 mt-2">Pack Icon</label>
-                    <div class="flex gap-2 justify-between mt-2" id="update-pack-icon-selectors">
-                        <button class="icon-selector-btn active" data-icon="fa-book-journal-whills" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-book-journal-whills"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-dragon" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-dragon"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-wand-sparkles" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-wand-sparkles"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-brands fa-jedi-order" onclick="window.selectUpdatePackIcon(this)"><i class="fa-brands fa-jedi-order"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-khanda" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-khanda"></i></button>
+                    <div class="flex gap-2 justify-between mt-2" id="pack-update-icon-selectors">
+                        <button class="update-icon-btn active icon-selector-btn" data-icon="fa-book-journal-whills" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-book-journal-whills"></i></button>
+                        <button class="update-icon-btn icon-selector-btn" data-icon="fa-dragon" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-dragon"></i></button>
+                        <button class="update-icon-btn icon-selector-btn" data-icon="fa-wand-sparkles" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-wand-sparkles"></i></button>
+                        <button class="update-icon-btn icon-selector-btn" data-icon="fa-brands fa-jedi-order" onclick="window.selectUpdatePackIcon(this)"><i class="fa-brands fa-jedi-order"></i></button>
+                        <button class="update-icon-btn icon-selector-btn" data-icon="fa-khanda" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-khanda"></i></button>
                     </div>
-                    <input type="hidden" id="update-pack-selected-icon" value="fa-book-journal-whills">
+                    <input type="hidden" id="pack-update-icon" value="fa-book-journal-whills">
                 </div>
                 <div>
                     <label class="tiny-label text-gray-400 mt-2">Update Notes / Changelog</label>
@@ -596,7 +598,7 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
         import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, addDoc, deleteDoc, getDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-        // --- CORE UI FUNCTIONS ---
+        // --- STREAMING_CHUNK:Core UI Functions... ---
         window.showToast = (m) => { 
             const t = document.getElementById('toast'); 
             if(t){ t.textContent=m; t.style.opacity=1; setTimeout(()=>t.style.opacity=0, 4000); } 
@@ -628,25 +630,138 @@
             confirmCallback = null;
         };
 
-        // --- HORIZONTAL SCROLL FIX ---
-        const enableHScroll = (id) => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.addEventListener('wheel', (e) => {
-                    if (e.deltaY !== 0) {
-                        e.preventDefault();
-                        el.scrollLeft += e.deltaY;
-                    }
+        // --- STREAMING_CHUNK:Scroll Fixes & Event Listeners... ---
+        const initScrollFixes = () => {
+            // Mouse wheel scrolling for main nav
+            const nav = document.getElementById('main-nav');
+            if (nav) {
+                nav.addEventListener('wheel', (e) => {
+                    if (e.deltaY !== 0) { e.preventDefault(); nav.scrollLeft += e.deltaY; }
                 }, { passive: false });
             }
+
+            // Vocation Tabs Drag & Scrollbar Logic
+            const container = document.getElementById('vocation-tabs-container');
+            const track = document.getElementById('voc-scroll-track');
+            const thumb = document.getElementById('voc-scroll-thumb');
+
+            if (!container) return;
+
+            // 1. Mouse wheel
+            container.addEventListener('wheel', (e) => {
+                if (e.deltaY !== 0) { e.preventDefault(); container.scrollLeft += e.deltaY; }
+            }, { passive: false });
+
+            // 2. Drag to scroll on container directly
+            let isDown = false;
+            let startXContainer;
+            let scrollLeftContainer;
+
+            container.addEventListener('mousedown', (e) => {
+                isDown = true;
+                container.classList.add('!cursor-grabbing');
+                startXContainer = e.pageX - container.offsetLeft;
+                scrollLeftContainer = container.scrollLeft;
+            });
+            container.addEventListener('mouseleave', () => { isDown = false; container.classList.remove('!cursor-grabbing'); });
+            container.addEventListener('mouseup', () => { isDown = false; container.classList.remove('!cursor-grabbing'); });
+            container.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - container.offsetLeft;
+                container.scrollLeft = scrollLeftContainer - (x - startXContainer);
+            });
+
+            // 3. Custom Interactive Scrollbar
+            if (!track || !thumb) return;
+
+            window.updateVocScrollbar = () => {
+                const scrollRatio = container.clientWidth / container.scrollWidth;
+                if (scrollRatio >= 1 || container.scrollWidth === 0) {
+                    thumb.classList.add('hidden');
+                } else {
+                    thumb.classList.remove('hidden');
+                    const thumbWidth = Math.max(scrollRatio * 100, 10); // min 10% width
+                    thumb.style.width = `${thumbWidth}%`;
+                    const scrollPercent = container.scrollLeft / (container.scrollWidth - container.clientWidth);
+                    const maxLeft = track.clientWidth - thumb.offsetWidth;
+                    thumb.style.left = `${scrollPercent * maxLeft}px`;
+                }
+            };
+
+            container.addEventListener('scroll', window.updateVocScrollbar);
+            window.addEventListener('resize', window.updateVocScrollbar);
+
+            let isDraggingThumb = false;
+            let thumbStartX;
+
+            thumb.addEventListener('mousedown', (e) => {
+                isDraggingThumb = true;
+                document.body.classList.add('cursor-grabbing', 'select-none');
+                thumbStartX = e.pageX - thumb.getBoundingClientRect().left;
+                e.stopPropagation();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDraggingThumb) return;
+                e.preventDefault();
+                const trackRect = track.getBoundingClientRect();
+                const xInsideTrack = e.pageX - trackRect.left;
+                const maxLeft = track.clientWidth - thumb.offsetWidth;
+                
+                let newLeft = xInsideTrack - thumbStartX;
+                if (newLeft < 0) newLeft = 0;
+                if (newLeft > maxLeft) newLeft = maxLeft;
+
+                const scrollPercent = newLeft / maxLeft;
+                container.scrollLeft = scrollPercent * (container.scrollWidth - container.clientWidth);
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDraggingThumb = false;
+                document.body.classList.remove('cursor-grabbing', 'select-none');
+            });
+
+            track.addEventListener('mousedown', (e) => {
+                if (e.target === thumb) return;
+                const trackRect = track.getBoundingClientRect();
+                const clickX = e.pageX - trackRect.left;
+                const maxLeft = track.clientWidth - thumb.offsetWidth;
+                let newLeft = clickX - (thumb.offsetWidth / 2);
+                if (newLeft < 0) newLeft = 0;
+                if (newLeft > maxLeft) newLeft = maxLeft;
+                
+                const scrollPercent = newLeft / maxLeft;
+                container.scrollLeft = scrollPercent * (container.scrollWidth - container.clientWidth);
+            });
+            
+            // Support touch on thumb
+            thumb.addEventListener('touchstart', (e) => {
+                isDraggingThumb = true;
+                thumbStartX = e.touches[0].pageX - thumb.getBoundingClientRect().left;
+                e.stopPropagation();
+            }, {passive: true});
+            document.addEventListener('touchmove', (e) => {
+                if(!isDraggingThumb) return;
+                const trackRect = track.getBoundingClientRect();
+                const xInsideTrack = e.touches[0].pageX - trackRect.left;
+                const maxLeft = track.clientWidth - thumb.offsetWidth;
+                let newLeft = xInsideTrack - thumbStartX;
+                if (newLeft < 0) newLeft = 0;
+                if (newLeft > maxLeft) newLeft = maxLeft;
+                const scrollPercent = newLeft / maxLeft;
+                container.scrollLeft = scrollPercent * (container.scrollWidth - container.clientWidth);
+            }, {passive: true});
+            document.addEventListener('touchend', () => { isDraggingThumb = false; });
         };
+
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => { enableHScroll('vocation-tabs-container'); enableHScroll('main-nav'); });
+            document.addEventListener('DOMContentLoaded', initScrollFixes);
         } else {
-            enableHScroll('vocation-tabs-container'); enableHScroll('main-nav');
+            initScrollFixes();
         }
 
-        // --- FIREBASE SETUP ---
+        // --- STREAMING_CHUNK:Firebase Setup & State... ---
         const firebaseConfig = {
             apiKey: "AIzaSyCKRN5dfi4og69_D8ZAvV1BQfwCK_f2uis",
             authDomain: "dndcampaigns-f3d48.firebaseapp.com",
@@ -712,17 +827,17 @@
             { id: 'class_fabricator', default: 'Fabricator', type: 'scripts' }
         ];
 
-        // --- Render and Filter Logic ---
+        // --- STREAMING_CHUNK:Render and Filter Logic... ---
         window.selectPackIcon = (btn) => {
-            document.querySelectorAll('.icon-selector-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.icon-selector-btn:not(.update-icon-btn)').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById('pack-selected-icon').value = btn.dataset.icon;
         };
         
         window.selectUpdatePackIcon = (btn) => {
-            document.getElementById('update-pack-icon-selectors').querySelectorAll('.icon-selector-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.update-icon-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById('update-pack-selected-icon').value = btn.dataset.icon;
+            document.getElementById('pack-update-icon').value = btn.dataset.icon;
         };
 
         window.setMainTypeFilter = (type) => {
@@ -844,6 +959,8 @@
                 html += `<button onclick="window.setVocationFilter('${v.id}')" class="vocation-tab ${currentVocationFilter === v.id ? 'active' : ''}" id="tab-voc-${v.id}">${displayName.toUpperCase()}</button>`;
             });
             container.innerHTML = html;
+
+            if(window.updateVocScrollbar) setTimeout(window.updateVocScrollbar, 50);
         };
 
         window.parseAeonfallContent = (text) => {
@@ -930,7 +1047,7 @@
             }
         };
 
-        // --- Definitions Handling ---
+        // --- STREAMING_CHUNK:Definitions Handling... ---
         const DEFAULT_DEFINITIONS = `**Scriptcasting**
 The Eternal Heart saturates Aeonfall with unseen energies. Across the world, these energies can be shaped into precise patterns known as **Scripts**.
 
@@ -1000,7 +1117,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- Campaign Terminology (DM Only) ---
+        // --- STREAMING_CHUNK:Campaign Terminology (DM Only)... ---
         window.openCampaignSettings = () => {
             if (activeRole !== 'dm') return;
             const terms = campaignSettings?.terms || {};
@@ -1148,7 +1265,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }).join('');
         };
 
-        // --- DM Actions and Save Logic ---
+        // --- STREAMING_CHUNK:DM Actions and Save Logic... ---
         window.setScriptFormType = (type) => {
             document.getElementById('script-form-type').value = type;
             const isFeature = type === 'features';
@@ -1288,7 +1405,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             });
         };
 
-        // --- Transfer System ---
+        // --- STREAMING_CHUNK:Transfer System... ---
         window.openTransferModal = (scriptId) => {
             targetTransferScript = scripts.find(s => s.id === scriptId);
             if (!targetTransferScript) return;
@@ -1387,7 +1504,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- Compendium Import Logic ---
+        // --- STREAMING_CHUNK:Compendium Import Logic... ---
         window.openImportModal = async () => {
             if (activeRole !== 'dm') return;
             document.getElementById('import-modal').classList.remove('hidden');
@@ -1464,7 +1581,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             document.getElementById('pd-admin-perm-delete').classList.toggle('hidden', !adminModeActive);
             if(adminModeActive && currentViewingPack.isDeleted) {
                  document.getElementById('pd-admin-panel').classList.remove('hidden');
-                 document.getElementById('pd-btn-archive')?.classList.add('hidden'); // already archived
+                 document.getElementById('pd-btn-archive').classList.add('hidden'); // already archived
             }
 
             document.getElementById('pack-details-modal').classList.remove('hidden');
@@ -1531,9 +1648,8 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
 
         window.deletePackMessage = async (msgId) => {
             if (!currentViewingPack || !adminModeActive) return;
-            
             window.customConfirm("Erase this message from the archives?", async (confirmed) => {
-                if (!confirmed) return;
+                if(!confirmed) return;
                 const pathArgs = currentViewingPack.isPrivate
                     ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id, 'messages', msgId]
                     : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id, 'messages', msgId];
@@ -1578,18 +1694,13 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         window.openUpdatePackModal = () => {
             if (!currentViewingPack) return;
             
-            document.getElementById('update-pack-name').value = currentViewingPack.name || '';
-            document.getElementById('update-pack-desc').value = currentViewingPack.description || '';
+            document.getElementById('pack-update-name').value = currentViewingPack.name || '';
+            document.getElementById('pack-update-desc').value = currentViewingPack.description || '';
             
-            const iconValue = currentViewingPack.icon || 'fa-book-journal-whills';
-            document.getElementById('update-pack-selected-icon').value = iconValue;
-            
-            document.getElementById('update-pack-icon-selectors').querySelectorAll('.icon-selector-btn').forEach(b => {
-                if (b.dataset.icon === iconValue) {
-                    b.classList.add('active');
-                } else {
-                    b.classList.remove('active');
-                }
+            const icon = currentViewingPack.icon || 'fa-book-journal-whills';
+            document.getElementById('pack-update-icon').value = icon;
+            document.querySelectorAll('.update-icon-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.icon === icon);
             });
 
             document.getElementById('pack-update-notes').value = '';
@@ -1598,14 +1709,13 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         
         window.executePackUpdate = async () => {
             if (!currentViewingPack || activeRole !== 'dm') return;
+            
+            const newName = document.getElementById('pack-update-name').value.trim() || currentViewingPack.name;
+            const newDesc = document.getElementById('pack-update-desc').value.trim() || currentViewingPack.description;
+            const newIcon = document.getElementById('pack-update-icon').value || currentViewingPack.icon;
             const notes = document.getElementById('pack-update-notes').value.trim() || 'Minor updates and script adjustments.';
-            const newName = document.getElementById('update-pack-name').value.trim();
-            const newDesc = document.getElementById('update-pack-desc').value.trim();
-            const newIcon = document.getElementById('update-pack-selected-icon').value;
             const newVersion = (currentViewingPack.version || 1) + 1;
             
-            if (!newName) return window.showToast("Pack name is required.");
-
             const pathArgs = currentViewingPack.isPrivate 
                 ? ['artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks', currentViewingPack.id]
                 : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id];
@@ -1755,7 +1865,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- Auth and Database Listeners ---
+        // --- STREAMING_CHUNK:Auth and Database Listeners... ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {

@@ -29,6 +29,9 @@
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .form-input { background: rgba(255,255,255,0.5); border: 1px solid rgba(139, 90, 43, 0.4); padding: 8px 12px; border-radius: 4px; transition: border-color 0.2s; outline: none; }
         .form-input:focus { border-color: #7a1b1b; }
+        
+        /* Admin specific styles */
+        .admin-glow { box-shadow: 0 0 15px rgba(255, 0, 0, 0.6) !important; border-color: #ff4444 !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
@@ -62,7 +65,11 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto items-center">
+                <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto items-center flex-wrap justify-center">
+                    
+                    <!-- ADMIN TERMINAL TOGGLE -->
+                    <button id="btn-admin-terminal" onclick="window.toggleAdminMode()" class="hidden bg-red-900 text-white hover:bg-red-700 px-5 py-2 text-xs rounded shadow-lg border border-red-500 font-heading font-black tracking-widest uppercase transition-colors"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Owner Override</button>
+
                     <!-- CODEX PACKS (ALL ROLES) -->
                     <button onclick="window.openPacksModal()" class="fantasy-btn-alt px-5 py-2 text-xs rounded shadow-lg"><i class="fa-solid fa-book-journal-whills mr-2"></i> Codex Packs</button>
                     
@@ -82,7 +89,7 @@
 
             <!-- MY ADVENTURES -->
             <div class="mb-10">
-                <h2 class="text-xl font-heading text-gold mb-4 border-b border-gray-800 pb-2">My Adventures</h2>
+                <h2 id="grid-title-1" class="text-xl font-heading text-gold mb-4 border-b border-gray-800 pb-2">My Adventures</h2>
                 <div id="my-adventures-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Joined campaigns populate here -->
                 </div>
@@ -90,7 +97,7 @@
 
             <!-- PUBLIC REALMS -->
             <div class="mb-10">
-                <h2 class="text-xl font-heading text-gray-500 mb-4 border-b border-gray-800 pb-2">Public Realms</h2>
+                <h2 id="grid-title-2" class="text-xl font-heading text-gray-500 mb-4 border-b border-gray-800 pb-2">Public Realms</h2>
                 <div id="public-realms-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-90">
                     <!-- Public campaigns populate here -->
                 </div>
@@ -276,6 +283,7 @@
         </div>
     </div>
 
+    <!-- SCRIPT INJECTION (The brains!) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -297,31 +305,52 @@
             appId: "1:1074491536795:web:56211729489be776d79d3e"
         };
 
+        // ** REPLACE THIS WITH YOUR EMAIL TO GAIN ADMIN OVERRIDE **
+        const ADMIN_OWNER_EMAIL = "admin@chronicles.com";
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         let currentUser = null;
         let allCampaigns = [];
+        let availablePacks = [];
         let allFetchedPacks = [];
         let currentViewingPack = null;
         let packMessagesUnsubscribe = null;
+        let adminModeActive = false;
 
         // Generate Random Invite Code
         function generateCode() {
             return Math.random().toString(36).substring(2, 8).toUpperCase();
         }
 
+        // Toggle Admin Mode
+        window.toggleAdminMode = () => {
+            adminModeActive = !adminModeActive;
+            
+            const btn = document.getElementById('btn-admin-terminal');
+            if (adminModeActive) {
+                btn.classList.add('admin-glow');
+                window.showToast("Admin Override Active. You see all.");
+            } else {
+                btn.classList.remove('admin-glow');
+                window.showToast("Admin Override Deactivated.");
+            }
+            renderCampaigns(); // Re-render to show everything
+        };
+
         // Generate Card HTML
         function createCampaignCard(camp, isMine) {
             const d = document.createElement('div');
             d.className = "bg-black bg-opacity-60 rounded-lg card p-5 flex flex-col justify-between group";
             
-            const isDM = currentUser && camp.dmId === currentUser.uid;
+            // Check real ownership OR if Admin Mode is active
+            const isDM = (currentUser && camp.dmId === currentUser.uid) || adminModeActive;
             
             // Interaction logic based on Role
             d.onclick = () => {
-                if (isMine) {
+                if (isMine || adminModeActive) {
                     try { window.location.href = `characters.html?id=${camp.id}`; } 
                     catch(e) { window.showToast("Redirects disabled in preview window."); }
                 } else if (currentUser.role === 'player' && camp.visibility === 'public') {
@@ -333,7 +362,8 @@
 
             let badges = '';
             
-            if (isDM) badges += `<span class="bg-blood text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading font-black shadow-md">DM</span>`;
+            if (isDM && !adminModeActive) badges += `<span class="bg-blood text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading font-black shadow-md">DM</span>`;
+            else if (adminModeActive) badges += `<span class="bg-red-600 text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading font-black shadow-md"><i class="fa-solid fa-triangle-exclamation mr-1"></i>ADMIN</span>`;
             else if (isMine) badges += `<span class="bg-green-700 text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading font-black shadow-md">Joined</span>`;
 
             if (camp.visibility === 'private') badges += `<span class="bg-gray-800 text-gray-400 border border-gray-600 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md ml-1"><i class="fa-solid fa-lock text-[7px] mr-1"></i>Private</span>`;
@@ -343,13 +373,13 @@
             // DM TOOLS (Edit & Delete) AND PLAYER TOOLS (Leave)
             const editBtn = isDM ? `<button onclick="event.stopPropagation(); window.openEditCampaign('${camp.id}')" class="text-gold hover:text-yellow-400 transition-colors ml-3" title="Edit Realm"><i class="fa-solid fa-pen"></i></button>` : '';
             const deleteBtn = isDM ? `<button onclick="event.stopPropagation(); window.deleteCampaign('${camp.id}', '${camp.name.replace(/'/g, "\\'")}')" class="text-blood hover:text-red-400 transition-colors ml-3" title="Delete Realm"><i class="fa-solid fa-trash-can"></i></button>` : '';
-            const leaveBtn = (!isDM && isMine) ? `<button onclick="event.stopPropagation(); window.leaveCampaign('${camp.id}', '${camp.name.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-parchment transition-colors ml-3" title="Leave Realm"><i class="fa-solid fa-right-from-bracket"></i></button>` : '';
+            const leaveBtn = (!isDM && isMine && !adminModeActive) ? `<button onclick="event.stopPropagation(); window.leaveCampaign('${camp.id}', '${camp.name.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-parchment transition-colors ml-3" title="Leave Realm"><i class="fa-solid fa-right-from-bracket"></i></button>` : '';
 
             const descText = camp.description ? `<p class="text-xs text-gray-400 font-serif mb-4 line-clamp-2">${camp.description}</p>` : '';
 
             // Footer Text logic
             let footerText = 'Click to enter realm';
-            if (isDM) footerText = `Code: <span class="text-white bg-gray-800 px-1 rounded">${camp.inviteCode}</span>`;
+            if (isDM || adminModeActive) footerText = `Code: <span class="text-white bg-gray-800 px-1 rounded">${camp.inviteCode}</span>`;
             else if (!isMine && currentUser.role === 'player') footerText = '<span class="text-gold group-hover:text-yellow-300 transition-colors"><i class="fa-solid fa-door-open mr-1"></i> Click to Join Realm</span>';
             else if (!isMine && currentUser.role === 'dm') footerText = '<span class="text-gray-600">Locked to other DMs</span>';
 
@@ -369,7 +399,7 @@
                 </div>
                 <div class="border-t border-gray-700 pt-3 flex justify-between items-center mt-2">
                     <span class="text-[9px] text-gray-500 uppercase font-heading tracking-widest">${footerText}</span>
-                    <i class="fa-solid fa-chevron-right ${!isMine && currentUser.role === 'dm' ? 'text-gray-800' : 'text-gray-600 group-hover:text-gold transition-colors'} text-xs"></i>
+                    <i class="fa-solid fa-chevron-right ${!isMine && currentUser.role === 'dm' && !adminModeActive ? 'text-gray-800' : 'text-gray-600 group-hover:text-gold transition-colors'} text-xs"></i>
                 </div>
             `;
             return d;
@@ -385,20 +415,37 @@
 
             const joinedIds = currentUser?.joinedCampaigns || [];
 
-            allCampaigns.forEach(camp => {
-                const isMine = joinedIds.includes(camp.id) || camp.dmId === currentUser.uid;
-                
-                if (isMine) {
-                    myGrid.appendChild(createCampaignCard(camp, true));
-                } else if (camp.visibility === 'public') {
-                    pubGrid.appendChild(createCampaignCard(camp, false));
-                }
-            });
+            if (adminModeActive) {
+                // ADMIN MODE: Throw EVERYTHING into the top grid so they can manage it
+                document.getElementById('grid-title-1').innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500 mr-2"></i> Owner Archive Override (All Realms)';
+                document.getElementById('grid-title-2').classList.add('hidden');
+                pubGrid.classList.add('hidden');
+
+                allCampaigns.forEach(camp => {
+                    myGrid.appendChild(createCampaignCard(camp, false)); // Force false so it shows Admin badge
+                });
+
+            } else {
+                // NORMAL MODE
+                document.getElementById('grid-title-1').innerText = 'My Adventures';
+                document.getElementById('grid-title-2').classList.remove('hidden');
+                pubGrid.classList.remove('hidden');
+
+                allCampaigns.forEach(camp => {
+                    const isMine = joinedIds.includes(camp.id) || camp.dmId === currentUser.uid;
+                    
+                    if (isMine) {
+                        myGrid.appendChild(createCampaignCard(camp, true));
+                    } else if (camp.visibility === 'public') {
+                        pubGrid.appendChild(createCampaignCard(camp, false));
+                    }
+                });
+            }
 
             if (myGrid.children.length === 0) {
-                myGrid.innerHTML = `<div class="col-span-full py-4 text-center border border-dashed border-gray-800 rounded bg-black bg-opacity-30"><p class="text-gray-500 text-xs italic font-serif">You have not joined any adventures yet.</p></div>`;
+                myGrid.innerHTML = `<div class="col-span-full py-4 text-center border border-dashed border-gray-800 rounded bg-black bg-opacity-30"><p class="text-gray-500 text-xs italic font-serif">No adventures found.</p></div>`;
             }
-            if (pubGrid.children.length === 0) {
+            if (pubGrid.children.length === 0 && !adminModeActive) {
                 pubGrid.innerHTML = `<div class="col-span-full py-4 text-center border border-dashed border-gray-800 rounded bg-black bg-opacity-30"><p class="text-gray-500 text-xs italic font-serif">No public realms are currently available.</p></div>`;
             }
         }
@@ -638,7 +685,7 @@
                 let packName = "Blank Slate";
                 let selectedPack = null;
                 if (packId) {
-                    selectedPack = allFetchedPacks.find(p => p.id === packId);
+                    selectedPack = availablePacks.find(p => p.id === packId);
                     if (selectedPack) packName = selectedPack.name;
                 }
 
@@ -723,7 +770,7 @@
 
                 let selectedPack = null;
                 if (packId) {
-                    selectedPack = allFetchedPacks.find(p => p.id === packId);
+                    selectedPack = availablePacks.find(p => p.id === packId);
                     if (selectedPack) {
                         updates.packName = selectedPack.name; 
                         
@@ -833,12 +880,60 @@
                 const roleBadge = document.getElementById('user-role-badge');
                 const createBtn = document.getElementById('btn-create-campaign');
                 const playerActions = document.getElementById('player-actions');
+                const adminBtn = document.getElementById('btn-admin-terminal');
+
+                // Reveal the Admin Owner Button if email matches
+                if (u.email === ADMIN_OWNER_EMAIL) {
+                    adminBtn.classList.remove('hidden');
+                }
 
                 if (currentUser.role === 'dm') {
                     roleBadge.innerText = 'DM';
                     roleBadge.className = 'bg-blood text-white px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-heading font-black shadow-md';
                     createBtn.classList.remove('hidden');
                     playerActions.classList.add('hidden');
+                    
+                    // Fetch Packs for the dropdown
+                    try {
+                        const pubSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'public', 'data', 'scriptPacks'));
+                        const privSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks'));
+                        availablePacks = [
+                            ...pubSnap.docs.map(d => ({id: d.id, isPrivate: false, ...d.data()})),
+                            ...privSnap.docs.map(d => ({id: d.id, isPrivate: true, ...d.data()}))
+                        ];
+                        
+                        const populatePackSelect = (selectId, previewId, defaultText) => {
+                            const packSelect = document.getElementById(selectId);
+                            if (packSelect) {
+                                packSelect.innerHTML = `<option value="">${defaultText}</option>`;
+                                availablePacks.forEach(p => {
+                                    const visLabel = p.isPrivate ? '(Private)' : '(Public)';
+                                    const arcLabel = p.isDeleted ? '[Archived]' : '';
+                                    packSelect.innerHTML += `<option value="${p.id}">${p.name} ${visLabel} ${arcLabel}</option>`;
+                                });
+                                
+                                const packPreview = document.getElementById(previewId);
+                                packSelect.addEventListener('change', (e) => {
+                                    const pid = e.target.value;
+                                    const p = availablePacks.find(x => x.id === pid);
+                                    if (p) {
+                                        const arcWarning = p.isDeleted ? `<div class="text-red-600 font-bold mb-2 font-heading uppercase tracking-widest text-[10px]"><i class="fa-solid fa-box-archive mr-1"></i> Archived - No Longer Updating</div>` : '';
+                                        packPreview.innerHTML = `${arcWarning}<b class="font-heading font-black text-blood not-italic uppercase text-[10px] tracking-widest block mb-1">Version ${p.version || 1}</b><span class="font-bold text-gray-800">Latest Update:</span> ${p.updateNotes || 'Initial publication.'}<br><br><span class="text-gray-600">${p.description || 'No description provided.'}</span>`;
+                                        packPreview.classList.remove('hidden');
+                                    } else {
+                                        packPreview.classList.add('hidden');
+                                    }
+                                });
+                            }
+                        };
+
+                        populatePackSelect('new-campaign-pack', 'new-campaign-pack-preview', 'Blank Slate (No Scripts)');
+                        populatePackSelect('edit-campaign-pack', 'edit-campaign-pack-preview', 'No Additional Pack');
+                        
+                    } catch(err) {
+                        console.error("Error fetching packs:", err);
+                    }
+
                 } else {
                     roleBadge.innerText = 'PLAYER';
                     roleBadge.className = 'bg-gray-600 text-white px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-heading font-black shadow-md';
@@ -858,39 +953,8 @@
                         ...pubSnap.docs.map(d => ({id: d.id, isPrivate: false, ...d.data()})),
                         ...privSnap.docs.map(d => ({id: d.id, isPrivate: true, ...d.data()}))
                     ];
-                    
-                    if (currentUser.role === 'dm') {
-                        const populatePackSelect = (selectId, previewId, defaultText) => {
-                            const packSelect = document.getElementById(selectId);
-                            if (packSelect) {
-                                packSelect.innerHTML = `<option value="">${defaultText}</option>`;
-                                allFetchedPacks.forEach(p => {
-                                    const visLabel = p.isPrivate ? '(Private)' : '(Public)';
-                                    const arcLabel = p.isDeleted ? '[Archived]' : '';
-                                    packSelect.innerHTML += `<option value="${p.id}">${p.name} ${visLabel} ${arcLabel}</option>`;
-                                });
-                                
-                                const packPreview = document.getElementById(previewId);
-                                packSelect.addEventListener('change', (e) => {
-                                    const pid = e.target.value;
-                                    const p = allFetchedPacks.find(x => x.id === pid);
-                                    if (p) {
-                                        const arcWarning = p.isDeleted ? `<div class="text-red-600 font-bold mb-2 font-heading uppercase tracking-widest text-[10px]"><i class="fa-solid fa-box-archive mr-1"></i> Archived - No Longer Updating</div>` : '';
-                                        packPreview.innerHTML = `${arcWarning}<b class="font-heading font-black text-blood not-italic uppercase text-[10px] tracking-widest block mb-1">Version ${p.version || 1}</b><span class="font-bold text-gray-800">Latest Update:</span> ${p.updateNotes || 'Initial publication.'}<br><br><span class="text-gray-600">${p.description || 'No description provided.'}</span>`;
-                                        packPreview.classList.remove('hidden');
-                                    } else {
-                                        packPreview.classList.add('hidden');
-                                    }
-                                });
-                            }
-                        };
-
-                        populatePackSelect('new-campaign-pack', 'new-campaign-pack-preview', 'Blank Slate (No Scripts)');
-                        populatePackSelect('edit-campaign-pack', 'edit-campaign-pack-preview', 'No Additional Pack');
-                    }
-                    
                 } catch(err) {
-                    console.error("Error fetching packs:", err);
+                    console.error("Error fetching generic packs:", err);
                 }
 
                 // Hide loading overlay

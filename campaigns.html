@@ -52,6 +52,10 @@
 </head>
 <body class="min-h-screen flex flex-col items-center">
 
+    <div id="banned-banner" class="hidden w-full bg-red-900 text-white text-center py-2 text-xs font-black uppercase tracking-widest font-heading border-b border-red-500 shadow-lg relative z-[1000]">
+        <i class="fa-solid fa-gavel mr-2"></i> You have been banished from the Tavern and joining new Realms.
+    </div>
+
     <div id="toast" class="toast">Message</div>
 
     <!-- Initial Loading State -->
@@ -446,6 +450,7 @@
         let activeChatTargetId = null;
         let activeChatTargetName = "";
         let dmUnreadCounts = {};
+        window.globalMessages = [];
 
         // Generate Random Invite Code
         function generateCode() {
@@ -465,6 +470,7 @@
                 window.showToast("Admin Override Deactivated.");
             }
             renderCampaigns(); // Re-render to show everything
+            if (window.renderGlobalChat) window.renderGlobalChat(); // Re-render chat to show/hide mod tools
         };
 
         // Generate Card HTML
@@ -627,48 +633,92 @@
             const q = query(collection(db, 'artifacts', 'global_chat', 'public', 'data', 'messages'));
             
             globalChatUnsub = onSnapshot(q, (snap) => {
-                const msgs = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => a.timestamp - b.timestamp).slice(-50);
-                const container = document.getElementById('global-chat-messages');
-                
-                if (msgs.length === 0) {
-                    container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">The tavern is quiet...</p>`;
-                } else {
-                    container.innerHTML = msgs.map(m => {
-                        const isMe = m.authorId === currentUser.uid;
-                        const roleColor = m.authorRole === 'dm' ? 'text-blood' : 'text-gold';
-                        const roleIcon = m.authorRole === 'dm' ? '<i class="fa-solid fa-dragon ml-1 text-[8px]" title="Dungeon Master"></i>' : '';
-                        const align = isMe ? 'text-right' : 'text-left';
-                        const bg = isMe ? 'bg-indigo-900/30 border-indigo-800' : 'bg-black/40 border-gray-700';
-                        
-                        return `
-                        <div class="chat-msg ${align}">
-                            <div class="text-[9px] font-heading font-bold uppercase tracking-widest mb-1">
-                                <span class="${roleColor}">${m.authorName}${roleIcon}</span>
-                                <span class="text-gray-600 ml-2">${window.formatChatTime(m.timestamp)}</span>
-                            </div>
-                            <div class="inline-block p-2 rounded text-sm font-serif text-gray-300 border ${bg} text-left max-w-[85%] break-words">
-                                ${m.text}
-                            </div>
-                        </div>
-                        `;
-                    }).join('');
-                    
-                    // Scroll to bottom
-                    container.scrollTop = container.scrollHeight;
-                    
-                    // Show badge if panel is closed
-                    const panel = document.getElementById('global-chat-panel');
-                    if (!panel.classList.contains('open') && msgs.length > 0) {
-                        const lastMsg = msgs[msgs.length - 1];
-                        if (lastMsg.authorId !== currentUser.uid) {
-                            document.getElementById('global-unread-badge').classList.remove('hidden');
-                        }
-                    }
-                }
+                window.globalMessages = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => a.timestamp - b.timestamp).slice(-50);
+                window.renderGlobalChat();
             });
         };
 
+        window.renderGlobalChat = () => {
+            const msgs = window.globalMessages || [];
+            const container = document.getElementById('global-chat-messages');
+            
+            if (msgs.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">The tavern is quiet...</p>`;
+            } else {
+                container.innerHTML = msgs.map(m => {
+                    const isMe = m.authorId === currentUser.uid;
+                    const roleColor = m.authorRole === 'dm' ? 'text-blood' : 'text-gold';
+                    const roleIcon = m.authorRole === 'dm' ? '<i class="fa-solid fa-dragon ml-1 text-[8px]" title="Dungeon Master"></i>' : '';
+                    const align = isMe ? 'text-right' : 'text-left';
+                    const bg = isMe ? 'bg-indigo-900/30 border-indigo-800' : 'bg-black/40 border-gray-700';
+                    
+                    let adminTools = '';
+                    if (adminModeActive) {
+                        adminTools = `<button onclick="window.deleteChatMessage('${m.id}')" class="text-gray-500 hover:text-red-500 ml-2" title="Delete Message"><i class="fa-solid fa-trash-can"></i></button>`;
+                        if (m.authorId !== currentUser.uid) {
+                            adminTools += `<button onclick="window.banUser('${m.authorId}', '${m.authorName.replace(/'/g, "\\'")}')" class="text-gray-500 hover:text-red-500 ml-1" title="Ban User"><i class="fa-solid fa-gavel"></i></button>`;
+                        }
+                    }
+
+                    return `
+                    <div class="chat-msg ${align}">
+                        <div class="text-[9px] font-heading font-bold uppercase tracking-widest mb-1">
+                            <span class="${roleColor}">${m.authorName}${roleIcon}</span>
+                            <span class="text-gray-600 ml-2">${window.formatChatTime(m.timestamp)}</span>
+                            ${adminTools}
+                        </div>
+                        <div class="inline-block p-2 rounded text-sm font-serif text-gray-300 border ${bg} text-left max-w-[85%] break-words">
+                            ${m.text}
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+                
+                // Scroll to bottom
+                container.scrollTop = container.scrollHeight;
+                
+                // Show badge if panel is closed
+                const panel = document.getElementById('global-chat-panel');
+                if (!panel.classList.contains('open') && msgs.length > 0) {
+                    const lastMsg = msgs[msgs.length - 1];
+                    if (lastMsg.authorId !== currentUser.uid) {
+                        document.getElementById('global-unread-badge').classList.remove('hidden');
+                    }
+                }
+            }
+        };
+
+        window.deleteChatMessage = async (msgId) => {
+            if (!adminModeActive) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', 'messages', msgId));
+                window.showToast("Message erased from archives.");
+            } catch(e) {
+                window.showToast("Failed to delete message.");
+            }
+        };
+
+        window.banUser = async (uid, username) => {
+            if (!adminModeActive) return;
+            if (!confirm(`Are you sure you want to ban ${username}? They will be blocked from chat and joining realms.`)) return;
+            try {
+                await updateDoc(doc(db, 'users', uid), {
+                    isBanned: true,
+                    notifications: arrayUnion({
+                        type: 'BANNED',
+                        itemName: 'System Ban',
+                        message: 'You have been banished from communications and joining new realms due to a violation of the archives.',
+                        timestamp: Date.now()
+                    })
+                });
+                window.showToast(`${username} has been banished.`);
+            } catch(e) {
+                window.showToast("Failed to ban user.");
+            }
+        };
+
         window.sendGlobalMessage = async () => {
+            if (currentUser?.isBanned) return window.showToast("You are banished. Action denied.");
             const input = document.getElementById('global-chat-input');
             const text = input.value.trim();
             if (!text || !currentUser) return;
@@ -825,6 +875,7 @@
         };
 
         window.sendDirectMessage = async () => {
+            if (currentUser?.isBanned) return window.showToast("You are banished. Action denied.");
             const input = document.getElementById('active-dm-input');
             const text = input.value.trim();
             if (!text || !currentUser || !activeChatTargetId) return;
@@ -1136,6 +1187,7 @@
         };
 
         window.joinByCode = async () => {
+            if (currentUser?.isBanned) return window.showToast("You are banished. Action denied.");
             const code = document.getElementById('invite-code-input').value.trim().toUpperCase();
             if (!code) return window.showToast("Enter a code first.");
 
@@ -1171,6 +1223,7 @@
 
         // Quick join for public campaigns
         window.joinPublicCampaign = async (id, name) => {
+            if (currentUser?.isBanned) return window.showToast("You are banished. Action denied.");
             if (!currentUser || currentUser.role !== 'player') return;
             try {
                 const camp = allCampaigns.find(c => c.id === id);
@@ -1196,6 +1249,7 @@
         };
 
         window.createCampaign = async () => {
+            if (currentUser?.isBanned) return window.showToast("You are banished. Action denied.");
             if (!currentUser || currentUser.role !== 'dm') return;
             const name = document.getElementById('new-campaign-name').value.trim();
             const desc = document.getElementById('new-campaign-desc').value.trim();
@@ -1542,6 +1596,14 @@
                         let updatedDisplay = currentUser.username || (u.email ? u.email.split('@')[0] : 'Traveler');
                         document.getElementById('user-display-name').innerText = updatedDisplay;
                         
+                        // Check Ban Status
+                        const banBanner = document.getElementById('banned-banner');
+                        if (currentUser.isBanned) {
+                            if (banBanner) banBanner.classList.remove('hidden');
+                        } else {
+                            if (banBanner) banBanner.classList.add('hidden');
+                        }
+
                         // Check for Admin Notifications
                         if (currentUser.notifications && currentUser.notifications.length > 0) {
                             const notifContainer = document.getElementById('notifications-list');

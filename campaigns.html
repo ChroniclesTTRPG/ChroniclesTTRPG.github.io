@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <script>
         tailwind.config = {
             theme: { extend: { colors: { 'parchment': '#f1e5c5', 'ink': '#2c1e16', 'blood': '#7a1b1b', 'gold': '#c5a059', 'wood': '#1a110b' }, fontFamily: { 'serif': ['Lora', 'serif'], 'heading': ['Cinzel', 'serif'] } } }
@@ -45,6 +46,16 @@
         .chat-btn-toggle:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.8); }
         .chat-btn-toggle .unread-badge { position: absolute; top: -4px; right: -4px; background: #7a1b1b; color: white; font-size: 10px; font-family: 'Cinzel', serif; font-weight: 900; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #f1e5c5; }
         
+        .audio-btn-toggle { position: fixed; bottom: 96px; right: 24px; width: 48px; height: 48px; border-radius: 50%; background: #1a110b; color: #c5a059; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 900; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 2px solid #c5a059; transition: all 0.2s; }
+        .audio-btn-toggle:hover { background: #2c1e16; color: #f1e5c5; transform: scale(1.1); }
+        .audio-btn-toggle.playing { background: #7a1b1b; color: #f1e5c5; border-color: #f1e5c5; animation: pulseGlow 2s infinite; }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 5px rgba(122, 27, 27, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(122, 27, 27, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(122, 27, 27, 0.5); }
+        }
+
         .dm-contact { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px dashed rgba(139, 90, 43, 0.3); cursor: pointer; transition: background 0.2s; }
         .dm-contact:hover { background: rgba(197, 160, 89, 0.1); }
         .dm-contact.has-unread { background: rgba(122, 27, 27, 0.15); border-left: 3px solid #7a1b1b; }
@@ -131,6 +142,11 @@
 
         </div>
     </div>
+
+    <!-- AUDIO TOGGLE BUTTON -->
+    <button id="audio-toggle-btn" class="audio-btn-toggle" onclick="window.toggleAmbiance()" title="Toggle Tavern Ambiance">
+        <i id="audio-icon" class="fa-solid fa-volume-xmark"></i>
+    </button>
 
     <!-- CHAT TOGGLE BUTTON -->
     <div id="chat-toggle-btn" class="chat-btn-toggle hidden" onclick="window.toggleChatPanel()">
@@ -557,6 +573,61 @@
         let dmUnreadCounts = {};
         window.globalMessages = [];
         window.myMessageLog = []; // Rate limiting log
+        
+        // Audio State
+        let isAmbiancePlaying = false;
+        let ambientSynth, hearthNoise, lfo;
+
+        // --- AMBIENT AUDIO LOGIC ---
+        window.initAudioEngine = async () => {
+            await Tone.start();
+            
+            // Warm drone (tavern murmur)
+            ambientSynth = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sine" },
+                envelope: { attack: 4, decay: 2, sustain: 0.8, release: 6 }
+            }).toDestination();
+            ambientSynth.volume.value = -25; // Keep it soft
+
+            // Hearth fire crackle
+            hearthNoise = new Tone.Noise("brown").toDestination();
+            hearthNoise.volume.value = -35;
+            
+            // Add movement to the drone
+            lfo = new Tone.LFO(0.1, -30, -20).start();
+            lfo.connect(ambientSynth.volume);
+        };
+
+        window.toggleAmbiance = async () => {
+            const btn = document.getElementById('audio-toggle-btn');
+            const icon = document.getElementById('audio-icon');
+
+            if (!isAmbiancePlaying) {
+                if (!ambientSynth) await window.initAudioEngine();
+                
+                isAmbiancePlaying = true;
+                btn.classList.add('playing');
+                icon.className = "fa-solid fa-volume-high";
+                
+                hearthNoise.start();
+                // Play a warm, slow chord loop
+                Tone.Transport.scheduleRepeat((time) => {
+                    ambientSynth.triggerAttackRelease(["C3", "E3", "G3", "B3"], "4n", time);
+                }, "2m");
+                Tone.Transport.start();
+                
+                window.showToast("Tavern ambiance enabled.");
+            } else {
+                isAmbiancePlaying = false;
+                btn.classList.remove('playing');
+                icon.className = "fa-solid fa-volume-xmark";
+                
+                hearthNoise.stop();
+                Tone.Transport.stop();
+                Tone.Transport.cancel(); // Clear scheduled events
+                ambientSynth.releaseAll();
+            }
+        };
 
         // Rate Limiter / Safety Check
         const checkRateLimit = (text) => {

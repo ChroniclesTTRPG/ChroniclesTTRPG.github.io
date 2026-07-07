@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <script>
         tailwind.config = {
             theme: { extend: { colors: { 'parchment': '#f1e5c5', 'ink': '#2c1e16', 'blood': '#7a1b1b', 'gold': '#c5a059', 'wood': '#1a110b' }, fontFamily: { 'serif': ['Lora', 'serif'], 'heading': ['Cinzel', 'serif'] } } }
@@ -35,7 +34,7 @@
         .admin-glow { box-shadow: 0 0 15px rgba(255, 0, 0, 0.6) !important; border-color: #ff4444 !important; }
         
         /* Chat Styles */
-        .chat-panel { position: fixed; top: 0; right: -400px; width: 400px; height: 100vh; background-color: #1a110b; border-left: 2px solid #c5a059; box-shadow: -10px 0 30px rgba(0,0,0,0.8); transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; display: flex; flex-direction: column; }
+        .chat-panel { position: fixed; top: 0; right: -400px; width: 400px; max-width: 100vw; height: 100vh; background-color: #1a110b; border-left: 2px solid #c5a059; box-shadow: -10px 0 30px rgba(0,0,0,0.8); transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; display: flex; flex-direction: column; }
         .chat-panel.open { right: 0; }
         .chat-tab { flex: 1; text-align: center; padding: 12px 0; font-family: 'Cinzel', serif; font-size: 12px; font-weight: 900; color: #888; border-bottom: 2px solid #333; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; background: rgba(0,0,0,0.4); }
         .chat-tab.active { color: #f1e5c5; border-bottom-color: #c5a059; background: rgba(122, 27, 27, 0.2); text-shadow: 0 0 10px rgba(197, 160, 89, 0.5); }
@@ -45,22 +44,10 @@
         .chat-btn-toggle { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: #f1e5c5; color: #1a110b; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 900; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 2px solid #c5a059; transition: transform 0.2s, box-shadow 0.2s; }
         .chat-btn-toggle:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.8); }
         .chat-btn-toggle .unread-badge { position: absolute; top: -4px; right: -4px; background: #7a1b1b; color: white; font-size: 10px; font-family: 'Cinzel', serif; font-weight: 900; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #f1e5c5; }
-        
-        .audio-btn-toggle { position: fixed; bottom: 96px; right: 24px; width: 48px; height: 48px; border-radius: 50%; background: #1a110b; color: #c5a059; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 900; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 2px solid #c5a059; transition: all 0.2s; }
-        .audio-btn-toggle:hover { background: #2c1e16; color: #f1e5c5; transform: scale(1.1); }
-        .audio-btn-toggle.playing { background: #7a1b1b; color: #f1e5c5; border-color: #f1e5c5; animation: pulseGlow 2s infinite; }
-
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 5px rgba(122, 27, 27, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(122, 27, 27, 0.8); }
-            100% { box-shadow: 0 0 5px rgba(122, 27, 27, 0.5); }
-        }
-
         .dm-contact { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px dashed rgba(139, 90, 43, 0.3); cursor: pointer; transition: background 0.2s; }
         .dm-contact:hover { background: rgba(197, 160, 89, 0.1); }
         .dm-contact.has-unread { background: rgba(122, 27, 27, 0.15); border-left: 3px solid #7a1b1b; }
-        
-        .deleted-msg-admin { border-left: 3px solid #ff4444; background-color: rgba(255, 0, 0, 0.05); }
+        .deleted-msg-admin { border-left: 3px solid #ff4444 !important; background-color: rgba(255, 0, 0, 0.05) !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
@@ -78,7 +65,7 @@
     <!-- Initial Loading State with Global Error Boundry -->
     <div id="initial-loading" class="flex flex-col items-center justify-center h-screen fade-in w-full text-center z-50 bg-wood">
         <i class="fa-solid fa-compass fa-spin text-6xl text-gray-500 mb-6"></i>
-        <h2 class="font-heading text-2xl text-parchment animate-pulse">Charting the Realms...</h2>
+        <h2 class="font-heading text-2xl text-parchment animate-pulse tracking-widest">Charting the Realms...</h2>
     </div>
 
     <!-- MAIN DASHBOARD -->
@@ -143,11 +130,6 @@
         </div>
     </div>
 
-    <!-- AUDIO TOGGLE BUTTON -->
-    <button id="audio-toggle-btn" class="audio-btn-toggle" onclick="window.toggleAmbiance()" title="Toggle Tavern Ambiance">
-        <i id="audio-icon" class="fa-solid fa-volume-xmark"></i>
-    </button>
-
     <!-- CHAT TOGGLE BUTTON -->
     <div id="chat-toggle-btn" class="chat-btn-toggle hidden" onclick="window.toggleChatPanel()">
         <i class="fa-solid fa-comments"></i>
@@ -195,7 +177,7 @@
             <div class="p-3 border-b border-gray-700 bg-black/20 shrink-0">
                 <p class="text-[10px] text-gray-500 font-serif italic mb-2 text-center">Communicate privately. Find a user to begin.</p>
                 <div class="flex gap-2">
-                    <input type="text" id="dm-search-input" class="form-input text-xs w-full py-1.5" placeholder="Search by name...">
+                    <input type="text" id="dm-search-input" class="form-input text-xs w-full py-1.5" placeholder="Search by name or 4-digit code...">
                     <button onclick="window.searchUsersForDM()" class="bg-gray-800 hover:bg-gray-700 text-gold px-3 py-1.5 rounded text-xs border border-gray-600"><i class="fa-solid fa-search"></i></button>
                     <button onclick="window.openCreateGroupModal()" class="bg-gray-800 hover:bg-gray-700 text-gold px-3 py-1.5 rounded text-xs border border-gray-600" title="Form Alliance"><i class="fa-solid fa-users"></i></button>
                 </div>
@@ -534,6 +516,11 @@
             <p class="text-[10px] text-gray-600 font-serif italic mb-4">Establish a private group channel.</p>
             
             <input type="text" id="new-group-name" class="fantasy-input w-full p-2 text-sm rounded mb-4" placeholder="Group Name (Optional)">
+
+            <div class="mb-4 text-left">
+                 <label class="block text-[10px] font-heading font-bold text-ink uppercase tracking-widest mb-1">4-Digit Invite Code (Required)</label>
+                 <input type="text" id="new-group-code" maxlength="4" pattern="\d{4}" class="fantasy-input w-full p-2 text-sm rounded text-center tracking-[0.5em] font-bold" placeholder="e.g. 1337" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
             
             <div class="flex gap-2 mb-4">
                 <input type="text" id="group-user-search" class="fantasy-input flex-grow p-2 text-sm rounded" placeholder="Search travelers...">
@@ -552,6 +539,21 @@
             <div class="flex justify-between gap-4 mt-6 border-t border-gray-300 pt-4">
                 <button onclick="window.closeCreateGroupModal()" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-ink font-heading transition-colors">Cancel</button>
                 <button onclick="window.confirmCreateGroup()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JOIN GROUP MODAL -->
+    <div id="join-group-modal" class="modal-overlay hidden z-[1050]">
+        <div class="parchment-bg rounded-lg max-w-sm w-full p-6 shadow-2xl border-2 border-gold text-center relative">
+            <h2 class="font-heading text-xl font-bold text-ink mb-1">Join an Alliance</h2>
+            <p class="text-[10px] text-gray-600 font-serif italic mb-6">Enter the 4-digit code to join an existing group.</p>
+            
+            <input type="text" id="join-group-code" maxlength="4" pattern="\d{4}" class="fantasy-input w-full p-3 text-lg rounded text-center tracking-[0.5em] font-bold mb-6" placeholder="0000" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            
+            <div class="flex justify-between gap-4">
+                <button onclick="document.getElementById('join-group-modal').classList.add('hidden')" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-ink font-heading transition-colors">Cancel</button>
+                <button onclick="window.confirmJoinGroup()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Join</button>
             </div>
         </div>
     </div>
@@ -629,69 +631,6 @@
         let dmUnreadCounts = {};
         window.globalMessages = [];
         window.myMessageLog = []; // Rate limiting log
-        
-        // Audio State
-        let isAmbiancePlaying = false;
-        let ambientSynth, hearthNoise;
-
-        // --- AMBIENT AUDIO LOGIC ---
-        window.initAudioEngine = () => {
-            if (ambientSynth) return;
-            // Warm drone (tavern murmur)
-            ambientSynth = new Tone.PolySynth(Tone.Synth, {
-                oscillator: { type: "triangle" }, // Changed to triangle for better laptop speaker visibility
-                envelope: { attack: 2, decay: 2, sustain: 0.8, release: 4 }
-            }).toDestination();
-            ambientSynth.volume.value = -15; // Boosted volume
-
-            // Hearth fire crackle
-            hearthNoise = new Tone.Noise("pink").toDestination();
-            hearthNoise.volume.value = -20; // Boosted volume
-        };
-
-        window.toggleAmbiance = async () => {
-            try {
-                // Safari Fix: Force strictly first start command.
-                await Tone.start();
-            } catch (err) {
-                console.error("Audio Context failed to start:", err);
-                window.showToast("Browser blocked audio. Try clicking again.");
-                return;
-            }
-
-            const btn = document.getElementById('audio-toggle-btn');
-            const icon = document.getElementById('audio-icon');
-
-            if (!isAmbiancePlaying) {
-                if (!ambientSynth) window.initAudioEngine();
-                
-                isAmbiancePlaying = true;
-                btn.classList.add('playing');
-                icon.className = "fa-solid fa-volume-high";
-                
-                hearthNoise.start();
-                
-                // Clear any lingering schedules
-                Tone.Transport.cancel();
-                
-                // Play a warm, slow chord loop (Shifted to C4/E4/G4 for laptop/phone speakers)
-                Tone.Transport.scheduleRepeat((time) => {
-                    ambientSynth.triggerAttackRelease(["C4", "E4", "G4"], "2n", time);
-                }, "1m");
-                
-                Tone.Transport.start();
-                window.showToast("Tavern ambiance enabled.");
-            } else {
-                isAmbiancePlaying = false;
-                btn.classList.remove('playing');
-                icon.className = "fa-solid fa-volume-xmark";
-                
-                if (hearthNoise) hearthNoise.stop();
-                Tone.Transport.stop();
-                Tone.Transport.cancel(); // Clear scheduled events
-                if (ambientSynth) ambientSynth.releaseAll();
-            }
-        };
 
         // Rate Limiter / Safety Check
         const checkRateLimit = (text) => {
@@ -758,7 +697,7 @@
             if (window.renderGlobalChat) window.renderGlobalChat(); // Re-render chat to show/hide mod tools
             if (window.activeChatTargetId) {
                 // If currently viewing a DM, trigger a re-render to show/hide mod tools there too
-                window.openDirectMessage(window.activeChatTargetId, window.activeChatTargetName);
+                window.openDirectMessage(window.activeChatTargetId, window.activeChatTargetName, window.activeChatIsGroup, window.activeChatMembers.join(','));
             }
         };
 
@@ -1138,6 +1077,13 @@
         window.searchUsersForDM = async () => {
             const queryText = document.getElementById('dm-search-input').value.trim().toLowerCase();
             if (!queryText) return window.showToast("Enter a name to search.");
+
+            // Check if it's a 4-digit code to join a group instead of a name search
+            if (/^\d{4}$/.test(queryText)) {
+                 document.getElementById('join-group-code').value = queryText;
+                 document.getElementById('join-group-modal').classList.remove('hidden');
+                 return;
+            }
             
             try {
                 // In a real app, this should be a cloud function. We pull all and filter locally due to Firebase limitations.
@@ -1275,7 +1221,7 @@
             document.getElementById('chat-view-active-dm').classList.remove('hidden');
             document.getElementById('active-dm-name').innerText = targetName;
             if(document.getElementById('dm-search-message-input')) document.getElementById('dm-search-message-input').value = '';
-            
+
             // Build Contextual Tools UI
             const toolsContainer = document.getElementById('active-dm-tools');
             if (window.activeChatIsGroup) {
@@ -1293,7 +1239,7 @@
                     <button onclick="window.promptBlockUser(window.activeChatTargetId, window.activeChatTargetName)" class="text-gray-500 hover:text-red-500 transition-colors" title="Block User"><i class="fa-solid fa-ban"></i></button>
                 `;
             }
-
+            
             // Clear unread count for this contact
             try {
                 await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`, targetId), { unreadCount: 0 });
@@ -1312,6 +1258,8 @@
 
         window.closeActiveDM = () => {
             window.activeChatTargetId = null;
+            window.activeChatIsGroup = false;
+            window.activeChatMembers = [];
             if (activeDmUnsub) { activeDmUnsub(); activeDmUnsub = null; }
             document.getElementById('chat-view-active-dm').classList.add('hidden');
             document.getElementById('chat-view-dms').classList.remove('hidden');
@@ -1323,6 +1271,23 @@
             if (!confirm(`Are you sure you want to ${actionText}?`)) return;
             
             try {
+                if (window.activeChatIsGroup) {
+                     // Remove self from the members array in the group document
+                     try {
+                         const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'groups', window.activeChatTargetId);
+                         await updateDoc(groupDocRef, {
+                             members: arrayRemove(currentUser.uid)
+                         });
+                         
+                         // Announce departure
+                         await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${window.activeChatTargetId}`), {
+                            text: `${currentUser.username} has left the alliance.`,
+                            authorId: 'system',
+                            timestamp: Date.now()
+                        });
+                     } catch(e) { console.error("Failed to remove from group array", e); }
+                }
+
                 await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`, window.activeChatTargetId));
                 window.showToast(window.activeChatIsGroup ? "Alliance left." : "Whisper cleared.");
                 window.closeActiveDM();
@@ -1351,7 +1316,7 @@
                             return window.showToast("This user is not accepting whispers from strangers.");
                         }
                     }
-                } catch(e) {} 
+                } catch(e) {} // Proceed if lookup fails
             }
             
             input.value = '';
@@ -1367,13 +1332,20 @@
                 });
 
                 if (window.activeChatIsGroup) {
-                    window.activeChatMembers.forEach(async (memberUid) => {
+                    // Pull the fresh member list in case people joined/left
+                    let freshMembers = window.activeChatMembers;
+                    try {
+                        const gSnap = await getDoc(doc(db, 'artifacts', 'global_chat', 'public', 'groups', window.activeChatTargetId));
+                        if (gSnap.exists()) freshMembers = gSnap.data().members || freshMembers;
+                    } catch(e) {}
+
+                    freshMembers.forEach(async (memberUid) => {
                         const targetRef = doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${memberUid}`, window.activeChatTargetId);
                         const targetSnap = await getDoc(targetRef);
                         const targetData = targetSnap.exists() ? targetSnap.data() : {
                             name: window.activeChatTargetName,
                             isGroup: true,
-                            members: window.activeChatMembers
+                            members: freshMembers
                         };
                         await setDoc(targetRef, {
                             ...targetData,
@@ -1458,6 +1430,7 @@
         window.openCreateGroupModal = () => {
             window.pendingGroupMembers = [];
             document.getElementById('new-group-name').value = '';
+            document.getElementById('new-group-code').value = '';
             document.getElementById('group-user-search').value = '';
             document.getElementById('group-search-results').innerHTML = '';
             document.getElementById('group-search-results').classList.add('hidden');
@@ -1526,18 +1499,41 @@
             if (window.pendingGroupMembers.length === 0) return window.showToast("Select at least one other traveler.");
             
             let groupName = document.getElementById('new-group-name').value.trim();
+            const groupCode = document.getElementById('new-group-code').value.trim();
+
+            if (!/^\d{4}$/.test(groupCode)) {
+                 return window.showToast("You must provide a 4-digit invite code.");
+            }
+
             if (!groupName) {
                 groupName = "Alliance: " + window.pendingGroupMembers.map(m => m.name).join(', ');
                 if (groupName.length > 30) groupName = groupName.substring(0, 30) + '...';
             }
 
-            const groupId = 'group_' + Date.now() + Math.random().toString(36).substring(2, 8);
+            const groupId = 'group_' + groupCode;
             const members = [currentUser.uid, ...window.pendingGroupMembers.map(m => m.id)];
             const now = Date.now();
 
             window.showToast("Forming alliance...");
             
             try {
+                // Check if code exists
+                const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'groups', groupId);
+                const gSnap = await getDoc(groupDocRef);
+                
+                if (gSnap.exists()) {
+                     return window.showToast("That 4-digit code is already in use by another alliance.");
+                }
+
+                // Register the group globally
+                await setDoc(groupDocRef, {
+                    name: groupName,
+                    code: groupCode,
+                    createdBy: currentUser.uid,
+                    createdAt: now,
+                    members: members
+                });
+
                 // Write to each member's contacts array
                 for (const uid of members) {
                     await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${uid}`, groupId), {
@@ -1552,7 +1548,7 @@
                 
                 // Add initial system message
                 await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${groupId}`), {
-                    text: `${currentUser.username} established the alliance.`,
+                    text: `${currentUser.username} established the alliance using code ${groupCode}.`,
                     authorId: 'system',
                     timestamp: now
                 });
@@ -1566,6 +1562,63 @@
             }
         };
 
+        window.confirmJoinGroup = async () => {
+            const code = document.getElementById('join-group-code').value.trim();
+            if (!/^\d{4}$/.test(code)) return window.showToast("Invalid code format.");
+
+            document.getElementById('join-group-modal').classList.add('hidden');
+            window.showToast("Searching for alliance...");
+
+            try {
+                const groupId = 'group_' + code;
+                const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'groups', groupId);
+                const gSnap = await getDoc(groupDocRef);
+
+                if (!gSnap.exists()) {
+                    return window.showToast("No alliance found with that code.");
+                }
+
+                const gData = gSnap.data();
+                const members = gData.members || [];
+
+                if (members.includes(currentUser.uid)) {
+                     window.showToast("You are already in this alliance.");
+                     window.openDirectMessage(groupId, gData.name, true, members.join(','));
+                     return;
+                }
+
+                // Add to Global Group List
+                members.push(currentUser.uid);
+                await updateDoc(groupDocRef, { members: members });
+
+                const now = Date.now();
+
+                // Add to personal contacts
+                await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`, groupId), {
+                    name: gData.name,
+                    isGroup: true,
+                    members: members,
+                    lastMessage: "You joined the alliance.",
+                    lastUpdated: now,
+                    unreadCount: 0
+                });
+
+                // Announce joining
+                await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${groupId}`), {
+                    text: `${currentUser.username} has joined the alliance.`,
+                    authorId: 'system',
+                    timestamp: now
+                });
+
+                window.showToast(`Joined ${gData.name}!`);
+                window.openDirectMessage(groupId, gData.name, true, members.join(','));
+
+            } catch(e) {
+                console.error(e);
+                window.showToast("Failed to join alliance.");
+            }
+        };
+
         window.renameGroup = async () => {
             if (!window.activeChatIsGroup) return;
             const newName = prompt("Enter new group name:", window.activeChatTargetName);
@@ -1573,11 +1626,17 @@
             
             window.showToast("Renaming group...");
             try {
-                const promises = window.activeChatMembers.map(uid => 
-                    updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${uid}`, window.activeChatTargetId), {
-                        name: newName.trim()
-                    })
-                );
+                // Update global registry
+                await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'groups', window.activeChatTargetId), { name: newName.trim() });
+
+                // Try to update for everyone (May fail if they left, but we catch it)
+                const promises = window.activeChatMembers.map(async (uid) => {
+                     try {
+                        await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${uid}`, window.activeChatTargetId), {
+                            name: newName.trim()
+                        });
+                     } catch(e) {}
+                });
                 await Promise.all(promises);
                 
                 await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${window.activeChatTargetId}`), {
@@ -1601,9 +1660,14 @@
             
             window.showToast("Destroying alliance...");
             try {
-                const promises = window.activeChatMembers.map(uid => 
-                    deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${uid}`, window.activeChatTargetId))
-                );
+                // Delete from global registry
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'groups', window.activeChatTargetId));
+
+                const promises = window.activeChatMembers.map(async (uid) => {
+                     try {
+                        await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${uid}`, window.activeChatTargetId));
+                     } catch(e) {}
+                });
                 await Promise.all(promises);
                 
                 window.closeActiveDM();

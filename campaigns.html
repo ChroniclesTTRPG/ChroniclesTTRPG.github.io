@@ -75,7 +75,7 @@
 
     <div id="toast" class="toast">Message</div>
 
-    <!-- Initial Loading State -->
+    <!-- Initial Loading State with Global Error Boundry -->
     <div id="initial-loading" class="flex flex-col items-center justify-center h-screen fade-in w-full text-center z-50 bg-wood">
         <i class="fa-solid fa-compass fa-spin text-6xl text-gray-500 mb-6"></i>
         <h2 class="font-heading text-2xl text-parchment animate-pulse">Charting the Realms...</h2>
@@ -532,6 +532,20 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, getDoc, addDoc, query, where, getDocs, arrayUnion, arrayRemove, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // --- GLOBAL ERROR BOUNDARY FOR GITHUB PAGES / CORS ISSUES ---
+        window.addEventListener('error', (event) => {
+            const loadingDiv = document.getElementById('initial-loading');
+            if (loadingDiv && !loadingDiv.classList.contains('hidden')) {
+                loadingDiv.innerHTML = `
+                    <div class="parchment-bg p-8 rounded border border-blood max-w-md text-center">
+                        <h2 class="font-heading text-xl text-blood font-bold mb-4">Script Execution Error</h2>
+                        <p class="text-sm font-serif text-ink mb-4">${event.message}</p>
+                        <p class="text-xs text-gray-600 font-bold">If you are on GitHub Pages, make sure your files are uploaded correctly and there are no syntax errors.</p>
+                    </div>
+                `;
+            }
+        });
+
         // --- CORE UI FUNCTIONS ---
         window.showToast = (m) => { 
             const t = document.getElementById('toast'); 
@@ -551,9 +565,20 @@
         // ** REPLACE THIS WITH YOUR EMAIL TO GAIN ADMIN OVERRIDE **
         const ADMIN_OWNER_EMAIL = "admin@chronicles.com";
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        let app, auth, db;
+        
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            document.getElementById('initial-loading').innerHTML = `
+                <div class="parchment-bg p-8 rounded border border-blood max-w-md text-center">
+                    <h2 class="font-heading text-xl text-blood font-bold mb-4">Initialization Error</h2>
+                    <p class="text-sm font-serif text-ink mb-4">${e.message}</p>
+                </div>
+            `;
+        }
 
         let currentUser = null;
         let allCampaigns = [];
@@ -579,9 +604,7 @@
         let ambientSynth, hearthNoise, lfo;
 
         // --- AMBIENT AUDIO LOGIC ---
-        window.initAudioEngine = async () => {
-            await Tone.start();
-            
+        window.initAudioEngine = () => {
             // Warm drone (tavern murmur)
             ambientSynth = new Tone.PolySynth(Tone.Synth, {
                 oscillator: { type: "sine" },
@@ -599,11 +622,16 @@
         };
 
         window.toggleAmbiance = async () => {
+            // Safari Fix: AudioContext MUST be started immediately upon the user interaction
+            if (Tone.context.state !== 'running') {
+                await Tone.start();
+            }
+
             const btn = document.getElementById('audio-toggle-btn');
             const icon = document.getElementById('audio-icon');
 
             if (!isAmbiancePlaying) {
-                if (!ambientSynth) await window.initAudioEngine();
+                if (!ambientSynth) window.initAudioEngine();
                 
                 isAmbiancePlaying = true;
                 btn.classList.add('playing');
@@ -2220,7 +2248,13 @@
 
             } catch (error) {
                 console.error(error);
-                document.getElementById('initial-loading').innerHTML = `<h2 class="font-heading text-2xl text-blood">Database Connection Failed</h2>`;
+                document.getElementById('initial-loading').innerHTML = `
+                    <div class="parchment-bg p-8 rounded border border-blood max-w-md text-center">
+                        <h2 class="font-heading text-xl text-blood font-bold mb-4">Connection Failed</h2>
+                        <p class="text-sm text-ink mb-4">${error.message}</p>
+                        <p class="text-xs text-gray-600 font-bold">If on GitHub Pages, ensure <span class="text-blood text-[14px]">your-username.github.io</span> is added to Firebase Console -> Authentication -> Settings -> Authorized Domains.</p>
+                    </div>
+                `;
             }
         });
     </script>

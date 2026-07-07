@@ -470,13 +470,13 @@
     </div>
 
     <!-- DM CONFIRMATION MODAL -->
-    <div id="dm-confirm-modal" class="modal-overlay hidden z-[1050]">
+    <div id="dm-confirm-modal" class="modal-overlay hidden z-[1100]">
         <div class="parchment-bg rounded-lg max-w-sm w-full p-6 shadow-2xl border-2 border-gold text-center relative">
             <h2 class="font-heading text-xl font-bold text-ink mb-2">Initiate Whisper?</h2>
             <p class="text-sm font-serif text-gray-700 mb-6 italic">Do you wish to open a private communications channel with <strong id="dm-confirm-name" class="text-blood font-heading tracking-widest uppercase"></strong>?</p>
             <div class="flex justify-center gap-4 font-heading border-b border-gray-300 pb-4 mb-4">
-                <button onclick="document.getElementById('dm-confirm-modal').classList.add('hidden')" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-ink px-4 transition-colors">Cancel</button>
-                <button onclick="window.confirmDirectMessage()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Whisper</button>
+                <button onclick="document.getElementById('dm-confirm-modal').classList.add('hidden')" class="bg-gray-300 hover:bg-gray-400 text-ink px-6 py-2 rounded text-xs font-bold uppercase tracking-widest shadow transition-colors">No</button>
+                <button onclick="window.confirmDirectMessage()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Yes, Whisper</button>
             </div>
             <button onclick="window.confirmBlockUser()" class="text-[10px] text-gray-500 hover:text-red-600 font-bold uppercase tracking-widest font-heading transition-colors"><i class="fa-solid fa-ban mr-1"></i> Block this User</button>
         </div>

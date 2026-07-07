@@ -523,11 +523,6 @@
             
             <input type="text" id="new-group-name" class="fantasy-input w-full p-2 text-sm rounded mb-4" placeholder="Group Name (Optional)">
 
-            <div class="mb-4 text-left">
-                 <label class="block text-[10px] font-heading font-bold text-ink uppercase tracking-widest mb-1">4-Digit Invite Code (Required)</label>
-                 <input type="text" id="new-group-code" maxlength="4" pattern="\d{4}" class="fantasy-input w-full p-2 text-sm rounded text-center tracking-[0.5em] font-bold" placeholder="e.g. 1337" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            </div>
-            
             <div class="text-left mb-4">
                 <p class="text-[10px] font-heading font-bold text-ink uppercase tracking-widest mb-1">Select from Ledger:</p>
                 <div id="group-friends-list" class="max-h-32 overflow-y-auto border border-gray-400 rounded bg-white/30 scrollbar-hide">
@@ -577,21 +572,6 @@
                     <button onclick="window.searchUsersForFriend()" class="bg-ink text-gold px-3 rounded hover:bg-black transition-colors"><i class="fa-solid fa-search"></i></button>
                 </div>
                 <div id="friend-search-results" class="max-h-40 overflow-y-auto scrollbar-hide space-y-2"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- JOIN GROUP MODAL -->
-    <div id="join-group-modal" class="modal-overlay hidden z-[1050]">
-        <div class="parchment-bg rounded-lg max-w-sm w-full p-6 shadow-2xl border-2 border-gold text-center relative">
-            <h2 class="font-heading text-xl font-bold text-ink mb-1">Join an Alliance</h2>
-            <p class="text-[10px] text-gray-600 font-serif italic mb-6">Enter the 4-digit code to join an existing group.</p>
-            
-            <input type="text" id="join-group-code" maxlength="4" pattern="\d{4}" class="fantasy-input w-full p-3 text-lg rounded text-center tracking-[0.5em] font-bold mb-6" placeholder="0000" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            
-            <div class="flex justify-between gap-4">
-                <button onclick="document.getElementById('join-group-modal').classList.add('hidden')" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-ink font-heading transition-colors">Cancel</button>
-                <button onclick="window.confirmJoinGroup()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Join</button>
             </div>
         </div>
     </div>
@@ -1121,13 +1101,6 @@
         window.searchUsersForDM = async () => {
             const queryText = document.getElementById('dm-search-input').value.trim().toLowerCase();
             if (!queryText) return window.showToast("Enter a name to search.");
-
-            // Check if it's a 4-digit code to join a group instead of a name search
-            if (/^\d{4}$/.test(queryText)) {
-                 document.getElementById('join-group-code').value = queryText;
-                 document.getElementById('join-group-modal').classList.remove('hidden');
-                 return;
-            }
             
             try {
                 // In a real app, this should be a cloud function. We pull all and filter locally due to Firebase limitations.
@@ -1659,7 +1632,6 @@
         window.openCreateGroupModal = () => {
             window.pendingGroupMembers = [];
             document.getElementById('new-group-name').value = '';
-            document.getElementById('new-group-code').value = '';
             
             const listContainer = document.getElementById('group-friends-list');
             
@@ -1710,26 +1682,15 @@
         window.confirmCreateGroup = async () => {
             if (window.pendingGroupMembers.length === 0) return window.showToast("Select at least one other traveler.");
             
-            const code = document.getElementById('new-group-code').value.trim();
-            if (!/^\d{4}$/.test(code)) return window.showToast("A 4-digit code is required.");
-
             let groupName = document.getElementById('new-group-name').value.trim();
             if (!groupName) {
                 groupName = "Alliance: " + window.pendingGroupMembers.map(m => m.name).join(', ');
                 if (groupName.length > 30) groupName = groupName.substring(0, 30) + '...';
             }
 
-            const groupId = 'group_' + code;
+            const groupId = 'group_' + Date.now() + Math.random().toString(36).substring(2, 8);
             const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'groups', groupId);
             
-            // Prevent overwriting an existing group with the same code
-            try {
-                const existing = await getDoc(groupDocRef);
-                if (existing.exists()) {
-                    return window.showToast("This 4-digit code is already in use by another alliance.");
-                }
-            } catch(e) {}
-
             const members = [currentUser.uid, ...window.pendingGroupMembers.map(m => m.id)];
             const now = Date.now();
 
@@ -1769,63 +1730,6 @@
             } catch (e) {
                 console.error(e);
                 window.showToast("Failed to create group.");
-            }
-        };
-
-        window.confirmJoinGroup = async () => {
-            const code = document.getElementById('join-group-code').value.trim();
-            if (!/^\d{4}$/.test(code)) return window.showToast("Invalid code format.");
-
-            document.getElementById('join-group-modal').classList.add('hidden');
-            window.showToast("Searching for alliance...");
-
-            try {
-                const groupId = 'group_' + code;
-                const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'groups', groupId);
-                const gSnap = await getDoc(groupDocRef);
-
-                if (!gSnap.exists()) {
-                    return window.showToast("No alliance found with that code.");
-                }
-
-                const gData = gSnap.data();
-                const members = gData.members || [];
-
-                if (members.includes(currentUser.uid)) {
-                     window.showToast("You are already in this alliance.");
-                     window.openDirectMessage(groupId, gData.name, true, members.join(','));
-                     return;
-                }
-
-                // Add to Global Group List
-                members.push(currentUser.uid);
-                await updateDoc(groupDocRef, { members: members });
-
-                const now = Date.now();
-
-                // Add to personal contacts
-                await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`, groupId), {
-                    name: gData.name,
-                    isGroup: true,
-                    members: members,
-                    lastMessage: "You joined the alliance.",
-                    lastUpdated: now,
-                    unreadCount: 0
-                });
-
-                // Announce joining
-                await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${groupId}`), {
-                    text: `${currentUser.username} has joined the alliance.`,
-                    authorId: 'system',
-                    timestamp: now
-                });
-
-                window.showToast(`Joined ${gData.name}!`);
-                window.openDirectMessage(groupId, gData.name, true, members.join(','));
-
-            } catch(e) {
-                console.error(e);
-                window.showToast("Failed to join alliance.");
             }
         };
 

@@ -908,8 +908,8 @@
         window.initDirectMessaging = () => {
             if (dmContactsUnsub) dmContactsUnsub();
             
-            // We store contact lists under the user's private data
-            dmContactsUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'users', currentUser.uid, 'contacts'), (snap) => {
+            // We store contact lists dynamically in public data to bypass cross-user write restrictions
+            dmContactsUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`), (snap) => {
                 const contacts = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => b.lastUpdated - a.lastUpdated);
                 const list = document.getElementById('dm-contacts-list');
                 
@@ -1018,7 +1018,7 @@
             
             // Clear unread count for this contact
             try {
-                await updateDoc(doc(db, 'artifacts', 'global_chat', 'users', currentUser.uid, 'contacts', targetId), { unreadCount: 0 });
+                await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`, targetId), { unreadCount: 0 });
             } catch(e) {} 
 
             // Determine Conversation ID
@@ -1026,7 +1026,7 @@
             
             if (activeDmUnsub) activeDmUnsub();
             
-            activeDmUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'private', 'conversations', convId, 'messages'), (snap) => {
+            activeDmUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${convId}`), (snap) => {
                 const msgs = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => a.timestamp - b.timestamp);
                 const container = document.getElementById('active-dm-messages');
                 
@@ -1110,20 +1110,20 @@
             const now = Date.now();
 
             try {
-                await addDoc(collection(db, 'artifacts', 'global_chat', 'private', 'conversations', convId, 'messages'), {
+                await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${convId}`), {
                     text: text,
                     authorId: currentUser.uid,
                     timestamp: now
                 });
 
-                await setDoc(doc(db, 'artifacts', 'global_chat', 'users', currentUser.uid, 'contacts', window.activeChatTargetId), {
+                await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`, window.activeChatTargetId), {
                     name: window.activeChatTargetName,
                     lastMessage: text,
                     lastUpdated: now,
                     unreadCount: 0
                 }, { merge: true });
 
-                const targetRef = doc(db, 'artifacts', 'global_chat', 'users', window.activeChatTargetId, 'contacts', currentUser.uid);
+                const targetRef = doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${window.activeChatTargetId}`, currentUser.uid);
                 const targetSnap = await getDoc(targetRef);
                 const currentUnread = targetSnap.exists() ? (targetSnap.data().unreadCount || 0) : 0;
                 
@@ -1143,7 +1143,7 @@
         window.deleteDirectMessage = async (msgId, convId) => {
             if (!adminModeActive) return;
             try {
-                await updateDoc(doc(db, 'artifacts', 'global_chat', 'private', 'conversations', convId, 'messages', msgId), {
+                await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${convId}`, msgId), {
                     isDeleted: true,
                     deletedBy: currentUser.username,
                     deletedAt: Date.now()

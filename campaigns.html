@@ -1689,6 +1689,89 @@
             }
         };
 
+        window.removeGroupMember = (uid) => {
+            window.pendingGroupMembers = window.pendingGroupMembers.filter(m => m.id !== uid);
+            window.renderSelectedGroupMembers();
+        };
+
+        window.renderSelectedGroupMembers = () => {
+            const container = document.getElementById('selected-group-members');
+            if (window.pendingGroupMembers.length === 0) {
+                container.innerHTML = `<span class="text-xs text-gray-500 italic w-full text-center py-2">No one selected...</span>`;
+                return;
+            }
+            container.innerHTML = window.pendingGroupMembers.map(m => `
+                <span class="bg-indigo-900 text-white text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded shadow-md flex items-center gap-1">
+                    ${m.name} <i class="fa-solid fa-xmark cursor-pointer hover:text-red-400 ml-1 border-l border-indigo-700 pl-1" onclick="window.removeGroupMember('${m.id}')"></i>
+                </span>
+            `).join('');
+        };
+
+        window.confirmCreateGroup = async () => {
+            if (window.pendingGroupMembers.length === 0) return window.showToast("Select at least one other traveler.");
+            
+            const code = document.getElementById('new-group-code').value.trim();
+            if (!/^\d{4}$/.test(code)) return window.showToast("A 4-digit code is required.");
+
+            let groupName = document.getElementById('new-group-name').value.trim();
+            if (!groupName) {
+                groupName = "Alliance: " + window.pendingGroupMembers.map(m => m.name).join(', ');
+                if (groupName.length > 30) groupName = groupName.substring(0, 30) + '...';
+            }
+
+            const groupId = 'group_' + code;
+            const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'groups', groupId);
+            
+            // Prevent overwriting an existing group with the same code
+            try {
+                const existing = await getDoc(groupDocRef);
+                if (existing.exists()) {
+                    return window.showToast("This 4-digit code is already in use by another alliance.");
+                }
+            } catch(e) {}
+
+            const members = [currentUser.uid, ...window.pendingGroupMembers.map(m => m.id)];
+            const now = Date.now();
+
+            window.showToast("Forming alliance...");
+            
+            try {
+                // 1. Create the global group document
+                await setDoc(groupDocRef, {
+                    name: groupName,
+                    members: members,
+                    createdAt: now,
+                    createdBy: currentUser.uid
+                });
+
+                // 2. Write to each member's contacts array
+                for (const uid of members) {
+                    await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${uid}`, groupId), {
+                        name: groupName,
+                        isGroup: true,
+                        members: members,
+                        lastMessage: "Alliance formed.",
+                        lastUpdated: now,
+                        unreadCount: uid === currentUser.uid ? 0 : 1
+                    });
+                }
+                
+                // 3. Add initial system message
+                await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${groupId}`), {
+                    text: `${currentUser.username} established the alliance.`,
+                    authorId: 'system',
+                    timestamp: now
+                });
+
+                window.closeCreateGroupModal();
+                window.showToast("Group created!");
+                window.openDirectMessage(groupId, groupName, true, members.join(','));
+            } catch (e) {
+                console.error(e);
+                window.showToast("Failed to create group.");
+            }
+        };
+
         window.confirmJoinGroup = async () => {
             const code = document.getElementById('join-group-code').value.trim();
             if (!/^\d{4}$/.test(code)) return window.showToast("Invalid code format.");

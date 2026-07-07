@@ -132,15 +132,15 @@
 
     <!-- CHAT TOGGLE BUTTON -->
     <div id="chat-toggle-btn" class="chat-btn-toggle hidden" onclick="window.toggleChatPanel()">
-        <i class="fa-solid fa-comments"></i>
-        <div id="global-unread-badge" class="unread-badge hidden">!</div>
-    </div>
-
-    <!-- CHAT PANEL -->
+        <!-- CHAT PANEL -->
     <div id="global-chat-panel" class="chat-panel">
         <div class="flex items-center justify-between p-4 border-b border-gold bg-black/40">
             <h2 class="font-heading text-lg font-black text-gold uppercase tracking-widest"><i class="fa-solid fa-tower-observation mr-2"></i> Communications</h2>
             <div class="flex gap-4">
+                <button onclick="window.openFriendsModal()" class="text-gray-500 hover:text-gold transition-colors relative" title="Traveler Ledger (Friends)">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span id="global-friends-badge" class="absolute -top-2 -right-2 bg-blood text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center hidden font-heading">0</span>
+                </button>
                 <button onclick="window.openChatSettings()" class="text-gray-500 hover:text-gold transition-colors" title="Chat Settings"><i class="fa-solid fa-gear"></i></button>
                 <button onclick="window.toggleChatPanel()" class="text-gray-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
@@ -486,11 +486,13 @@
     <!-- DM CONFIRMATION MODAL -->
     <div id="dm-confirm-modal" class="modal-overlay hidden z-[1100]">
         <div class="parchment-bg rounded-lg max-w-sm w-full p-6 shadow-2xl border-2 border-gold text-center relative">
-            <h2 class="font-heading text-xl font-bold text-ink mb-2">Initiate Whisper?</h2>
-            <p class="text-sm font-serif text-gray-700 mb-6 italic">Do you wish to open a private communications channel with <strong id="dm-confirm-name" class="text-blood font-heading tracking-widest uppercase"></strong>?</p>
-            <div class="flex justify-center gap-4 font-heading border-b border-gray-300 pb-4 mb-4">
-                <button onclick="document.getElementById('dm-confirm-modal').classList.add('hidden')" class="bg-gray-300 hover:bg-gray-400 text-ink px-6 py-2 rounded text-xs font-bold uppercase tracking-widest shadow transition-colors">No</button>
-                <button onclick="window.confirmDirectMessage()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Yes, Whisper</button>
+            <h2 class="font-heading text-xl font-bold text-ink mb-2">Interact with Traveler?</h2>
+            <p class="text-sm font-serif text-gray-700 mb-6 italic">How would you like to interact with <strong id="dm-confirm-name" class="text-blood font-heading tracking-widest uppercase"></strong>?</p>
+            
+            <div class="flex flex-col gap-3 font-heading border-b border-gray-300 pb-4 mb-4">
+                <button onclick="window.confirmDirectMessage()" class="fantasy-btn py-2 rounded text-xs shadow-lg w-full"><i class="fa-solid fa-comment mr-2"></i> Whisper Privately</button>
+                <button id="btn-add-friend" onclick="window.sendFriendRequestFromModal()" class="bg-gray-800 hover:bg-black text-gold border border-gold py-2 rounded text-xs shadow-lg w-full transition-colors"><i class="fa-solid fa-user-plus mr-2"></i> Send Friend Request</button>
+                <button onclick="document.getElementById('dm-confirm-modal').classList.add('hidden')" class="bg-gray-300 hover:bg-gray-400 text-ink py-2 rounded text-xs font-bold uppercase tracking-widest shadow transition-colors w-full">Cancel</button>
             </div>
             <button onclick="window.confirmBlockUser()" class="text-[10px] text-gray-500 hover:text-red-600 font-bold uppercase tracking-widest font-heading transition-colors"><i class="fa-solid fa-ban mr-1"></i> Block this User</button>
         </div>
@@ -513,7 +515,7 @@
     <div id="create-group-modal" class="modal-overlay hidden z-[1050]">
         <div class="parchment-bg rounded-lg max-w-sm w-full p-6 shadow-2xl border-2 border-gold text-center relative">
             <h2 class="font-heading text-xl font-bold text-ink mb-1">Form an Alliance</h2>
-            <p class="text-[10px] text-gray-600 font-serif italic mb-4">Establish a private group channel.</p>
+            <p class="text-[10px] text-gray-600 font-serif italic mb-4">Establish a private group channel with your friends.</p>
             
             <input type="text" id="new-group-name" class="fantasy-input w-full p-2 text-sm rounded mb-4" placeholder="Group Name (Optional)">
 
@@ -522,12 +524,12 @@
                  <input type="text" id="new-group-code" maxlength="4" pattern="\d{4}" class="fantasy-input w-full p-2 text-sm rounded text-center tracking-[0.5em] font-bold" placeholder="e.g. 1337" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             
-            <div class="flex gap-2 mb-4">
-                <input type="text" id="group-user-search" class="fantasy-input flex-grow p-2 text-sm rounded" placeholder="Search travelers...">
-                <button onclick="window.searchForGroupMembers()" class="bg-ink text-gold px-3 rounded hover:bg-black transition-colors"><i class="fa-solid fa-search"></i></button>
+            <div class="text-left mb-4">
+                <p class="text-[10px] font-heading font-bold text-ink uppercase tracking-widest mb-1">Select from Ledger:</p>
+                <div id="group-friends-list" class="max-h-32 overflow-y-auto border border-gray-400 rounded bg-white/30 scrollbar-hide">
+                    <!-- Populated by JS -->
+                </div>
             </div>
-            
-            <div id="group-search-results" class="max-h-32 overflow-y-auto mb-4 border border-gray-400 rounded bg-white/30 hidden text-left scrollbar-hide"></div>
             
             <div class="text-left mb-4">
                 <p class="text-[10px] font-heading font-bold text-ink uppercase tracking-widest mb-1">Invited Travelers:</p>
@@ -539,6 +541,38 @@
             <div class="flex justify-between gap-4 mt-6 border-t border-gray-300 pt-4">
                 <button onclick="window.closeCreateGroupModal()" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-ink font-heading transition-colors">Cancel</button>
                 <button onclick="window.confirmCreateGroup()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FRIENDS MODAL -->
+    <div id="friends-modal" class="modal-overlay hidden z-[1050]">
+        <div class="parchment-bg rounded-lg max-w-sm w-full p-6 shadow-2xl border-2 border-gold text-center relative">
+            <button onclick="document.getElementById('friends-modal').classList.add('hidden')" class="absolute top-2 right-3 text-gray-500 hover:text-blood text-xl"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="font-heading text-xl font-bold text-ink mb-4 border-b border-gray-400 pb-2">Traveler Ledger</h2>
+            
+            <!-- Tabs -->
+            <div class="flex border-b border-gold mb-4">
+                <button id="tab-friends-list" onclick="window.switchFriendTab('list')" class="flex-1 py-1 font-heading font-bold text-blood border-b-2 border-blood text-[10px] uppercase tracking-widest">My Ledger</button>
+                <button id="tab-friends-reqs" onclick="window.switchFriendTab('reqs')" class="flex-1 py-1 font-heading font-bold text-ink hover:text-blood transition text-[10px] uppercase tracking-widest relative">Requests <span id="req-tab-badge" class="ml-1 bg-blood text-white rounded-full px-1.5 py-0.5 text-[8px] hidden shadow">0</span></button>
+                <button id="tab-friends-search" onclick="window.switchFriendTab('search')" class="flex-1 py-1 font-heading font-bold text-ink hover:text-blood transition text-[10px] uppercase tracking-widest">Find</button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div id="friends-view-list" class="max-h-60 overflow-y-auto scrollbar-hide text-left space-y-2">
+                <!-- Friends popualate here -->
+            </div>
+            
+            <div id="friends-view-reqs" class="hidden max-h-60 overflow-y-auto scrollbar-hide text-left space-y-2">
+                <!-- Requests popualate here -->
+            </div>
+            
+            <div id="friends-view-search" class="hidden text-left">
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="friend-search-input" class="fantasy-input flex-grow p-2 text-sm rounded" placeholder="Search by exact name...">
+                    <button onclick="window.searchUsersForFriend()" class="bg-ink text-gold px-3 rounded hover:bg-black transition-colors"><i class="fa-solid fa-search"></i></button>
+                </div>
+                <div id="friend-search-results" class="max-h-40 overflow-y-auto scrollbar-hide space-y-2"></div>
             </div>
         </div>
     </div>
@@ -631,6 +665,12 @@
         let dmUnreadCounts = {};
         window.globalMessages = [];
         window.myMessageLog = []; // Rate limiting log
+        
+        // Friends State
+        window.myFriends = [];
+        window.myFriendRequests = [];
+        let friendsUnsub = null;
+        let reqsUnsub = null;
 
         // Rate Limiter / Safety Check
         const checkRateLimit = (text) => {
@@ -638,7 +678,7 @@
             
             // Clean log of old messages (older than 10s)
             window.myMessageLog = window.myMessageLog.filter(t => now - t.time < 10000);
-            
+
             // Spam Check (5 msgs in 10s)
             if (window.myMessageLog.length >= 5) {
                 window.showToast("You are speaking too quickly. Please wait a moment.");
@@ -1118,21 +1158,24 @@
 
         window.promptDirectMessage = (uid, username) => {
             if (currentUser && uid === currentUser.uid) {
-                return window.showToast("You cannot whisper yourself.");
+                return window.showToast("You cannot interact with yourself.");
             }
             if (isUserBlocked(uid)) {
                 return window.showToast("This user is blocked.");
             }
-            
-            // Bypass modal if already an active contact
-            if (window.myDmContactIds && window.myDmContactIds.includes(uid)) {
-                window.switchChatTab('dms');
-                window.openDirectMessage(uid, username);
-                return;
-            }
 
             window.pendingDmTarget = { id: uid, name: username };
             document.getElementById('dm-confirm-name').innerText = username;
+            
+            // Show/Hide Add Friend Button
+            const addBtn = document.getElementById('btn-add-friend');
+            const isFriend = window.myFriends.some(f => f.id === uid);
+            if (isFriend) {
+                addBtn.classList.add('hidden');
+            } else {
+                addBtn.classList.remove('hidden');
+            }
+
             document.getElementById('dm-confirm-modal').classList.remove('hidden');
         };
 
@@ -1424,6 +1467,188 @@
             }
         }
 
+        // --- FRIENDS SYSTEM LOGIC ---
+
+        window.initFriendsSync = () => {
+            if (friendsUnsub) friendsUnsub();
+            if (reqsUnsub) reqsUnsub();
+
+            // Sync Approved Friends
+            friendsUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'public', 'data', `friends_of_${currentUser.uid}`), (snap) => {
+                window.myFriends = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                if(!document.getElementById('friends-modal').classList.contains('hidden')) window.renderFriendsList();
+            });
+
+            // Sync Pending Incoming Requests
+            reqsUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'public', 'data', `friend_reqs_for_${currentUser.uid}`), (snap) => {
+                window.myFriendRequests = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                
+                const badge = document.getElementById('global-friends-badge');
+                const tabBadge = document.getElementById('req-tab-badge');
+                
+                if (window.myFriendRequests.length > 0) {
+                    badge.innerText = window.myFriendRequests.length;
+                    badge.classList.remove('hidden');
+                    tabBadge.innerText = window.myFriendRequests.length;
+                    tabBadge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                    tabBadge.classList.add('hidden');
+                }
+                
+                if(!document.getElementById('friends-modal').classList.contains('hidden')) window.renderFriendRequests();
+            });
+        };
+
+        window.openFriendsModal = () => {
+            window.switchFriendTab('list');
+            document.getElementById('friends-modal').classList.remove('hidden');
+        };
+
+        window.switchFriendTab = (tab) => {
+            document.getElementById('tab-friends-list').className = "flex-1 py-1 font-heading font-bold text-ink hover:text-blood transition text-[10px] uppercase tracking-widest";
+            document.getElementById('tab-friends-reqs').className = "flex-1 py-1 font-heading font-bold text-ink hover:text-blood transition text-[10px] uppercase tracking-widest relative";
+            document.getElementById('tab-friends-search').className = "flex-1 py-1 font-heading font-bold text-ink hover:text-blood transition text-[10px] uppercase tracking-widest";
+            
+            document.getElementById('friends-view-list').classList.add('hidden');
+            document.getElementById('friends-view-reqs').classList.add('hidden');
+            document.getElementById('friends-view-search').classList.add('hidden');
+            
+            if (tab === 'list') {
+                document.getElementById('tab-friends-list').className = "flex-1 py-1 font-heading font-bold text-blood border-b-2 border-blood text-[10px] uppercase tracking-widest";
+                document.getElementById('friends-view-list').classList.remove('hidden');
+                window.renderFriendsList();
+            } else if (tab === 'reqs') {
+                document.getElementById('tab-friends-reqs').className = "flex-1 py-1 font-heading font-bold text-blood border-b-2 border-blood text-[10px] uppercase tracking-widest relative";
+                document.getElementById('friends-view-reqs').classList.remove('hidden');
+                window.renderFriendRequests();
+            } else if (tab === 'search') {
+                document.getElementById('tab-friends-search').className = "flex-1 py-1 font-heading font-bold text-blood border-b-2 border-blood text-[10px] uppercase tracking-widest";
+                document.getElementById('friends-view-search').classList.remove('hidden');
+            }
+        };
+
+        window.renderFriendsList = () => {
+            const container = document.getElementById('friends-view-list');
+            if (window.myFriends.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">Your ledger is empty.</p>`;
+            } else {
+                container.innerHTML = window.myFriends.map(f => `
+                    <div class="flex justify-between items-center p-3 bg-white/40 border border-gray-300 rounded shadow-sm">
+                        <span class="font-heading font-bold text-ink text-sm uppercase tracking-widest">${f.name}</span>
+                        <div class="flex gap-3">
+                            <button onclick="document.getElementById('friends-modal').classList.add('hidden'); window.promptDirectMessage('${f.id}', '${f.name.replace(/'/g, "\\'")}')" class="text-gray-600 hover:text-gold transition-colors" title="Message"><i class="fa-solid fa-comment"></i></button>
+                            <button onclick="window.removeFriend('${f.id}')" class="text-gray-600 hover:text-red-500 transition-colors" title="Remove Friend"><i class="fa-solid fa-user-minus"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        window.renderFriendRequests = () => {
+            const container = document.getElementById('friends-view-reqs');
+            if (window.myFriendRequests.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">No pending requests.</p>`;
+            } else {
+                container.innerHTML = window.myFriendRequests.map(r => `
+                    <div class="flex justify-between items-center p-3 bg-white/40 border border-gold rounded shadow-sm">
+                        <span class="font-heading font-bold text-ink text-sm uppercase tracking-widest">${r.name}</span>
+                        <div class="flex gap-2">
+                            <button onclick="window.acceptFriendRequest('${r.id}', '${r.name.replace(/'/g, "\\'")}')" class="bg-green-700 hover:bg-green-600 text-white px-2 py-1 rounded shadow text-[10px] font-bold uppercase tracking-widest"><i class="fa-solid fa-check"></i></button>
+                            <button onclick="window.declineFriendRequest('${r.id}')" class="bg-gray-400 hover:bg-red-500 text-white px-2 py-1 rounded shadow text-[10px] font-bold uppercase tracking-widest"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        window.searchUsersForFriend = async () => {
+            const queryText = document.getElementById('friend-search-input').value.trim().toLowerCase();
+            if (!queryText) return window.showToast("Enter a name to search.");
+            
+            try {
+                const snap = await getDocs(collection(db, 'users'));
+                const results = snap.docs
+                    .map(d => ({id: d.id, ...d.data()}))
+                    .filter(u => u.uid !== currentUser.uid && u.username && u.username.toLowerCase().includes(queryText) && !isUserBlocked(u.uid));
+                    
+                const list = document.getElementById('friend-search-results');
+                
+                if (results.length === 0) {
+                    list.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">No travelers found by that name.</p>`;
+                } else {
+                    list.innerHTML = results.map(u => {
+                        const isFriend = window.myFriends.some(f => f.id === u.uid);
+                        return `
+                        <div class="flex justify-between items-center p-2 border-b border-gray-300">
+                            <span class="font-heading font-bold text-ink text-sm uppercase tracking-widest">${u.username}</span>
+                            ${isFriend ? `<span class="text-[10px] text-green-700 font-bold uppercase tracking-widest"><i class="fa-solid fa-check mr-1"></i>Friend</span>` 
+                            : `<button onclick="window.sendFriendRequest('${u.uid}', '${u.username.replace(/'/g, "\\'")}')" class="text-gold hover:text-ink transition-colors"><i class="fa-solid fa-user-plus"></i></button>`}
+                        </div>
+                        `;
+                    }).join('');
+                }
+            } catch (e) {
+                console.error(e);
+                window.showToast("Search failed.");
+            }
+        };
+
+        window.sendFriendRequestFromModal = () => {
+            if (!window.pendingDmTarget) return;
+            window.sendFriendRequest(window.pendingDmTarget.id, window.pendingDmTarget.name);
+            document.getElementById('dm-confirm-modal').classList.add('hidden');
+            window.pendingDmTarget = null;
+        };
+
+        window.sendFriendRequest = async (targetUid, targetName) => {
+            if (isUserBlocked(targetUid)) return window.showToast("Cannot add blocked user.");
+            if (window.myFriends.some(f => f.id === targetUid)) return window.showToast("Already on your ledger.");
+            
+            window.showToast("Sending request...");
+            try {
+                await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friend_reqs_for_${targetUid}`, currentUser.uid), {
+                    name: currentUser.username,
+                    timestamp: Date.now()
+                });
+                window.showToast("Request sent!");
+            } catch (e) {
+                console.error(e);
+                window.showToast("Failed to send request.");
+            }
+        };
+
+        window.acceptFriendRequest = async (targetUid, targetName) => {
+            try {
+                // Delete the request
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friend_reqs_for_${currentUser.uid}`, targetUid));
+                
+                // Add to both friends lists
+                await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friends_of_${currentUser.uid}`, targetUid), { name: targetName });
+                await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friends_of_${targetUid}`, currentUser.uid), { name: currentUser.username });
+                
+                window.showToast("Added to Ledger.");
+            } catch(e) {
+                console.error(e);
+                window.showToast("Error accepting request.");
+            }
+        };
+
+        window.declineFriendRequest = async (targetUid) => {
+            try {
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friend_reqs_for_${currentUser.uid}`, targetUid));
+            } catch(e) {}
+        };
+
+        window.removeFriend = async (targetUid) => {
+            if(!confirm("Remove this traveler from your ledger?")) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friends_of_${currentUser.uid}`, targetUid));
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friends_of_${targetUid}`, currentUser.uid));
+                window.showToast("Traveler removed.");
+            } catch(e) {}
+        };
+
         // --- GROUP CHAT LOGIC ---
         window.pendingGroupMembers = [];
 
@@ -1431,9 +1656,20 @@
             window.pendingGroupMembers = [];
             document.getElementById('new-group-name').value = '';
             document.getElementById('new-group-code').value = '';
-            document.getElementById('group-user-search').value = '';
-            document.getElementById('group-search-results').innerHTML = '';
-            document.getElementById('group-search-results').classList.add('hidden');
+            
+            const listContainer = document.getElementById('group-friends-list');
+            
+            if (window.myFriends.length === 0) {
+                listContainer.innerHTML = '<p class="text-[10px] text-gray-600 italic text-center py-4">You have no friends on your ledger. Add some first to form an alliance!</p>';
+            } else {
+                listContainer.innerHTML = window.myFriends.map(f => `
+                    <div class="flex justify-between items-center p-2 hover:bg-black/10 border-b border-gray-300 last:border-0">
+                        <span class="text-xs font-heading font-bold text-ink uppercase tracking-widest">${f.name}</span>
+                        <button onclick="window.addGroupMember('${f.id}', '${f.name.replace(/'/g, "\\'")}')" class="text-green-700 hover:text-green-900 transition-colors"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                `).join('');
+            }
+            
             window.renderSelectedGroupMembers();
             document.getElementById('create-group-modal').classList.remove('hidden');
         };
@@ -1442,123 +1678,10 @@
             document.getElementById('create-group-modal').classList.add('hidden');
         };
 
-        window.searchForGroupMembers = async () => {
-            const queryText = document.getElementById('group-user-search').value.trim().toLowerCase();
-            if (!queryText) return;
-            
-            try {
-                const snap = await getDocs(collection(db, 'users'));
-                const results = snap.docs
-                    .map(d => ({id: d.id, ...d.data()}))
-                    .filter(u => u.uid !== currentUser.uid && u.username && u.username.toLowerCase().includes(queryText) && !isUserBlocked(u.uid));
-                    
-                const resultsContainer = document.getElementById('group-search-results');
-                resultsContainer.classList.remove('hidden');
-                
-                if (results.length === 0) {
-                    resultsContainer.innerHTML = `<p class="text-xs text-gray-500 italic p-2">No travelers found.</p>`;
-                } else {
-                    resultsContainer.innerHTML = results.map(u => `
-                        <div class="flex justify-between items-center p-2 hover:bg-black/10 cursor-pointer border-b border-gray-300 last:border-b-0" onclick="window.addGroupMember('${u.uid}', '${u.username.replace(/'/g, "\\'")}')">
-                            <span class="text-sm font-heading font-bold text-ink">${u.username}</span>
-                            <i class="fa-solid fa-plus text-green-700"></i>
-                        </div>
-                    `).join('');
-                }
-            } catch (e) {}
-        };
-
         window.addGroupMember = (uid, name) => {
             if (!window.pendingGroupMembers.find(m => m.id === uid)) {
                 window.pendingGroupMembers.push({ id: uid, name: name });
                 window.renderSelectedGroupMembers();
-            }
-            document.getElementById('group-search-results').classList.add('hidden');
-            document.getElementById('group-user-search').value = '';
-        };
-
-        window.removeGroupMember = (uid) => {
-            window.pendingGroupMembers = window.pendingGroupMembers.filter(m => m.id !== uid);
-            window.renderSelectedGroupMembers();
-        };
-
-        window.renderSelectedGroupMembers = () => {
-            const container = document.getElementById('selected-group-members');
-            if (window.pendingGroupMembers.length === 0) {
-                container.innerHTML = `<span class="text-xs text-gray-500 italic w-full text-center py-2">No one selected...</span>`;
-                return;
-            }
-            container.innerHTML = window.pendingGroupMembers.map(m => `
-                <span class="bg-indigo-900 text-white text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded shadow-md flex items-center gap-1">
-                    ${m.name} <i class="fa-solid fa-xmark cursor-pointer hover:text-red-400 ml-1 border-l border-indigo-700 pl-1" onclick="window.removeGroupMember('${m.id}')"></i>
-                </span>
-            `).join('');
-        };
-
-        window.confirmCreateGroup = async () => {
-            if (window.pendingGroupMembers.length === 0) return window.showToast("Select at least one other traveler.");
-            
-            let groupName = document.getElementById('new-group-name').value.trim();
-            const groupCode = document.getElementById('new-group-code').value.trim();
-
-            if (!/^\d{4}$/.test(groupCode)) {
-                 return window.showToast("You must provide a 4-digit invite code.");
-            }
-
-            if (!groupName) {
-                groupName = "Alliance: " + window.pendingGroupMembers.map(m => m.name).join(', ');
-                if (groupName.length > 30) groupName = groupName.substring(0, 30) + '...';
-            }
-
-            const groupId = 'group_' + groupCode;
-            const members = [currentUser.uid, ...window.pendingGroupMembers.map(m => m.id)];
-            const now = Date.now();
-
-            window.showToast("Forming alliance...");
-            
-            try {
-                // Check if code exists
-                const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'groups', groupId);
-                const gSnap = await getDoc(groupDocRef);
-                
-                if (gSnap.exists()) {
-                     return window.showToast("That 4-digit code is already in use by another alliance.");
-                }
-
-                // Register the group globally
-                await setDoc(groupDocRef, {
-                    name: groupName,
-                    code: groupCode,
-                    createdBy: currentUser.uid,
-                    createdAt: now,
-                    members: members
-                });
-
-                // Write to each member's contacts array
-                for (const uid of members) {
-                    await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${uid}`, groupId), {
-                        name: groupName,
-                        isGroup: true,
-                        members: members,
-                        lastMessage: "Alliance formed.",
-                        lastUpdated: now,
-                        unreadCount: uid === currentUser.uid ? 0 : 1
-                    });
-                }
-                
-                // Add initial system message
-                await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${groupId}`), {
-                    text: `${currentUser.username} established the alliance using code ${groupCode}.`,
-                    authorId: 'system',
-                    timestamp: now
-                });
-
-                window.closeCreateGroupModal();
-                window.showToast("Group created!");
-                window.openDirectMessage(groupId, groupName, true, members.join(','));
-            } catch (e) {
-                console.error(e);
-                window.showToast("Failed to create group.");
             }
         };
 
@@ -2428,6 +2551,7 @@
                 document.getElementById('chat-toggle-btn').classList.remove('hidden');
                 window.initGlobalChat();
                 window.initDirectMessaging();
+                window.initFriendsSync(); // Initialize real-time friends syncing
 
                 if (currentUser.role === 'dm') {
                     roleBadge.innerText = 'DM';

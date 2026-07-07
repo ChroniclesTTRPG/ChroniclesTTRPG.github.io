@@ -16,7 +16,8 @@
         body { font-family: 'Lora', serif; background-color: #1a110b; background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%232c1e16' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E"); color: #f1e5c5; overflow-x: hidden; }
         .parchment-bg { background-color: #f1e5c5; background-image: radial-gradient(circle at center, transparent 0%, rgba(200, 170, 120, 0.3) 100%), url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E"); box-shadow: inset 0 0 40px rgba(139, 90, 43, 0.4), 0 10px 30px rgba(0,0,0,0.7); border: 2px solid #c5a059; color: #2c1e16; }
         .fantasy-btn { background: linear-gradient(to bottom, #8a2b2b, #5a1111); color: #f1e5c5 !important; border: 2px solid #c5a059 !important; font-family: 'Cinzel', serif; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.2) !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
-        .fantasy-btn:hover { background: linear-gradient(to bottom, #a33232, #7a1b1b); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.6) !important; border-color: #e8cd87 !important; }
+        .fantasy-btn:hover:not(:disabled) { background: linear-gradient(to bottom, #a33232, #7a1b1b); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.6) !important; border-color: #e8cd87 !important; }
+        .fantasy-btn:disabled { opacity: 0.7; cursor: not-allowed; }
         .fantasy-btn-alt { background: linear-gradient(to bottom, #2c1e16, #1a110b); color: #c5a059 !important; border: 2px solid #c5a059 !important; font-family: 'Cinzel', serif; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s ease; }
         .fantasy-btn-alt:hover { background: linear-gradient(to bottom, #3d2a1f, #2c1e16); color: #f1e5c5 !important; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.6) !important; }
         .card { transition: all 0.2s; position: relative; border: 1px solid #555; background-color: rgba(0,0,0,0.7); cursor: pointer; }
@@ -181,9 +182,8 @@
             <div class="p-3 border-b border-gray-700 bg-black/20 shrink-0">
                 <p class="text-[10px] text-gray-500 font-serif italic mb-2 text-center">Communicate privately. Find a user to begin.</p>
                 <div class="flex gap-2">
-                    <input type="text" id="dm-search-input" class="form-input text-xs w-full py-1.5" placeholder="Search by name or 4-digit code...">
-                    <button onclick="window.searchUsersForDM()" class="bg-gray-800 hover:bg-gray-700 text-gold px-3 py-1.5 rounded text-xs border border-gray-600"><i class="fa-solid fa-search"></i></button>
-                    <button onclick="window.openCreateGroupModal()" class="bg-gray-800 hover:bg-gray-700 text-gold px-3 py-1.5 rounded text-xs border border-gray-600" title="Form Alliance"><i class="fa-solid fa-users"></i></button>
+                    <input type="text" id="dm-search-input" class="form-input text-xs w-full py-1.5" placeholder="Search your contacts...">
+                    <button onclick="window.openCreateGroupModal()" class="bg-gray-800 hover:bg-gray-700 text-gold px-3 py-1.5 rounded text-xs border border-gray-600 w-full" title="Form Alliance"><i class="fa-solid fa-users mr-2"></i> Form Alliance</button>
                 </div>
             </div>
             <div id="dm-contacts-list" class="flex-grow overflow-y-auto scrollbar-hide">
@@ -521,7 +521,7 @@
             <h2 class="font-heading text-xl font-bold text-ink mb-1">Form an Alliance</h2>
             <p class="text-[10px] text-gray-600 font-serif italic mb-4">Establish a private group channel with your friends.</p>
             
-            <input type="text" id="new-group-name" class="fantasy-input w-full p-2 text-sm rounded mb-4" placeholder="Group Name (Optional)">
+            <input type="text" id="new-group-name" class="form-input w-full p-2 text-sm rounded mb-4" placeholder="Group Name (Optional)">
 
             <div class="text-left mb-4">
                 <p class="text-[10px] font-heading font-bold text-ink uppercase tracking-widest mb-1">Select from Ledger:</p>
@@ -539,7 +539,7 @@
             
             <div class="flex justify-between gap-4 mt-6 border-t border-gray-300 pt-4">
                 <button onclick="window.closeCreateGroupModal()" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-ink font-heading transition-colors">Cancel</button>
-                <button onclick="window.confirmCreateGroup()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Create</button>
+                <button id="btn-confirm-create-group" onclick="window.confirmCreateGroup()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Create</button>
             </div>
         </div>
     </div>
@@ -568,7 +568,7 @@
             
             <div id="friends-view-search" class="hidden text-left">
                 <div class="flex gap-2 mb-4">
-                    <input type="text" id="friend-search-input" class="fantasy-input flex-grow p-2 text-sm rounded" placeholder="Search by exact name...">
+                    <input type="text" id="friend-search-input" class="form-input flex-grow p-2 text-sm rounded" placeholder="Search by exact name...">
                     <button onclick="window.searchUsersForFriend()" class="bg-ink text-gold px-3 rounded hover:bg-black transition-colors"><i class="fa-solid fa-search"></i></button>
                 </div>
                 <div id="friend-search-results" class="max-h-40 overflow-y-auto scrollbar-hide space-y-2"></div>
@@ -1141,6 +1141,13 @@
                 return window.showToast("This user is blocked.");
             }
 
+            // Bypass modal if already an active contact
+            if (window.myDmContactIds && window.myDmContactIds.includes(uid)) {
+                window.switchChatTab('dms');
+                window.openDirectMessage(uid, username);
+                return;
+            }
+
             window.pendingDmTarget = { id: uid, name: username };
             document.getElementById('dm-confirm-name').innerText = username;
             
@@ -1294,7 +1301,7 @@
                 if (window.activeChatIsGroup) {
                      // Remove self from the members array in the group document
                      try {
-                         const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'groups', window.activeChatTargetId);
+                         const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'data', 'groups', window.activeChatTargetId);
                          await updateDoc(groupDocRef, {
                              members: arrayRemove(currentUser.uid)
                          });
@@ -1355,7 +1362,7 @@
                     // Pull the fresh member list in case people joined/left
                     let freshMembers = window.activeChatMembers;
                     try {
-                        const gSnap = await getDoc(doc(db, 'artifacts', 'global_chat', 'public', 'groups', window.activeChatTargetId));
+                        const gSnap = await getDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', 'groups', window.activeChatTargetId));
                         if (gSnap.exists()) freshMembers = gSnap.data().members || freshMembers;
                     } catch(e) {}
 
@@ -1680,7 +1687,15 @@
         };
 
         window.confirmCreateGroup = async () => {
-            if (window.pendingGroupMembers.length === 0) return window.showToast("Select at least one other traveler.");
+            if (window.pendingGroupMembers.length === 0) {
+                return window.showToast("Select at least one friend first!");
+            }
+            
+            const createBtn = document.getElementById('btn-confirm-create-group');
+            if(createBtn) {
+                createBtn.innerText = "Creating...";
+                createBtn.disabled = true;
+            }
             
             let groupName = document.getElementById('new-group-name').value.trim();
             if (!groupName) {
@@ -1689,7 +1704,7 @@
             }
 
             const groupId = 'group_' + Date.now() + Math.random().toString(36).substring(2, 8);
-            const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'groups', groupId);
+            const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'data', 'groups', groupId);
             
             const members = [currentUser.uid, ...window.pendingGroupMembers.map(m => m.id)];
             const now = Date.now();
@@ -1724,12 +1739,20 @@
                     timestamp: now
                 });
 
+                if(createBtn) {
+                    createBtn.innerText = "Create";
+                    createBtn.disabled = false;
+                }
                 window.closeCreateGroupModal();
                 window.showToast("Group created!");
                 window.openDirectMessage(groupId, groupName, true, members.join(','));
             } catch (e) {
                 console.error(e);
                 window.showToast("Failed to create group.");
+                if(createBtn) {
+                    createBtn.innerText = "Create";
+                    createBtn.disabled = false;
+                }
             }
         };
 
@@ -1741,7 +1764,7 @@
             window.showToast("Renaming group...");
             try {
                 // Update global registry
-                await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'groups', window.activeChatTargetId), { name: newName.trim() });
+                await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', 'groups', window.activeChatTargetId), { name: newName.trim() });
 
                 // Try to update for everyone (May fail if they left, but we catch it)
                 const promises = window.activeChatMembers.map(async (uid) => {
@@ -1775,7 +1798,7 @@
             window.showToast("Destroying alliance...");
             try {
                 // Delete from global registry
-                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'groups', window.activeChatTargetId));
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', 'groups', window.activeChatTargetId));
 
                 const promises = window.activeChatMembers.map(async (uid) => {
                      try {
@@ -2542,7 +2565,7 @@
                 document.getElementById('chat-toggle-btn').classList.remove('hidden');
                 window.initGlobalChat();
                 window.initDirectMessaging();
-                window.initFriendsSync(); // Initialize real-time friends syncing
+                window.initFriendsSync();
 
                 if (currentUser.role === 'dm') {
                     roleBadge.innerText = 'DM';

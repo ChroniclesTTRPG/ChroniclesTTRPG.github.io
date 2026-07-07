@@ -156,6 +156,12 @@
 
         <!-- THE TAVERN (GLOBAL) -->
         <div id="chat-view-global" class="flex flex-col h-full overflow-hidden">
+            <div class="p-2 border-b border-gray-700 bg-black/30 shrink-0">
+                <div class="flex items-center gap-2 bg-black/50 border border-gray-600 rounded px-2 py-1">
+                    <i class="fa-solid fa-magnifying-glass text-gray-500 text-[10px]"></i>
+                    <input type="text" id="global-search-input" oninput="window.renderGlobalChat()" class="bg-transparent border-none text-[10px] text-gray-300 w-full focus:outline-none font-serif" placeholder="Search tavern messages...">
+                </div>
+            </div>
             <div id="global-chat-messages" class="flex-grow overflow-y-auto p-4 scrollbar-hide space-y-4">
                 <!-- Global messages populate here -->
             </div>
@@ -187,6 +193,12 @@
                 <button onclick="window.closeActiveDM()" class="text-gray-500 hover:text-gold transition-colors"><i class="fa-solid fa-arrow-left"></i></button>
                 <h3 id="active-dm-name" class="font-heading text-sm font-bold text-white uppercase tracking-widest truncate">User Name</h3>
                 <button onclick="window.promptBlockUser(window.activeChatTargetId, window.activeChatTargetName)" class="text-gray-500 hover:text-red-500 transition-colors" title="Block User"><i class="fa-solid fa-ban"></i></button>
+            </div>
+            <div class="p-2 border-b border-gray-700 bg-black/30 shrink-0">
+                <div class="flex items-center gap-2 bg-black/50 border border-gray-600 rounded px-2 py-1">
+                    <i class="fa-solid fa-magnifying-glass text-gray-500 text-[10px]"></i>
+                    <input type="text" id="dm-search-message-input" oninput="window.renderActiveDM()" class="bg-transparent border-none text-[10px] text-gray-300 w-full focus:outline-none font-serif" placeholder="Search this whisper...">
+                </div>
             </div>
             <div id="active-dm-messages" class="flex-grow overflow-y-auto p-4 scrollbar-hide space-y-4">
                 <!-- Private messages populate here -->
@@ -537,6 +549,7 @@
         let activeDmUnsub = null;
         window.activeChatTargetId = null;
         window.activeChatTargetName = "";
+        window.myDmContactIds = [];
         let dmUnreadCounts = {};
         window.globalMessages = [];
         window.myMessageLog = []; // Rate limiting log
@@ -783,10 +796,13 @@
             const msgs = window.globalMessages || [];
             const container = document.getElementById('global-chat-messages');
             
-            if (msgs.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">The tavern is quiet...</p>`;
+            const searchTerm = (document.getElementById('global-search-input')?.value || '').toLowerCase().trim();
+            const filteredMsgs = searchTerm ? msgs.filter(m => m.text.toLowerCase().includes(searchTerm) || m.authorName.toLowerCase().includes(searchTerm)) : msgs;
+
+            if (filteredMsgs.length === 0) {
+                container.innerHTML = searchTerm ? `<p class="text-xs text-gray-500 italic text-center py-4">No matching messages...</p>` : `<p class="text-xs text-gray-500 italic text-center py-4">The tavern is quiet...</p>`;
             } else {
-                container.innerHTML = msgs.map(m => {
+                container.innerHTML = filteredMsgs.map(m => {
                     // Filter out blocked users
                     if (isUserBlocked(m.authorId)) return '';
 
@@ -830,8 +846,10 @@
                     `;
                 }).join('');
                 
-                // Scroll to bottom
-                container.scrollTop = container.scrollHeight;
+                // Scroll to bottom only if not searching
+                if (!searchTerm) {
+                    container.scrollTop = container.scrollHeight;
+                }
                 
                 // Show badge if panel is closed
                 const panel = document.getElementById('global-chat-panel');
@@ -910,6 +928,7 @@
             
             // We store contact lists dynamically in public data to bypass cross-user write restrictions
             dmContactsUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`), (snap) => {
+                window.myDmContactIds = snap.docs.map(d => d.id);
                 const contacts = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => b.lastUpdated - a.lastUpdated);
                 const list = document.getElementById('dm-contacts-list');
                 
@@ -992,6 +1011,14 @@
             if (isUserBlocked(uid)) {
                 return window.showToast("This user is blocked.");
             }
+            
+            // Bypass modal if already an active contact
+            if (window.myDmContactIds && window.myDmContactIds.includes(uid)) {
+                window.switchChatTab('dms');
+                window.openDirectMessage(uid, username);
+                return;
+            }
+
             window.pendingDmTarget = { id: uid, name: username };
             document.getElementById('dm-confirm-name').innerText = username;
             document.getElementById('dm-confirm-modal').classList.remove('hidden');
@@ -1008,6 +1035,65 @@
             window.pendingDmTarget = null;
         };
 
+        window.activeDmMessages = [];
+
+        window.renderActiveDM = () => {
+            const msgs = window.activeDmMessages || [];
+            const container = document.getElementById('active-dm-messages');
+            const targetName = window.activeChatTargetName;
+            const convId = [currentUser.uid, window.activeChatTargetId].sort().join('_');
+            
+            const searchTerm = (document.getElementById('dm-search-message-input')?.value || '').toLowerCase().trim();
+            const filteredMsgs = searchTerm ? msgs.filter(m => m.text.toLowerCase().includes(searchTerm) || (m.authorId === currentUser.uid ? currentUser.username.toLowerCase() : targetName.toLowerCase()).includes(searchTerm)) : msgs;
+
+            if (filteredMsgs.length === 0) {
+                container.innerHTML = searchTerm ? `<p class="text-xs text-gray-500 italic text-center py-4">No matching messages...</p>` : `<p class="text-xs text-gray-500 italic text-center py-4">This is the start of your private history with ${targetName}.</p>`;
+            } else {
+                container.innerHTML = filteredMsgs.map(m => {
+                    const isMe = m.authorId === currentUser.uid;
+                    const align = isMe ? 'text-right' : 'text-left';
+                    const bg = isMe ? 'bg-blood/20 border-blood/50 text-parchment' : 'bg-black/40 border-gray-700 text-gray-300';
+                    
+                    let adminTools = '';
+                    if (adminModeActive && !m.isDeleted) {
+                        adminTools = `<button onclick="window.deleteDirectMessage('${m.id}', '${convId}')" class="text-gray-500 hover:text-red-500 ml-2" title="Delete Message"><i class="fa-solid fa-trash-can"></i></button>`;
+                    }
+
+                    const msgAuthorName = isMe ? currentUser.username : targetName;
+                    const reportBtn = (!isMe && !m.isDeleted) ? `<button onclick="window.promptReportUser('${m.authorId}', '${msgAuthorName.replace(/'/g, "\\'")}', '${m.text.replace(/'/g, "\\'").replace(/"/g, '&quot;').substring(0, 50)}')" class="text-gray-500 hover:text-yellow-500 ml-1" title="Report User"><i class="fa-solid fa-flag"></i></button>` : '';
+
+                    let msgContent = m.text;
+                    let deletedClass = '';
+                    
+                    if (m.isDeleted) {
+                        if (adminModeActive) {
+                            deletedClass = 'deleted-msg-admin';
+                            msgContent = `<span class="text-red-500 font-bold uppercase text-[9px] block mb-1">Deleted by ${m.deletedBy}</span>` + m.text;
+                        } else {
+                            return `<div class="chat-msg ${align}"><p class="text-[10px] text-gray-600 italic">This message was removed by the archives.</p></div>`;
+                        }
+                    }
+
+                    return `
+                    <div class="chat-msg ${align}">
+                        <div class="text-[9px] font-heading font-bold uppercase tracking-widest mb-1">
+                            <span class="text-gray-500">${window.formatChatTime(m.timestamp)}</span>
+                            ${adminTools}
+                            ${reportBtn}
+                        </div>
+                        <div class="inline-block p-2 rounded text-sm font-serif border ${bg} ${deletedClass} text-left max-w-[85%] break-words">
+                            ${msgContent}
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+                
+                if (!searchTerm) {
+                    container.scrollTop = container.scrollHeight;
+                }
+            }
+        };
+
         window.openDirectMessage = async (targetId, targetName) => {
             window.activeChatTargetId = targetId;
             window.activeChatTargetName = targetName;
@@ -1015,6 +1101,7 @@
             document.getElementById('chat-view-dms').classList.add('hidden');
             document.getElementById('chat-view-active-dm').classList.remove('hidden');
             document.getElementById('active-dm-name').innerText = targetName;
+            if(document.getElementById('dm-search-message-input')) document.getElementById('dm-search-message-input').value = '';
             
             // Clear unread count for this contact
             try {
@@ -1027,53 +1114,8 @@
             if (activeDmUnsub) activeDmUnsub();
             
             activeDmUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${convId}`), (snap) => {
-                const msgs = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => a.timestamp - b.timestamp);
-                const container = document.getElementById('active-dm-messages');
-                
-                if (msgs.length === 0) {
-                    container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">This is the start of your private history with ${targetName}.</p>`;
-                } else {
-                    container.innerHTML = msgs.map(m => {
-                        const isMe = m.authorId === currentUser.uid;
-                        const align = isMe ? 'text-right' : 'text-left';
-                        const bg = isMe ? 'bg-blood/20 border-blood/50 text-parchment' : 'bg-black/40 border-gray-700 text-gray-300';
-                        
-                        let adminTools = '';
-                        if (adminModeActive && !m.isDeleted) {
-                            adminTools = `<button onclick="window.deleteDirectMessage('${m.id}', '${convId}')" class="text-gray-500 hover:text-red-500 ml-2" title="Delete Message"><i class="fa-solid fa-trash-can"></i></button>`;
-                        }
-
-                        const msgAuthorName = isMe ? currentUser.username : targetName;
-                        const reportBtn = (!isMe && !m.isDeleted) ? `<button onclick="window.promptReportUser('${m.authorId}', '${msgAuthorName.replace(/'/g, "\\'")}', '${m.text.replace(/'/g, "\\'").replace(/"/g, '&quot;').substring(0, 50)}')" class="text-gray-500 hover:text-yellow-500 ml-1" title="Report User"><i class="fa-solid fa-flag"></i></button>` : '';
-
-                        let msgContent = m.text;
-                        let deletedClass = '';
-                        
-                        if (m.isDeleted) {
-                            if (adminModeActive) {
-                                deletedClass = 'deleted-msg-admin';
-                                msgContent = `<span class="text-red-500 font-bold uppercase text-[9px] block mb-1">Deleted by ${m.deletedBy}</span>` + m.text;
-                            } else {
-                                return `<div class="chat-msg ${align}"><p class="text-[10px] text-gray-600 italic">This message was removed by the archives.</p></div>`;
-                            }
-                        }
-
-                        return `
-                        <div class="chat-msg ${align}">
-                            <div class="text-[9px] font-heading font-bold uppercase tracking-widest mb-1">
-                                <span class="text-gray-500">${window.formatChatTime(m.timestamp)}</span>
-                                ${adminTools}
-                                ${reportBtn}
-                            </div>
-                            <div class="inline-block p-2 rounded text-sm font-serif border ${bg} ${deletedClass} text-left max-w-[85%] break-words">
-                                ${msgContent}
-                            </div>
-                        </div>
-                        `;
-                    }).join('');
-                    
-                    container.scrollTop = container.scrollHeight;
-                }
+                window.activeDmMessages = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => a.timestamp - b.timestamp);
+                window.renderActiveDM();
             });
         };
 

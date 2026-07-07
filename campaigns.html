@@ -156,11 +156,12 @@
 
         <!-- THE TAVERN (GLOBAL) -->
         <div id="chat-view-global" class="flex flex-col h-full overflow-hidden">
-            <div class="p-2 border-b border-gray-700 bg-black/30 shrink-0">
-                <div class="flex items-center gap-2 bg-black/50 border border-gray-600 rounded px-2 py-1">
+            <div class="p-2 border-b border-gray-700 bg-black/30 shrink-0 flex gap-2">
+                <div class="flex items-center gap-2 bg-black/50 border border-gray-600 rounded px-2 py-1 flex-grow">
                     <i class="fa-solid fa-magnifying-glass text-gray-500 text-[10px]"></i>
                     <input type="text" id="global-search-input" oninput="window.renderGlobalChat()" class="bg-transparent border-none text-[10px] text-gray-300 w-full focus:outline-none font-serif" placeholder="Search tavern messages...">
                 </div>
+                <button id="btn-clear-tavern" onclick="window.clearGlobalChat()" class="hidden bg-red-900 hover:bg-red-700 text-white px-2 py-1 rounded border border-red-500 transition-colors shadow-lg" title="Wipe Tavern Chat"><i class="fa-solid fa-broom"></i></button>
             </div>
             <div id="global-chat-messages" class="flex-grow overflow-y-auto p-4 scrollbar-hide space-y-4">
                 <!-- Global messages populate here -->
@@ -608,11 +609,14 @@
             adminModeActive = !adminModeActive;
             
             const btn = document.getElementById('btn-admin-terminal');
+            const clearTavernBtn = document.getElementById('btn-clear-tavern');
             if (adminModeActive) {
                 btn.classList.add('admin-glow');
+                if (clearTavernBtn) clearTavernBtn.classList.remove('hidden');
                 window.showToast("Admin Override Active. You see all.");
             } else {
                 btn.classList.remove('admin-glow');
+                if (clearTavernBtn) clearTavernBtn.classList.add('hidden');
                 window.showToast("Admin Override Deactivated.");
             }
             renderCampaigns(); // Re-render to show everything
@@ -882,6 +886,22 @@
                 window.showToast("Message erased from archives.");
             } catch(e) {
                 window.showToast("Failed to delete message.");
+            }
+        };
+
+        window.clearGlobalChat = async () => {
+            if (!adminModeActive) return;
+            if (!confirm("Are you sure you want to completely wipe the Tavern chat? This cannot be undone.")) return;
+            
+            window.showToast("Wiping the Tavern...");
+            try {
+                const snap = await getDocs(collection(db, 'artifacts', 'global_chat', 'public', 'data', 'messages'));
+                const promises = snap.docs.map(d => deleteDoc(d.ref));
+                await Promise.all(promises);
+                window.showToast("The Tavern has been wiped clean.");
+            } catch(e) {
+                console.error(e);
+                window.showToast("Failed to wipe the Tavern.");
             }
         };
 

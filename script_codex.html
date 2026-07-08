@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chronicles - Records Codex</title>
+    <title>Chronicles - Script Codex</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
@@ -63,7 +63,7 @@
 
         .vocation-tab { background: rgba(0,0,0,0.5); border: 1px solid #444; color: #888; font-family: 'Cinzel', serif; font-size: 10px; font-weight: 900; text-transform: uppercase; padding: 6px 12px; border-radius: 4px; transition: all 0.2s; cursor: pointer; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; }
         .vocation-tab:hover { border-color: #c5a059; color: #c5a059; background: rgba(0,0,0,0.7); }
-        .vocation-tab.active { background: #c5a059; color: #1a110b; border-color: #e8cd87; box-shadow: 0 0 15px rgba(197, 160, 89, 0.4); transform: scale(1.05); z-index: 10;}
+        .vocation-tab.active { background: #c5a059; color: #1a110b; border-color: #e8cd87; box-shadow: 0 0 15px rgba(197, 160, 89, 0.4); z-index: 10;}
 
         .level-tab { width: 28px; height: 28px; border-radius: 50%; background: #2c1e16; color: #888; border: 1px solid #555; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-weight: 900; font-size: 11px; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); margin: 2px; flex-shrink: 0;}
         .level-tab:hover { background: #3d2a1f; color: #f1e5c5; border-color: #c5a059; }
@@ -93,6 +93,14 @@
 
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Draggable Custom Scrollbar */
+        .custom-scrollbar { cursor: grab; padding-bottom: 8px; }
+        .custom-scrollbar:active { cursor: grabbing; }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c5a059; border-radius: 4px; border: 1px solid #1a110b; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #e8cd87; }
         
         input, textarea, select { background: transparent; border: none; font-size: 13px; color: #2c1e16; width: 100%; font-family: 'Lora', serif; }
         input:focus, textarea:focus { outline: none; background-color: rgba(255,255,255,0.6); }
@@ -100,7 +108,7 @@
         .form-input:focus { border-color: #7a1b1b; }
         .tiny-label { font-size: 9px; text-transform: uppercase; color: #555; font-weight: 900; display: block; margin-bottom: 2px; font-family: 'Cinzel', serif;}
         
-        .icon-selector-btn { border: 2px solid transparent; border-radius: 4px; padding: 8px; font-size: 24px; color: #888; transition: all 0.2s; cursor: pointer; }
+        .icon-selector-btn { border: 2px solid transparent; border-radius: 4px; padding: 8px; font-size: 20px; color: #888; transition: all 0.2s; cursor: pointer; flex-shrink: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
         .icon-selector-btn:hover { color: #c5a059; background: rgba(255,255,255,0.05); }
         .icon-selector-btn.active { color: #c5a059; border-color: #c5a059; background: rgba(197, 160, 89, 0.2); }
     </style>
@@ -164,15 +172,12 @@
                     </div>
                 </div>
 
-                <!-- VOCATION TABS (Scrollable) -->
-                <div class="flex overflow-x-auto scrollbar-hide gap-2 justify-start pb-2 mb-2 select-none" id="vocation-tabs-container">
+                <!-- VOCATION TABS (Scrollable & Draggable) -->
+                <div class="flex overflow-x-auto custom-scrollbar gap-2 justify-start mb-2" id="vocation-tabs-container">
                     <!-- Populated by JS -->
                 </div>
                 
-                <!-- CUSTOM INTERACTIVE SCROLLBAR TRACK -->
-                <div id="voc-scroll-track" class="w-full h-[4px] bg-[rgba(139,90,43,0.1)] border-y border-[rgba(139,90,43,0.2)] rounded cursor-pointer relative mb-4 group transition-all">
-                    <div id="voc-scroll-thumb" class="absolute top-[-1px] left-0 h-[6px] bg-gold rounded cursor-grab hover:bg-parchment transition-colors shadow-[0_0_8px_rgba(197,160,89,0.5)] hidden group-hover:h-[8px] group-hover:top-[-2px] duration-200"></div>
-                </div>
+                <hr class="border-t border-[rgba(139,90,43,0.2)] mb-4 mt-2">
 
                 <!-- Title, Levels & Action Buttons -->
                 <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
@@ -280,8 +285,9 @@
                         <h2 id="pd-title" class="font-heading text-2xl font-black text-gold uppercase tracking-widest drop-shadow-md">Pack Name</h2>
                         <p id="pd-author" class="text-xs font-serif text-gray-400 italic mt-1">By Author</p>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right flex flex-col items-end gap-1">
                         <span id="pd-version" class="bg-indigo-900 text-indigo-200 border border-indigo-700 px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-heading font-black shadow-md">v1</span>
+                        <span id="pd-downloads" class="text-[10px] text-gray-500 font-bold tracking-widest font-heading" title="Times injected"><i class="fa-solid fa-download mr-1"></i>0</span>
                     </div>
                 </div>
                 
@@ -296,7 +302,7 @@
                 <div id="pd-admin-panel" class="hidden mt-auto border-t border-gray-700 pt-4 space-y-2 pb-4">
                     <h3 class="font-heading text-xs font-bold text-red-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-crown mr-1"></i> Author Management</h3>
                     <div class="flex gap-2">
-                        <button onclick="window.openUpdatePackModal()" class="flex-1 bg-indigo-900 hover:bg-indigo-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-indigo-700">Push Update</button>
+                        <button onclick="window.openUpdatePackModal()" class="flex-1 bg-indigo-900 hover:bg-indigo-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-indigo-700">Edit / Update</button>
                         <button onclick="window.deleteCurrentPack(false)" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-gray-600">Archive</button>
                         <button id="pd-admin-perm-delete" onclick="window.deleteCurrentPack(true)" class="hidden flex-1 bg-red-900 hover:bg-red-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-red-700">Delete</button>
                     </div>
@@ -328,9 +334,9 @@
 
     <!-- UPDATE PACK MODAL (DM ONLY) -->
     <div id="pack-update-modal" class="modal-overlay hidden z-[980]">
-        <div class="modal-container max-w-md text-center bg-wood !border-gray-600 shadow-2xl">
-            <h2 class="font-heading text-xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Push Codex Update</h2>
-            <p class="text-xs font-serif text-gray-400 italic mb-6 mt-4">Overwrites the published pack with your current Codex and increments the version.</p>
+        <div class="modal-container max-w-lg text-center bg-wood !border-gray-600 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h2 class="font-heading text-xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Edit / Push Update</h2>
+            <p class="text-xs font-serif text-gray-400 italic mb-6 mt-4">Modify the pack's details and overwrite it with your current Codex records to release a new version.</p>
             
             <div class="space-y-4 text-left mb-8">
                 <div>
@@ -343,18 +349,23 @@
                 </div>
                 <div>
                     <label class="tiny-label text-gray-400 mt-2">Pack Icon</label>
-                    <div class="flex gap-2 justify-between mt-2" id="pack-update-icon-selectors">
-                        <button class="update-icon-btn active icon-selector-btn" data-icon="fa-book-journal-whills" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-book-journal-whills"></i></button>
-                        <button class="update-icon-btn icon-selector-btn" data-icon="fa-dragon" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-dragon"></i></button>
-                        <button class="update-icon-btn icon-selector-btn" data-icon="fa-wand-sparkles" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-wand-sparkles"></i></button>
-                        <button class="update-icon-btn icon-selector-btn" data-icon="fa-brands fa-jedi-order" onclick="window.selectUpdatePackIcon(this)"><i class="fa-brands fa-jedi-order"></i></button>
-                        <button class="update-icon-btn icon-selector-btn" data-icon="fa-khanda" onclick="window.selectUpdatePackIcon(this)"><i class="fa-solid fa-khanda"></i></button>
+                    <div class="flex flex-wrap gap-2 justify-start mt-2" id="pack-update-icon-selectors">
+                        <button class="icon-selector-btn active" data-icon="fa-solid fa-book-journal-whills" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-book-journal-whills"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-dragon" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-dragon"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-wand-sparkles" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-wand-sparkles"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-brands fa-jedi-order" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-brands fa-jedi-order"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-khanda" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-khanda"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-flask" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-flask"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-skull" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-skull"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-shield-halved" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-shield-halved"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-scroll" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-scroll"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-fire-flame-curved" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-fire-flame-curved"></i></button>
                     </div>
-                    <input type="hidden" id="pack-update-icon" value="fa-book-journal-whills">
+                    <input type="hidden" id="pack-update-selected-icon" value="fa-solid fa-book-journal-whills">
                 </div>
                 <div>
                     <label class="tiny-label text-gray-400 mt-2">Update Notes / Changelog</label>
-                    <textarea id="pack-update-notes" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-24 resize-none" placeholder="What changed in this version?"></textarea>
+                    <textarea id="pack-update-notes" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-16 resize-none" placeholder="What changed in this version?"></textarea>
                 </div>
             </div>
 
@@ -367,7 +378,7 @@
 
     <!-- PUBLISH PACK MODAL (DM ONLY) -->
     <div id="create-pack-modal" class="modal-overlay hidden z-[960]">
-        <div class="modal-container max-w-md text-center bg-wood !border-gray-600 shadow-2xl">
+        <div class="modal-container max-w-lg text-center bg-wood !border-gray-600 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
             <h2 class="font-heading text-2xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Publish Script Pack</h2>
             <p class="text-xs font-serif text-gray-400 italic mb-6 mt-4">Bundle your current codex into a reusable pack for yourself or the public.</p>
             
@@ -378,23 +389,23 @@
                 </div>
                 <div>
                     <label class="tiny-label text-gray-400 mt-2">Description</label>
-                    <textarea id="pack-desc" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-20 resize-none" placeholder="What kind of scripts does this contain?"></textarea>
+                    <textarea id="pack-desc" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-20 resize-none" placeholder="What kind of records does this contain?"></textarea>
                 </div>
                 <div>
                     <label class="tiny-label text-gray-400 mt-2">Pack Icon</label>
                     <div class="flex flex-wrap gap-2 justify-start mt-2" id="pack-icon-selectors">
-                        <button class="icon-selector-btn active" data-icon="fa-book-journal-whills" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-book-journal-whills"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-dragon" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-dragon"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-wand-sparkles" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-wand-sparkles"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-brands fa-jedi-order" onclick="window.selectPackIcon(this)"><i class="fa-brands fa-jedi-order"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-khanda" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-khanda"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-flask" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-flask"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-shield-halved" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-shield-halved"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-skull" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-skull"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-meteor" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-meteor"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-hat-wizard" onclick="window.selectPackIcon(this)"><i class="fa-solid fa-hat-wizard"></i></button>
+                        <button class="icon-selector-btn active" data-icon="fa-solid fa-book-journal-whills" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-book-journal-whills"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-dragon" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-dragon"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-wand-sparkles" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-wand-sparkles"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-brands fa-jedi-order" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-brands fa-jedi-order"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-khanda" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-khanda"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-flask" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-flask"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-skull" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-skull"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-shield-halved" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-shield-halved"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-scroll" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-scroll"></i></button>
+                        <button class="icon-selector-btn" data-icon="fa-solid fa-fire-flame-curved" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-fire-flame-curved"></i></button>
                     </div>
-                    <input type="hidden" id="pack-selected-icon" value="fa-book-journal-whills">
+                    <input type="hidden" id="pack-selected-icon" value="fa-solid fa-book-journal-whills">
                 </div>
                 <div>
                     <label class="tiny-label text-gray-400 mt-2">Visibility</label>
@@ -635,135 +646,48 @@
             confirmCallback = null;
         };
 
-        // --- SCROLL FIXES & EVENT LISTENERS ---
-        const initScrollFixes = () => {
-            // Mouse wheel scrolling for main nav
-            const nav = document.getElementById('main-nav');
-            if (nav) {
-                nav.addEventListener('wheel', (e) => {
-                    if (e.deltaY !== 0) { e.preventDefault(); nav.scrollLeft += e.deltaY; }
-                }, { passive: false });
-            }
-
-            // Vocation Tabs Drag & Scrollbar Logic
-            const container = document.getElementById('vocation-tabs-container');
-            const track = document.getElementById('voc-scroll-track');
-            const thumb = document.getElementById('voc-scroll-thumb');
-
-            if (!container) return;
-
-            // 1. Mouse wheel
-            container.addEventListener('wheel', (e) => {
-                if (e.deltaY !== 0) { e.preventDefault(); container.scrollLeft += e.deltaY; }
-            }, { passive: false });
-
-            // 2. Drag to scroll on container directly
+        // --- HORIZONTAL DRAG & SCROLL FIX ---
+        const enableDraggableHScroll = (id) => {
+            const slider = document.getElementById(id);
+            if (!slider) return;
             let isDown = false;
-            let startXContainer;
-            let scrollLeftContainer;
+            let startX;
+            let scrollLeft;
 
-            container.addEventListener('mousedown', (e) => {
+            slider.addEventListener('mousedown', (e) => {
                 isDown = true;
-                container.classList.add('!cursor-grabbing');
-                startXContainer = e.pageX - container.offsetLeft;
-                scrollLeftContainer = container.scrollLeft;
+                slider.classList.add('cursor-grabbing');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
             });
-            container.addEventListener('mouseleave', () => { isDown = false; container.classList.remove('!cursor-grabbing'); });
-            container.addEventListener('mouseup', () => { isDown = false; container.classList.remove('!cursor-grabbing'); });
-            container.addEventListener('mousemove', (e) => {
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.classList.remove('cursor-grabbing');
+            });
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('cursor-grabbing');
+            });
+            slider.addEventListener('mousemove', (e) => {
                 if (!isDown) return;
                 e.preventDefault();
-                const x = e.pageX - container.offsetLeft;
-                container.scrollLeft = scrollLeftContainer - (x - startXContainer);
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2; // Scroll-fast
+                slider.scrollLeft = scrollLeft - walk;
             });
-
-            // 3. Custom Interactive Scrollbar
-            if (!track || !thumb) return;
-
-            window.updateVocScrollbar = () => {
-                const scrollRatio = container.clientWidth / container.scrollWidth;
-                if (scrollRatio >= 1 || container.scrollWidth === 0) {
-                    thumb.classList.add('hidden');
-                } else {
-                    thumb.classList.remove('hidden');
-                    const thumbWidth = Math.max(scrollRatio * 100, 10); // min 10% width
-                    thumb.style.width = `${thumbWidth}%`;
-                    const scrollPercent = container.scrollLeft / (container.scrollWidth - container.clientWidth);
-                    const maxLeft = track.clientWidth - thumb.offsetWidth;
-                    thumb.style.left = `${scrollPercent * maxLeft}px`;
+            // Wheel scroll
+            slider.addEventListener('wheel', (e) => {
+                if (e.deltaY !== 0) {
+                    e.preventDefault();
+                    slider.scrollLeft += e.deltaY;
                 }
-            };
-
-            container.addEventListener('scroll', window.updateVocScrollbar);
-            window.addEventListener('resize', window.updateVocScrollbar);
-
-            let isDraggingThumb = false;
-            let thumbStartX;
-
-            thumb.addEventListener('mousedown', (e) => {
-                isDraggingThumb = true;
-                document.body.classList.add('cursor-grabbing', 'select-none');
-                thumbStartX = e.pageX - thumb.getBoundingClientRect().left;
-                e.stopPropagation();
-            });
-
-            document.addEventListener('mousemove', (e) => {
-                if (!isDraggingThumb) return;
-                e.preventDefault();
-                const trackRect = track.getBoundingClientRect();
-                const xInsideTrack = e.pageX - trackRect.left;
-                const maxLeft = track.clientWidth - thumb.offsetWidth;
-                
-                let newLeft = xInsideTrack - thumbStartX;
-                if (newLeft < 0) newLeft = 0;
-                if (newLeft > maxLeft) newLeft = maxLeft;
-
-                const scrollPercent = newLeft / maxLeft;
-                container.scrollLeft = scrollPercent * (container.scrollWidth - container.clientWidth);
-            });
-
-            document.addEventListener('mouseup', () => {
-                isDraggingThumb = false;
-                document.body.classList.remove('cursor-grabbing', 'select-none');
-            });
-
-            track.addEventListener('mousedown', (e) => {
-                if (e.target === thumb) return;
-                const trackRect = track.getBoundingClientRect();
-                const clickX = e.pageX - trackRect.left;
-                const maxLeft = track.clientWidth - thumb.offsetWidth;
-                let newLeft = clickX - (thumb.offsetWidth / 2);
-                if (newLeft < 0) newLeft = 0;
-                if (newLeft > maxLeft) newLeft = maxLeft;
-                
-                const scrollPercent = newLeft / maxLeft;
-                container.scrollLeft = scrollPercent * (container.scrollWidth - container.clientWidth);
-            });
-            
-            // Support touch on thumb
-            thumb.addEventListener('touchstart', (e) => {
-                isDraggingThumb = true;
-                thumbStartX = e.touches[0].pageX - thumb.getBoundingClientRect().left;
-                e.stopPropagation();
-            }, {passive: true});
-            document.addEventListener('touchmove', (e) => {
-                if(!isDraggingThumb) return;
-                const trackRect = track.getBoundingClientRect();
-                const xInsideTrack = e.touches[0].pageX - trackRect.left;
-                const maxLeft = track.clientWidth - thumb.offsetWidth;
-                let newLeft = xInsideTrack - thumbStartX;
-                if (newLeft < 0) newLeft = 0;
-                if (newLeft > maxLeft) newLeft = maxLeft;
-                const scrollPercent = newLeft / maxLeft;
-                container.scrollLeft = scrollPercent * (container.scrollWidth - container.clientWidth);
-            }, {passive: true});
-            document.addEventListener('touchend', () => { isDraggingThumb = false; });
+            }, { passive: false });
         };
-
+        
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initScrollFixes);
+            document.addEventListener('DOMContentLoaded', () => { enableDraggableHScroll('vocation-tabs-container'); enableDraggableHScroll('main-nav'); });
         } else {
-            initScrollFixes();
+            enableDraggableHScroll('vocation-tabs-container'); enableDraggableHScroll('main-nav');
         }
 
         // --- FIREBASE SETUP ---
@@ -833,27 +757,27 @@
         ];
 
         // --- RENDER AND FILTER LOGIC ---
-        window.selectPackIcon = (btn) => {
-            document.querySelectorAll('.icon-selector-btn:not(.update-icon-btn)').forEach(b => b.classList.remove('active'));
+        window.selectPackIcon = (btn, hiddenInputId) => {
+            const container = btn.parentElement;
+            container.querySelectorAll('.icon-selector-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById('pack-selected-icon').value = btn.dataset.icon;
-        };
-
-        window.selectUpdatePackIcon = (btn) => {
-            document.querySelectorAll('.update-icon-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('pack-update-icon').value = btn.dataset.icon;
+            document.getElementById(hiddenInputId).value = btn.dataset.icon;
         };
 
         window.setMainTypeFilter = (type) => {
             mainTypeFilter = type;
             document.querySelectorAll('.type-toggle-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`type-toggle-${type.toLowerCase()}`).classList.add('active');
+            
+            // Re-added specific check for the scriptcasting button ID bug
+            const btnId = type === 'scriptcasting' ? 'type-toggle-scriptcasting' : `type-toggle-${type.toLowerCase()}`;
+            const targetBtn = document.getElementById(btnId);
+            if (targetBtn) targetBtn.classList.add('active');
             
             if (type === 'features') {
                 if (currentLevelFilter === '0') currentLevelFilter = '1';
             }
             
+            // Check if current vocation is allowed in this new filter
             if (currentVocationFilter !== 'All') {
                 const voc = VOC_KEYS.find(v => v.id === currentVocationFilter);
                 if (voc) {
@@ -891,8 +815,7 @@
             } else {
                 let minLvl = 0;
                 let maxLvl = 9;
-
-                // Restrict spell levels based on Vocation (Class)
+                
                 if (currentVocationFilter === 'class_heartbound' || currentVocationFilter === 'class_nomad') {
                     minLvl = 1;
                     maxLvl = 5;
@@ -901,7 +824,7 @@
                     maxLvl = 5;
                 }
 
-                let currLvlInt = parseInt(currentLevelFilter) || 0;
+                let currLvlInt = parseInt(currentLevelFilter) || minLvl;
                 if (currLvlInt < minLvl) currentLevelFilter = minLvl.toString();
                 if (currLvlInt > maxLvl) currentLevelFilter = maxLvl.toString();
 
@@ -975,8 +898,6 @@
                 html += `<button onclick="window.setVocationFilter('${v.id}')" class="vocation-tab ${currentVocationFilter === v.id ? 'active' : ''}" id="tab-voc-${v.id}">${displayName.toUpperCase()}</button>`;
             });
             container.innerHTML = html;
-
-            if(window.updateVocScrollbar) setTimeout(window.updateVocScrollbar, 50);
         };
 
         window.parseAeonfallContent = (text) => {
@@ -1520,7 +1441,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- COMPENDIUM IMPORT LOGIC ---
+        // --- COMPENDIUM IMPORT & UPDATES ---
         window.openImportModal = async () => {
             if (activeRole !== 'dm') return;
             document.getElementById('import-modal').classList.remove('hidden');
@@ -1553,7 +1474,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                         <p class="text-xs text-gray-400 mb-3 line-clamp-3 font-serif">${pack.description || 'No description provided.'}</p>
                         <div class="border-t border-gray-700 pt-2 flex justify-between items-center mt-auto">
                             <span class="text-[9px] text-gold font-bold uppercase tracking-widest">v${pack.version || 1} • ${(pack.scripts || []).length} Records</span>
-                            <span class="text-[9px] text-gray-500 italic">By ${pack.authorName || 'Unknown'}</span>
+                            <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest flex items-center gap-1" title="Times Injected"><i class="fa-solid fa-download text-[8px]"></i>${pack.downloads || 0}</span>
                         </div>
                     </div>
                 `).join('');
@@ -1581,6 +1502,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             
             document.getElementById('pd-author').innerText = `By ${currentViewingPack.authorName}`;
             document.getElementById('pd-version').innerText = `v${currentViewingPack.version || 1}`;
+            document.getElementById('pd-downloads').innerHTML = `<i class="fa-solid fa-download mr-1"></i>${currentViewingPack.downloads || 0}`;
             document.getElementById('pd-desc').innerText = currentViewingPack.description || 'No description provided.';
             document.getElementById('pd-notes').innerText = currentViewingPack.updateNotes || 'Initial publication.';
             
@@ -1597,7 +1519,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             document.getElementById('pd-admin-perm-delete').classList.toggle('hidden', !adminModeActive);
             if(adminModeActive && currentViewingPack.isDeleted) {
                  document.getElementById('pd-admin-panel').classList.remove('hidden');
-                 document.getElementById('pd-btn-archive').classList.add('hidden'); // already archived
+                 document.getElementById('pd-btn-archive')?.classList.add('hidden'); // already archived
             }
 
             document.getElementById('pack-details-modal').classList.remove('hidden');
@@ -1698,6 +1620,15 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                         const docRef = doc(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION));
                         batch.set(docRef, { ...item, createdAt: Date.now(), updatedAt: Date.now() });
                     });
+
+                    // Increment Download Counter
+                    const pathArgs = currentViewingPack.isPrivate 
+                        ? ['artifacts', 'global_codex', 'users', currentViewingPack.authorId, 'scriptPacks', currentViewingPack.id]
+                        : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', currentViewingPack.id];
+                    
+                    const currentDownloads = currentViewingPack.downloads || 0;
+                    batch.update(doc(db, ...pathArgs), { downloads: currentDownloads + 1 });
+
                     await batch.commit();
                     window.showToast("Pack injected successfully!");
                 } catch (e) {
@@ -1710,26 +1641,34 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         window.openUpdatePackModal = () => {
             if (!currentViewingPack) return;
             
+            // Pre-fill fields with current pack data
             document.getElementById('pack-update-name').value = currentViewingPack.name || '';
             document.getElementById('pack-update-desc').value = currentViewingPack.description || '';
-            
-            const icon = currentViewingPack.icon || 'fa-book-journal-whills';
-            document.getElementById('pack-update-icon').value = icon;
-            document.querySelectorAll('.update-icon-btn').forEach(b => {
-                b.classList.toggle('active', b.dataset.icon === icon);
-            });
-
             document.getElementById('pack-update-notes').value = '';
+            
+            const currentIcon = currentViewingPack.icon || 'fa-solid fa-book-journal-whills';
+            document.getElementById('pack-update-selected-icon').value = currentIcon;
+            
+            // Update icon selection buttons
+            document.querySelectorAll('#pack-update-icon-selectors .icon-selector-btn').forEach(b => {
+                if(b.dataset.icon === currentIcon) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+            
             document.getElementById('pack-update-modal').classList.remove('hidden');
         };
         
         window.executePackUpdate = async () => {
             if (!currentViewingPack || activeRole !== 'dm') return;
             
-            const newName = document.getElementById('pack-update-name').value.trim() || currentViewingPack.name;
-            const newDesc = document.getElementById('pack-update-desc').value.trim() || currentViewingPack.description;
-            const newIcon = document.getElementById('pack-update-icon').value || currentViewingPack.icon;
+            const name = document.getElementById('pack-update-name').value.trim() || currentViewingPack.name;
+            const desc = document.getElementById('pack-update-desc').value.trim();
             const notes = document.getElementById('pack-update-notes').value.trim() || 'Minor updates and script adjustments.';
+            const icon = document.getElementById('pack-update-selected-icon').value || currentViewingPack.icon;
+            
             const newVersion = (currentViewingPack.version || 1) + 1;
             
             const pathArgs = currentViewingPack.isPrivate 
@@ -1741,9 +1680,9 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             
             try {
                 await updateDoc(doc(db, ...pathArgs), {
-                    name: newName,
-                    description: newDesc,
-                    icon: newIcon,
+                    name: name,
+                    description: desc,
+                    icon: icon,
                     scripts: scripts.map(s => { const c = {...s}; delete c.id; return c; }),
                     version: newVersion,
                     updateNotes: notes,
@@ -1844,7 +1783,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             const name = document.getElementById('pack-name').value.trim();
             const desc = document.getElementById('pack-desc').value.trim();
             const vis = document.getElementById('pack-vis').value;
-            const icon = document.getElementById('pack-selected-icon').value || 'fa-book-journal-whills';
+            const icon = document.getElementById('pack-selected-icon').value || 'fa-solid fa-book-journal-whills';
             
             if (!name) return window.showToast("A pack name is required.");
             
@@ -1857,6 +1796,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 visibility: vis,
                 icon: icon,
                 version: 1,
+                downloads: 0,
                 updateNotes: 'Initial publication.',
                 authorId: currentUser.uid,
                 authorName: currentUser.username || 'Unknown DM',
@@ -1881,7 +1821,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
         };
 
-        // --- AUTH AND DATABASE LISTENERS ---
+        // --- AUTH & LISTENERS ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {
@@ -1948,7 +1888,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                         
                         safeSet('type-toggle-all', t.nav_all_records);
                         safeSet('type-toggle-features', t.nav_features);
-                        safeSet('type-toggle-scripts', t.nav_scripts);
+                        safeSet('type-toggle-scriptcasting', t.nav_scripts);
 
                         const titleEl = document.getElementById('main-campaign-title-label');
                         if (titleEl) titleEl.innerText = t.book_scriptcodex || 'Script Codex';

@@ -162,66 +162,57 @@
             <div class="p-2 border-b border-gray-700 bg-black/30 shrink-0 flex gap-2">
                 <div class="flex items-center gap-2 bg-black/50 border border-gray-600 rounded px-2 py-1 flex-grow">
                     <i class="fa-solid fa-magnifying-glass text-gray-500 text-[10px]"></i>
-                    <input type="text" id="global-search-input" class="form-input text-white bg-transparent border-none focus:ring-0 text-xs w-full py-1 h-6" placeholder="Search Tavern...">
+                    <input type="text" id="global-search-input" oninput="window.renderGlobalChat()" class="bg-transparent border-none text-[10px] text-gray-300 w-full focus:outline-none font-serif" placeholder="Search tavern messages...">
                 </div>
+                <button id="btn-clear-tavern" onclick="window.clearGlobalChat()" class="hidden bg-red-900 hover:bg-red-700 text-white px-2 py-1 rounded border border-red-500 transition-colors shadow-lg" title="Wipe Tavern Chat"><i class="fa-solid fa-broom"></i></button>
             </div>
-
-            <div id="global-messages-container" class="flex-grow overflow-y-auto p-4 space-y-4">
-                <!-- Messages populate here -->
+            <div id="global-chat-messages" class="flex-grow overflow-y-auto p-4 scrollbar-hide space-y-4">
+                <!-- Global messages populate here -->
             </div>
-
-            <div class="p-2 border-t border-gray-700 bg-black/30 shrink-0 flex gap-2">
-                <input type="text" id="global-chat-input" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold text-xs w-full" placeholder="Speak your mind...">
-                <button onclick="window.sendGlobalMessage()" class="bg-gray-800 hover:bg-gray-700 text-gold px-4 py-2 rounded text-xs font-bold uppercase tracking-widest font-heading transition-colors border border-gray-600"><i class="fa-solid fa-paper-plane"></i></button>
+            <div class="p-4 border-t border-gray-700 bg-black/40 shrink-0">
+                <div class="flex gap-2">
+                    <input type="text" id="global-chat-input" class="form-input text-xs w-full font-serif" placeholder="Speak to the realm...">
+                    <button onclick="window.sendGlobalMessage()" class="fantasy-btn px-4 py-2 rounded text-xs"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
             </div>
         </div>
 
-        <!-- WHISPERS (DMs & GROUPS) -->
-        <div id="chat-view-dms" class="hidden flex-col h-full overflow-hidden">
-            
-            <!-- List View -->
-            <div id="dm-list-view" class="flex-grow overflow-y-auto p-2">
-                <div class="flex justify-between items-center mb-3 px-2 py-1 border-b border-gray-700">
-                    <h3 class="text-xs font-heading font-bold text-gray-400 uppercase tracking-widest">Active Channels</h3>
-                    <button onclick="window.openCreateGroupModal()" class="text-xs text-gold hover:text-white transition-colors" title="Form an Alliance"><i class="fa-solid fa-users-medical"></i></button>
-                </div>
-                
-                <div class="flex items-center gap-2 bg-black/50 border border-gray-600 rounded px-2 py-1 mb-3 mx-2">
-                    <i class="fa-solid fa-magnifying-glass text-gray-500 text-[10px]"></i>
-                    <input type="text" id="dm-search-input" oninput="window.searchUsersForDM()" class="bg-transparent border-none text-[10px] text-gray-300 w-full focus:outline-none font-serif" placeholder="Search contacts...">
-                </div>
-
-                <div id="dm-contacts-list" class="space-y-1 pb-4">
-                    <!-- Contacts populate here -->
+        <!-- WHISPERS (DIRECT MESSAGES) LIST -->
+        <div id="chat-view-dms" class="flex flex-col h-full overflow-hidden hidden">
+            <div class="p-3 border-b border-gray-700 bg-black/20 shrink-0">
+                <p class="text-[10px] text-gray-500 font-serif italic mb-2 text-center">Communicate privately. Find a user to begin.</p>
+                <div class="flex gap-2">
+                    <input type="text" id="dm-search-input" class="form-input text-xs w-full py-1.5" placeholder="Search your contacts...">
+                    <button onclick="window.openCreateGroupModal()" class="bg-gray-800 hover:bg-gray-700 text-gold px-3 py-1.5 rounded text-xs border border-gray-600 w-full" title="Form Alliance"><i class="fa-solid fa-users mr-2"></i> Form Alliance</button>
                 </div>
             </div>
-            
-            <!-- Active DM View -->
-            <div id="chat-view-active-dm" class="hidden flex-col h-full overflow-hidden">
-                <div class="flex items-center justify-between p-3 border-b border-gray-700 bg-black/40 shrink-0">
-                    <button onclick="window.closeActiveDM()" class="text-gray-500 hover:text-gold transition-colors"><i class="fa-solid fa-arrow-left"></i></button>
-                    <h3 id="active-dm-name" class="font-heading text-sm font-bold text-white uppercase tracking-widest truncate max-w-[180px]">User Name</h3>
-                    <div class="flex gap-3" id="active-dm-tools">
-                        <!-- Dynamic Tools -->
-                    </div>
+            <div id="dm-contacts-list" class="flex-grow overflow-y-auto scrollbar-hide">
+                <!-- DM Contacts populate here -->
+            </div>
+        </div>
+
+        <!-- ACTIVE WHISPER CONVERSATION -->
+        <div id="chat-view-active-dm" class="flex flex-col h-full overflow-hidden hidden">
+            <div class="flex items-center justify-between p-3 border-b border-gray-700 bg-black/40 shrink-0">
+                <button onclick="window.closeActiveDM()" class="text-gray-500 hover:text-gold transition-colors"><i class="fa-solid fa-arrow-left"></i></button>
+                <h3 id="active-dm-name" class="font-heading text-sm font-bold text-white uppercase tracking-widest truncate max-w-[180px]">User Name</h3>
+                <div class="flex gap-3" id="active-dm-tools">
+                    <!-- Dynamic Tools (Clear, Block, Rename, Delete) Go Here -->
                 </div>
-                
-                <div class="p-2 border-b border-gray-700 bg-black/30 shrink-0">
-                    <div class="flex items-center gap-2 bg-black/50 border border-gray-600 rounded px-2 py-1">
-                        <i class="fa-solid fa-magnifying-glass text-gray-500 text-[10px]"></i>
-                        <input type="text" id="dm-search-message-input" oninput="window.renderActiveDM()" class="bg-transparent border-none text-[10px] text-gray-300 w-full focus:outline-none font-serif" placeholder="Search this whisper...">
-                    </div>
+            </div>
+            <div class="p-2 border-b border-gray-700 bg-black/30 shrink-0">
+                <div class="flex items-center gap-2 bg-black/50 border border-gray-600 rounded px-2 py-1">
+                    <i class="fa-solid fa-magnifying-glass text-gray-500 text-[10px]"></i>
+                    <input type="text" id="dm-search-message-input" oninput="window.renderActiveDM()" class="bg-transparent border-none text-[10px] text-gray-300 w-full focus:outline-none font-serif" placeholder="Search this whisper...">
                 </div>
-                
-                <div id="active-dm-messages" class="flex-grow overflow-y-auto p-4 scrollbar-hide space-y-4">
-                    <!-- Messages populate here -->
-                </div>
-                
-                <div class="p-4 border-t border-gray-700 bg-black/40 shrink-0">
-                    <div class="flex gap-2">
-                        <input type="text" id="active-dm-input" class="form-input text-xs w-full font-serif" placeholder="Whisper privately...">
-                        <button onclick="window.sendDirectMessage()" class="fantasy-btn px-4 py-2 rounded text-xs"><i class="fa-solid fa-paper-plane"></i></button>
-                    </div>
+            </div>
+            <div id="active-dm-messages" class="flex-grow overflow-y-auto p-4 scrollbar-hide space-y-4">
+                <!-- Private messages populate here -->
+            </div>
+            <div class="p-4 border-t border-gray-700 bg-black/40 shrink-0">
+                <div class="flex gap-2">
+                    <input type="text" id="active-dm-input" class="form-input text-xs w-full font-serif" placeholder="Whisper privately...">
+                    <button onclick="window.sendDirectMessage()" class="fantasy-btn px-4 py-2 rounded text-xs"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
             </div>
         </div>
@@ -293,8 +284,9 @@
                         <h2 id="pd-title" class="font-heading text-2xl font-black text-gold uppercase tracking-widest drop-shadow-md">Pack Name</h2>
                         <p id="pd-author" class="text-xs font-serif text-gray-400 italic mt-1">By Author</p>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right flex flex-col items-end gap-1">
                         <span id="pd-version" class="bg-indigo-900 text-indigo-200 border border-indigo-700 px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-heading font-black shadow-md">v1</span>
+                        <span id="pd-downloads" class="text-[10px] text-gray-500 font-bold tracking-widest font-heading" title="Times injected"><i class="fa-solid fa-download mr-1"></i>0</span>
                     </div>
                 </div>
                 
@@ -586,40 +578,28 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, addDoc, deleteDoc, getDoc, getDocs, writeBatch, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, getDoc, addDoc, query, where, getDocs, arrayUnion, arrayRemove, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+        // --- GLOBAL ERROR BOUNDARY FOR GITHUB PAGES / CORS ISSUES ---
+        window.addEventListener('error', (event) => {
+            const loadingDiv = document.getElementById('initial-loading');
+            if (loadingDiv && !loadingDiv.classList.contains('hidden')) {
+                loadingDiv.innerHTML = `
+                    <div class="parchment-bg p-8 rounded border border-blood max-w-md text-center">
+                        <h2 class="font-heading text-xl text-blood font-bold mb-4">Script Execution Error</h2>
+                        <p class="text-sm font-serif text-ink mb-4">${event.message}</p>
+                        <p class="text-xs text-gray-600 font-bold">If you are on GitHub Pages, make sure your files are uploaded correctly and there are no syntax errors.</p>
+                    </div>
+                `;
+            }
+        });
 
         // --- CORE UI FUNCTIONS ---
         window.showToast = (m) => { 
             const t = document.getElementById('toast'); 
             if(t){ t.textContent=m; t.style.opacity=1; setTimeout(()=>t.style.opacity=0, 4000); } 
-        };
-
-        window.routeTo = (page) => {
-            const currentId = new URLSearchParams(window.location.search).get('id') || new URLSearchParams(window.location.search).get('campaignId');
-            try {
-                if (currentId && currentId !== "demo_campaign") {
-                    const separator = page.includes('?') ? '&' : '?';
-                    window.location.href = `${page}${separator}id=${currentId}`;
-                } else {
-                    window.location.href = page;
-                }
-            } catch(e) {
-                window.showToast("Redirects disabled in preview window.");
-            }
-        };
-
-        let confirmCallback = null;
-        window.customConfirm = (message, callback) => {
-            document.getElementById('confirm-modal-text').innerText = message;
-            document.getElementById('confirm-modal').classList.remove('hidden');
-            confirmCallback = callback;
-        };
-        window.closeConfirmModal = (result) => {
-            document.getElementById('confirm-modal').classList.add('hidden');
-            if (confirmCallback) confirmCallback(result);
-            confirmCallback = null;
         };
 
         // --- HORIZONTAL DRAG & SCROLL FIX ---
@@ -790,7 +770,6 @@
             }
         };
 
-        // Generate Card HTML
         function createCampaignCard(camp, isMine) {
             const d = document.createElement('div');
             d.className = "bg-black bg-opacity-60 rounded-lg card p-5 flex flex-col justify-between group";
@@ -904,7 +883,7 @@
             }
         }
 
-        // --- CHAT LOGIC ---
+        // --- STREAMING_CHUNK:Configuring Chat Functions... ---
         window.toggleChatPanel = () => {
             const panel = document.getElementById('global-chat-panel');
             panel.classList.toggle('open');
@@ -1113,7 +1092,7 @@
             }
         };
 
-        // DIRECT MESSAGING (WHISPERS)
+        // --- STREAMING_CHUNK:Direct Messaging Logic... ---
         window.initDirectMessaging = () => {
             if (dmContactsUnsub) dmContactsUnsub();
             
@@ -1317,71 +1296,76 @@
             // Build Contextual Tools UI
             const toolsContainer = document.getElementById('active-dm-tools');
             if (window.activeChatIsGroup) {
-                let groupTools = `<button onclick="window.clearActiveDM()" class="text-gray-500 hover:text-red-500 transition-colors" title="Clear Chat History"><i class="fa-solid fa-broom"></i></button>`;
-                
-                // Allow owner (or admin) to rename/delete group
-                // For simplicity, any group member can rename it in this version, but only admins can delete
-                groupTools += `<button onclick="window.renameGroup()" class="text-gray-500 hover:text-gold transition-colors" title="Rename Alliance"><i class="fa-solid fa-pen"></i></button>`;
-                
-                if (adminModeActive) {
-                    groupTools += `<button onclick="window.deleteGroup()" class="text-red-900 hover:text-red-500 transition-colors ml-2" title="Delete Alliance"><i class="fa-solid fa-trash-can"></i></button>`;
+                let toolsHTML = `<button onclick="window.clearDMConversation()" class="text-gray-500 hover:text-orange-500 transition-colors" title="Leave Group"><i class="fa-solid fa-right-from-bracket"></i></button>`;
+                if (currentUser.role === 'dm' || currentUser.role === 'admin' || adminModeActive) {
+                    toolsHTML = `
+                        <button onclick="window.renameGroup()" class="text-gray-500 hover:text-gold transition-colors" title="Rename Group"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="window.deleteGroup()" class="text-gray-500 hover:text-red-500 transition-colors" title="Delete Group for All"><i class="fa-solid fa-trash-can"></i></button>
+                    ` + toolsHTML;
                 }
-                
-                toolsContainer.innerHTML = groupTools;
+                toolsContainer.innerHTML = toolsHTML;
             } else {
-                 toolsContainer.innerHTML = `
-                    <button onclick="window.clearActiveDM()" class="text-gray-500 hover:text-red-500 transition-colors" title="Clear Chat History"><i class="fa-solid fa-broom"></i></button>
-                    <button onclick="window.confirmBlockUser()" class="text-gray-500 hover:text-red-500 transition-colors" title="Block User"><i class="fa-solid fa-ban"></i></button>
+                toolsContainer.innerHTML = `
+                    <button onclick="window.clearDMConversation()" class="text-gray-500 hover:text-orange-500 transition-colors" title="Clear/Hide Conversation"><i class="fa-solid fa-trash-can"></i></button>
+                    <button onclick="window.promptBlockUser(window.activeChatTargetId, window.activeChatTargetName)" class="text-gray-500 hover:text-red-500 transition-colors" title="Block User"><i class="fa-solid fa-ban"></i></button>
                 `;
             }
             
-            // Subscribe to messages
+            // Clear unread count for this contact
+            try {
+                await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`, targetId), { unreadCount: 0 });
+            } catch(e) {} 
+
+            // Determine Conversation ID
             const convId = window.activeChatIsGroup ? targetId : [currentUser.uid, targetId].sort().join('_');
             
             if (activeDmUnsub) activeDmUnsub();
-            activeDmUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'private', 'conversations', convId, 'messages'), (snap) => {
-                window.activeDmMessages = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => a.timestamp - b.timestamp);
+            
+            activeDmUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${convId}`), (snap) => {
+                window.activeDmMessages = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => a.timestamp - b.timestamp);
                 window.renderActiveDM();
-                
-                // Clear unread count locally
-                if (dmUnreadCounts[targetId]) {
-                    dmUnreadCounts[targetId] = 0;
-                    updateTotalUnreadBadge();
-                    
-                    // Update firestore to mark as read
-                    updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`, targetId), { unreadCount: 0 }).catch(e => console.log("Failed to clear unread", e));
-                }
             });
         };
 
         window.closeActiveDM = () => {
-            if (activeDmUnsub) { activeDmUnsub(); activeDmUnsub = null; }
             window.activeChatTargetId = null;
-            window.activeChatTargetName = "";
             window.activeChatIsGroup = false;
             window.activeChatMembers = [];
-            
+            if (activeDmUnsub) { activeDmUnsub(); activeDmUnsub = null; }
             document.getElementById('chat-view-active-dm').classList.add('hidden');
             document.getElementById('chat-view-dms').classList.remove('hidden');
         };
-        
-        window.clearActiveDM = async () => {
-             window.customConfirm("Are you sure you want to clear your local copy of this conversation?", async (confirmed) => {
-                if (!confirmed || !window.activeChatTargetId) return;
-                
-                const convId = window.activeChatIsGroup ? window.activeChatTargetId : [currentUser.uid, window.activeChatTargetId].sort().join('_');
-                
-                try {
-                     // We don't actually delete the messages (so the other person still sees them),
-                     // we just delete the contact reference for *this* user, hiding the chat until someone messages again.
-                     await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`, window.activeChatTargetId));
-                     window.showToast("Conversation cleared from your list.");
-                     window.closeActiveDM();
-                } catch (e) {
-                    console.error(e);
-                    window.showToast("Failed to clear conversation.");
+
+        window.clearDMConversation = async () => {
+            if (!window.activeChatTargetId) return;
+            const actionText = window.activeChatIsGroup ? 'leave this alliance' : 'clear this whisper from your active list';
+            if (!confirm(`Are you sure you want to ${actionText}?`)) return;
+            
+            try {
+                if (window.activeChatIsGroup) {
+                     // Remove self from the members array in the group document
+                     try {
+                         const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'data', 'groups', window.activeChatTargetId);
+                         await updateDoc(groupDocRef, {
+                             members: arrayRemove(currentUser.uid)
+                         });
+                         
+                         // Announce departure
+                         await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${window.activeChatTargetId}`), {
+                            text: `${currentUser.username} has left the alliance.`,
+                            authorId: 'system',
+                            timestamp: Date.now()
+                        });
+                     } catch(e) { console.error("Failed to remove from group array", e); }
                 }
-             });
+
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${currentUser.uid}`, window.activeChatTargetId));
+                window.showToast(window.activeChatIsGroup ? "Alliance left." : "Whisper cleared.");
+                window.closeActiveDM();
+            } catch (err) {
+                console.error(err);
+                window.showToast("Failed to complete action.");
+            }
         };
 
         window.sendDirectMessage = async () => {
@@ -1411,7 +1395,7 @@
             const now = Date.now();
 
             try {
-                await addDoc(collection(db, 'artifacts', 'global_chat', 'private', 'conversations', convId, 'messages'), {
+                await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${convId}`), {
                     text: text,
                     authorId: currentUser.uid,
                     authorName: currentUser.username,
@@ -1470,7 +1454,7 @@
         window.deleteDirectMessage = async (msgId, convId) => {
             if (!adminModeActive) return;
             try {
-                await updateDoc(doc(db, 'artifacts', 'global_chat', 'private', 'conversations', convId, 'messages', msgId), {
+                await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${convId}`, msgId), {
                     isDeleted: true,
                     deletedBy: currentUser.username,
                     deletedAt: Date.now()
@@ -1481,7 +1465,7 @@
             }
         };
 
-        // BLOCK USER
+        // --- STREAMING_CHUNK:Friend Request and Block Logic... ---
         window.promptBlockUser = (uid, name) => {
             if (confirm(`Block ${name}? You will no longer see their messages or receive whispers from them.`)) {
                 executeBlockUser(uid);
@@ -1489,75 +1473,556 @@
         };
 
         window.confirmBlockUser = () => {
-            // Check if we are coming from the DM modal
-            let targetUid = window.pendingDmTarget ? window.pendingDmTarget.id : null;
-            let targetName = window.pendingDmTarget ? window.pendingDmTarget.name : null;
+            if (!window.pendingDmTarget) return;
+            executeBlockUser(window.pendingDmTarget.id);
+            document.getElementById('dm-confirm-modal').classList.add('hidden');
+            window.pendingDmTarget = null;
+        };
+
+        async function executeBlockUser(uid) {
+            try {
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    blockedUsers: arrayUnion(uid)
+                });
+                if (!currentUser.blockedUsers) currentUser.blockedUsers = [];
+                currentUser.blockedUsers.push(uid);
+                
+                if (window.activeChatTargetId === uid) window.closeActiveDM();
+                window.showToast("User blocked.");
+                if (window.renderGlobalChat) window.renderGlobalChat(); // refresh chat to hide their msgs
+            } catch(e) {
+                window.showToast("Failed to block user.");
+            }
+        }
+
+        window.initFriendsSync = () => {
+            if (friendsUnsub) friendsUnsub();
+            if (reqsUnsub) reqsUnsub();
+
+            // Sync Approved Friends
+            friendsUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'public', 'data', `friends_of_${currentUser.uid}`), (snap) => {
+                window.myFriends = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                if(!document.getElementById('friends-modal').classList.contains('hidden')) window.renderFriendsList();
+            });
+
+            // Sync Pending Incoming Requests
+            reqsUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'public', 'data', `friend_reqs_for_${currentUser.uid}`), (snap) => {
+                window.myFriendRequests = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                
+                const badge = document.getElementById('global-friends-badge');
+                const tabBadge = document.getElementById('req-tab-badge');
+                
+                if (window.myFriendRequests.length > 0) {
+                    badge.innerText = window.myFriendRequests.length;
+                    badge.classList.remove('hidden');
+                    tabBadge.innerText = window.myFriendRequests.length;
+                    tabBadge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                    tabBadge.classList.add('hidden');
+                }
+                
+                if(!document.getElementById('friends-modal').classList.contains('hidden')) window.renderFriendRequests();
+            });
+        };
+
+        window.openFriendsModal = () => {
+            window.switchFriendTab('list');
+            document.getElementById('friends-modal').classList.remove('hidden');
+        };
+
+        window.switchFriendTab = (tab) => {
+            document.getElementById('tab-friends-list').className = "flex-1 py-1 font-heading font-bold text-ink hover:text-blood transition text-[10px] uppercase tracking-widest";
+            document.getElementById('tab-friends-reqs').className = "flex-1 py-1 font-heading font-bold text-ink hover:text-blood transition text-[10px] uppercase tracking-widest relative";
+            document.getElementById('tab-friends-search').className = "flex-1 py-1 font-heading font-bold text-ink hover:text-blood transition text-[10px] uppercase tracking-widest";
             
-            // Fallback to active chat if no pending target
-            if (!targetUid && window.activeChatTargetId && !window.activeChatIsGroup) {
-                targetUid = window.activeChatTargetId;
-                targetName = window.activeChatTargetName;
+            document.getElementById('friends-view-list').classList.add('hidden');
+            document.getElementById('friends-view-reqs').classList.add('hidden');
+            document.getElementById('friends-view-search').classList.add('hidden');
+            
+            if (tab === 'list') {
+                document.getElementById('tab-friends-list').className = "flex-1 py-1 font-heading font-bold text-blood border-b-2 border-blood text-[10px] uppercase tracking-widest";
+                document.getElementById('friends-view-list').classList.remove('hidden');
+                window.renderFriendsList();
+            } else if (tab === 'reqs') {
+                document.getElementById('tab-friends-reqs').className = "flex-1 py-1 font-heading font-bold text-blood border-b-2 border-blood text-[10px] uppercase tracking-widest relative";
+                document.getElementById('friends-view-reqs').classList.remove('hidden');
+                window.renderFriendRequests();
+            } else if (tab === 'search') {
+                document.getElementById('tab-friends-search').className = "flex-1 py-1 font-heading font-bold text-blood border-b-2 border-blood text-[10px] uppercase tracking-widest";
+                document.getElementById('friends-view-search').classList.remove('hidden');
+            }
+        };
+
+        window.renderFriendsList = () => {
+            const container = document.getElementById('friends-view-list');
+            if (window.myFriends.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">Your ledger is empty.</p>`;
+            } else {
+                container.innerHTML = window.myFriends.map(f => `
+                    <div class="flex justify-between items-center p-3 bg-white/40 border border-gray-300 rounded shadow-sm">
+                        <span class="font-heading font-bold text-ink text-sm uppercase tracking-widest">${f.name}</span>
+                        <div class="flex gap-3">
+                            <button onclick="document.getElementById('friends-modal').classList.add('hidden'); window.promptDirectMessage('${f.id}', '${f.name.replace(/'/g, "\\'")}')" class="text-gray-600 hover:text-gold transition-colors" title="Message"><i class="fa-solid fa-comment"></i></button>
+                            <button onclick="window.removeFriend('${f.id}')" class="text-gray-600 hover:text-red-500 transition-colors" title="Remove Friend"><i class="fa-solid fa-user-minus"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        window.renderFriendRequests = () => {
+            const container = document.getElementById('friends-view-reqs');
+            if (window.myFriendRequests.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">No pending requests.</p>`;
+            } else {
+                container.innerHTML = window.myFriendRequests.map(r => `
+                    <div class="flex justify-between items-center p-3 bg-white/40 border border-gold rounded shadow-sm">
+                        <span class="font-heading font-bold text-ink text-sm uppercase tracking-widest">${r.name}</span>
+                        <div class="flex gap-2">
+                            <button onclick="window.acceptFriendRequest('${r.id}', '${r.name.replace(/'/g, "\\'")}')" class="bg-green-700 hover:bg-green-600 text-white px-2 py-1 rounded shadow text-[10px] font-bold uppercase tracking-widest"><i class="fa-solid fa-check"></i></button>
+                            <button onclick="window.declineFriendRequest('${r.id}')" class="bg-gray-400 hover:bg-red-500 text-white px-2 py-1 rounded shadow text-[10px] font-bold uppercase tracking-widest"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        window.searchUsersForFriend = async () => {
+            const queryText = document.getElementById('friend-search-input').value.trim().toLowerCase();
+            if (!queryText) return window.showToast("Enter a name to search.");
+            
+            try {
+                const snap = await getDocs(collection(db, 'users'));
+                const results = snap.docs
+                    .map(d => ({id: d.id, ...d.data()}))
+                    .filter(u => u.uid !== currentUser.uid && u.username && u.username.toLowerCase().includes(queryText) && !isUserBlocked(u.uid));
+                    
+                const list = document.getElementById('friend-search-results');
+                
+                if (results.length === 0) {
+                    list.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">No travelers found by that name.</p>`;
+                } else {
+                    list.innerHTML = results.map(u => {
+                        const isFriend = window.myFriends.some(f => f.id === u.uid);
+                        return `
+                        <div class="flex justify-between items-center p-2 border-b border-gray-300">
+                            <span class="font-heading font-bold text-ink text-sm uppercase tracking-widest">${u.username}</span>
+                            ${isFriend ? `<span class="text-[10px] text-green-700 font-bold uppercase tracking-widest"><i class="fa-solid fa-check mr-1"></i>Friend</span>` 
+                            : `<button onclick="window.sendFriendRequest('${u.uid}', '${u.username.replace(/'/g, "\\'")}')" class="text-gold hover:text-ink transition-colors"><i class="fa-solid fa-user-plus"></i></button>`}
+                        </div>
+                        `;
+                    }).join('');
+                }
+            } catch (e) {
+                console.error(e);
+                window.showToast("Search failed.");
+            }
+        };
+
+        window.sendFriendRequestFromModal = () => {
+            if (!window.pendingDmTarget) return;
+            window.sendFriendRequest(window.pendingDmTarget.id, window.pendingDmTarget.name);
+            document.getElementById('dm-confirm-modal').classList.add('hidden');
+            window.pendingDmTarget = null;
+        };
+
+        window.sendFriendRequest = async (targetUid, targetName) => {
+            if (isUserBlocked(targetUid)) return window.showToast("Cannot add blocked user.");
+            if (window.myFriends.some(f => f.id === targetUid)) return window.showToast("Already on your ledger.");
+            
+            window.showToast("Sending request...");
+            try {
+                await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friend_reqs_for_${targetUid}`, currentUser.uid), {
+                    name: currentUser.username,
+                    timestamp: Date.now()
+                });
+                window.showToast("Request sent!");
+            } catch (e) {
+                console.error(e);
+                window.showToast("Failed to send request.");
+            }
+        };
+
+        window.acceptFriendRequest = async (targetUid, targetName) => {
+            try {
+                // Delete the request
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friend_reqs_for_${currentUser.uid}`, targetUid));
+                
+                // Add to both friends lists
+                await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friends_of_${currentUser.uid}`, targetUid), { name: targetName });
+                await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friends_of_${targetUid}`, currentUser.uid), { name: currentUser.username });
+                
+                window.showToast("Added to Ledger.");
+            } catch(e) {
+                console.error(e);
+                window.showToast("Error accepting request.");
+            }
+        };
+
+        window.declineFriendRequest = async (targetUid) => {
+            try {
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friend_reqs_for_${currentUser.uid}`, targetUid));
+            } catch(e) {}
+        };
+
+        window.removeFriend = async (targetUid) => {
+            if(!confirm("Remove this traveler from your ledger?")) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friends_of_${currentUser.uid}`, targetUid));
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `friends_of_${targetUid}`, currentUser.uid));
+                window.showToast("Traveler removed.");
+            } catch(e) {}
+        };
+
+        // --- GROUP CHAT LOGIC ---
+        window.pendingGroupMembers = [];
+
+        window.openCreateGroupModal = () => {
+            window.pendingGroupMembers = [];
+            document.getElementById('new-group-name').value = '';
+            
+            const listContainer = document.getElementById('group-friends-list');
+            
+            if (window.myFriends.length === 0) {
+                listContainer.innerHTML = '<p class="text-[10px] text-gray-600 italic text-center py-4">You have no friends on your ledger. Add some first to form an alliance!</p>';
+            } else {
+                listContainer.innerHTML = window.myFriends.map(f => `
+                    <div class="flex justify-between items-center p-2 hover:bg-black/10 border-b border-gray-300 last:border-0">
+                        <span class="text-xs font-heading font-bold text-ink uppercase tracking-widest">${f.name}</span>
+                        <button onclick="window.addGroupMember('${f.id}', '${f.name.replace(/'/g, "\\'")}')" class="text-green-700 hover:text-green-900 transition-colors"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                `).join('');
+            }
+            
+            window.renderSelectedGroupMembers();
+            document.getElementById('create-group-modal').classList.remove('hidden');
+        };
+
+        window.closeCreateGroupModal = () => {
+            document.getElementById('create-group-modal').classList.add('hidden');
+        };
+
+        window.addGroupMember = (uid, name) => {
+            if (!window.pendingGroupMembers.find(m => m.id === uid)) {
+                window.pendingGroupMembers.push({ id: uid, name: name });
+                window.renderSelectedGroupMembers();
+            }
+        };
+
+        window.removeGroupMember = (uid) => {
+            window.pendingGroupMembers = window.pendingGroupMembers.filter(m => m.id !== uid);
+            window.renderSelectedGroupMembers();
+        };
+
+        window.renderSelectedGroupMembers = () => {
+            const container = document.getElementById('selected-group-members');
+            if (window.pendingGroupMembers.length === 0) {
+                container.innerHTML = `<span class="text-xs text-gray-500 italic w-full text-center py-2">No one selected...</span>`;
+                return;
+            }
+            container.innerHTML = window.pendingGroupMembers.map(m => `
+                <span class="bg-indigo-900 text-white text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded shadow-md flex items-center gap-1">
+                    ${m.name} <i class="fa-solid fa-xmark cursor-pointer hover:text-red-400 ml-1 border-l border-indigo-700 pl-1" onclick="window.removeGroupMember('${m.id}')"></i>
+                </span>
+            `).join('');
+        };
+
+        window.confirmCreateGroup = async () => {
+            if (window.pendingGroupMembers.length === 0) {
+                return window.showToast("Select at least one friend first!");
+            }
+            
+            const createBtn = document.getElementById('btn-confirm-create-group');
+            if(createBtn) {
+                createBtn.innerText = "Creating...";
+                createBtn.disabled = true;
+            }
+            
+            let groupName = document.getElementById('new-group-name').value.trim();
+            if (!groupName) {
+                groupName = "Alliance: " + window.pendingGroupMembers.map(m => m.name).join(', ');
+                if (groupName.length > 30) groupName = groupName.substring(0, 30) + '...';
             }
 
-            if (!targetUid) return;
+            const groupId = 'group_' + Date.now() + Math.random().toString(36).substring(2, 8);
+            const groupDocRef = doc(db, 'artifacts', 'global_chat', 'public', 'data', 'groups', groupId);
+            
+            const members = [currentUser.uid, ...window.pendingGroupMembers.map(m => m.id)];
+            const now = Date.now();
 
-            window.customConfirm(`Block ${targetName}? You will no longer see their messages or receive whispers from them.`, async (confirmed) => {
-                if (!confirmed) return;
+            window.showToast("Forming alliance...");
+            
+            try {
+                // 1. Create the global group document
+                await setDoc(groupDocRef, {
+                    name: groupName,
+                    members: members,
+                    createdAt: now,
+                    createdBy: currentUser.uid
+                });
+
+                // 2. Write to each member's contacts array
+                for (const uid of members) {
+                    await setDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${uid}`, groupId), {
+                        name: groupName,
+                        isGroup: true,
+                        members: members,
+                        lastMessage: "Alliance formed.",
+                        lastUpdated: now,
+                        unreadCount: uid === currentUser.uid ? 0 : 1
+                    });
+                }
                 
-                try {
-                     await updateDoc(doc(db, 'users', currentUser.uid), {
-                        blockedUsers: arrayUnion(targetUid)
-                     });
-                     currentUser.blockedUsers = [...(currentUser.blockedUsers || []), targetUid];
-                     
-                     window.showToast(`${targetName} has been blocked.`);
-                     document.getElementById('dm-confirm-modal').classList.add('hidden');
-                     
-                     if (window.activeChatTargetId === targetUid) {
-                         window.closeActiveDM();
-                     }
-                     
-                     if (window.renderGlobalChat) window.renderGlobalChat();
-                     
-                } catch (e) {
-                     console.error("Failed to block user", e);
-                     window.showToast("Failed to block user.");
+                // 3. Add initial system message
+                await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${groupId}`), {
+                    text: `${currentUser.username} established the alliance.`,
+                    authorId: 'system',
+                    timestamp: now
+                });
+
+                if(createBtn) {
+                    createBtn.innerText = "Create";
+                    createBtn.disabled = false;
+                }
+                window.closeCreateGroupModal();
+                window.showToast("Group created!");
+                window.openDirectMessage(groupId, groupName, true, members.join(','));
+            } catch (e) {
+                console.error(e);
+                window.showToast("Failed to create group.");
+                if(createBtn) {
+                    createBtn.innerText = "Create";
+                    createBtn.disabled = false;
+                }
+            }
+        };
+
+        window.renameGroup = async () => {
+            if (!window.activeChatIsGroup) return;
+            const newName = prompt("Enter new group name:", window.activeChatTargetName);
+            if (!newName || newName.trim() === '') return;
+            
+            window.showToast("Renaming group...");
+            try {
+                // Update global registry
+                await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', 'groups', window.activeChatTargetId), { name: newName.trim() });
+
+                // Try to update for everyone (May fail if they left, but we catch it)
+                const promises = window.activeChatMembers.map(async (uid) => {
+                     try {
+                        await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${uid}`, window.activeChatTargetId), {
+                            name: newName.trim()
+                        });
+                     } catch(e) {}
+                });
+                await Promise.all(promises);
+                
+                await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', `dm_messages_${window.activeChatTargetId}`), {
+                    text: `${currentUser.username} renamed the alliance to "${newName.trim()}".`,
+                    authorId: 'system',
+                    timestamp: Date.now()
+                });
+
+                document.getElementById('active-dm-name').innerText = newName.trim();
+                window.activeChatTargetName = newName.trim();
+                window.showToast("Group renamed.");
+            } catch(e) {
+                console.error(e);
+                window.showToast("Failed to rename group.");
+            }
+        };
+
+        window.deleteGroup = async () => {
+            if (!window.activeChatIsGroup) return;
+            if (!confirm("Are you sure you want to permanently obliterate this alliance for all members?")) return;
+            
+            window.showToast("Destroying alliance...");
+            try {
+                // Delete from global registry
+                await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', 'groups', window.activeChatTargetId));
+
+                const promises = window.activeChatMembers.map(async (uid) => {
+                     try {
+                        await deleteDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', `dm_contacts_${uid}`, window.activeChatTargetId));
+                     } catch(e) {}
+                });
+                await Promise.all(promises);
+                
+                window.closeActiveDM();
+                window.showToast("Group deleted.");
+            } catch(e) {
+                console.error(e);
+                window.showToast("Failed to delete group.");
+            }
+        };
+
+        // --- STREAMING_CHUNK:Reports and Escalations... ---
+        window.pendingReportData = null;
+
+        window.promptReportUser = (uid, username, msgSnippet) => {
+            if (currentUser && uid === currentUser.uid) return window.showToast("You cannot report yourself.");
+            window.pendingReportData = { reportedId: uid, reportedName: username, snippet: msgSnippet };
+            document.getElementById('report-target-name').innerText = username;
+            document.getElementById('report-reason').value = '';
+            document.getElementById('report-modal').classList.remove('hidden');
+        };
+
+        window.submitReport = async () => {
+            const reason = document.getElementById('report-reason').value.trim();
+            if (!reason) return window.showToast("Please provide a reason.");
+            if (!window.pendingReportData) return;
+
+            document.getElementById('report-modal').classList.add('hidden');
+            window.showToast("Submitting report...");
+
+            try {
+                await addDoc(collection(db, 'artifacts', 'global_chat', 'public', 'data', 'reports'), {
+                    reportedId: window.pendingReportData.reportedId,
+                    reportedName: window.pendingReportData.reportedName,
+                    reporterId: currentUser.uid,
+                    reporterName: currentUser.username,
+                    reason: reason,
+                    messageSnippet: window.pendingReportData.snippet,
+                    status: 'pending',
+                    timestamp: Date.now()
+                });
+                window.showToast("Report submitted to Archives.");
+            } catch (err) {
+                console.error(err);
+                window.showToast("Failed to submit report.");
+            }
+            window.pendingReportData = null;
+        };
+
+        let reportsUnsub = null;
+        window.initAdminReports = () => {
+            if (reportsUnsub) reportsUnsub();
+            reportsUnsub = onSnapshot(collection(db, 'artifacts', 'global_chat', 'public', 'data', 'reports'), (snap) => {
+                const reports = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(r => r.status === 'pending').sort((a,b) => b.timestamp - a.timestamp);
+                const container = document.getElementById('reports-list-container');
+                const badge = document.getElementById('report-tab-badge');
+
+                if (reports.length > 0) {
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+
+                if (!container) return;
+
+                if (reports.length === 0) {
+                    container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">No pending reports.</p>`;
+                } else {
+                    container.innerHTML = reports.map(r => `
+                        <div class="bg-black/40 border border-red-900/50 p-3 rounded mb-3">
+                            <div class="flex justify-between items-start mb-2 border-b border-red-900/30 pb-2">
+                                <div>
+                                    <h4 class="font-heading text-sm font-bold text-red-500 uppercase tracking-widest">Report: ${r.reportedName}</h4>
+                                    <p class="text-[9px] text-gray-500 uppercase font-heading">By ${r.reporterName} • ${window.formatChatTime(r.timestamp)}</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-300 font-serif mb-2"><strong class="text-gray-500">Reason:</strong> ${r.reason}</p>
+                            ${r.messageSnippet ? `<p class="text-[10px] text-gray-500 font-serif italic mb-3 bg-black/50 p-2 border-l-2 border-gray-600">"${r.messageSnippet}..."</p>` : ''}
+                            <div class="flex gap-2 justify-end mt-2">
+                                <button onclick="window.resolveReport('${r.id}')" class="text-[10px] bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded border border-gray-600 transition-colors uppercase font-bold tracking-widest font-heading">Dismiss</button>
+                                <button onclick="window.promptEscalation('${r.id}', '${r.reportedId}', '${r.reportedName.replace(/'/g, "\\'")}')" class="text-[10px] bg-red-900 hover:bg-red-800 text-white px-3 py-1 rounded border border-red-500 transition-colors uppercase font-bold tracking-widest font-heading">Review & Penalize</button>
+                            </div>
+                        </div>
+                    `).join('');
                 }
             });
         };
 
-        // --- TRANSFER SYSTEM (Not fully implemented in campaigns.html, but kept for parity if needed) ---
-        // Functions omitted for brevity as they are primarily for script_codex.html
-
-        // --- COMPENDIUM IMPORT & UPDATES (Admin/DM Only) ---
-        window.openPacksModal = async () => {
-            document.getElementById('packs-modal').classList.remove('hidden');
-            const grid = document.getElementById('packs-grid');
-            grid.innerHTML = '<div class="col-span-full py-8 text-center text-gold"><i class="fa-solid fa-spinner fa-spin text-3xl"></i></div>';
-
+        window.resolveReport = async (reportId) => {
             try {
-                const pubSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'public', 'data', 'scriptPacks'));
-                let privSnap = { docs: [] };
+                await updateDoc(doc(db, 'artifacts', 'global_chat', 'public', 'data', 'reports', reportId), { status: 'resolved' });
+                window.showToast("Report dismissed.");
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        // ADMIN ESCALATION SYSTEM
+        window.promptEscalation = (reportId, uid, username) => {
+            document.getElementById('escalation-report-id').value = reportId;
+            document.getElementById('escalation-uid').value = uid;
+            document.getElementById('escalation-username').value = username;
+            document.getElementById('admin-escalation-modal').classList.remove('hidden');
+        };
+
+        const executePenalty = async (type, hours = 0) => {
+            const reportId = document.getElementById('escalation-report-id').value;
+            const uid = document.getElementById('escalation-uid').value;
+            const username = document.getElementById('escalation-username').value;
+            
+            document.getElementById('admin-escalation-modal').classList.add('hidden');
+            window.showToast("Applying penalty...");
+            
+            try {
+                const userRef = doc(db, 'users', uid);
+                const userSnap = await getDoc(userRef);
+                const currentStrikes = userSnap.exists() ? (userSnap.data().strikes || 0) : 0;
                 
-                if (currentUser) {
-                    privSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks'));
+                let notificationMsg = "";
+                let updates = { strikes: currentStrikes + 1 };
+                
+                if (type === 'warn') {
+                    notificationMsg = "You have received a formal warning from the Archives due to a violation of conduct. Further offenses will result in a mute.";
+                } else if (type === 'mute') {
+                    const muteUntil = Date.now() + (hours * 60 * 60 * 1000);
+                    updates.mutedUntil = muteUntil;
+                    notificationMsg = `You have been silenced by the Archives for ${hours} hour(s) due to a violation of conduct.`;
+                } else if (type === 'ban') {
+                    updates.isBanned = true;
+                    notificationMsg = "You have been permanently banished from communications and joining new realms due to severe or repeated violations.";
                 }
                 
-                allFetchedPacks = [
-                    ...pubSnap.docs.map(d => ({id: d.id, isPrivate: false, ...d.data()})),
-                    ...privSnap.docs.map(d => ({id: d.id, isPrivate: true, ...d.data()}))
-                ];
+                updates.notifications = arrayUnion({
+                    type: type === 'ban' ? 'BANNED' : 'MODERATION ACTION',
+                    itemName: 'System Notice',
+                    message: notificationMsg,
+                    timestamp: Date.now()
+                });
+                
+                await updateDoc(userRef, updates);
+                await window.resolveReport(reportId);
+                window.showToast(`Penalty applied to ${username}.`);
+                
+            } catch(e) {
+                console.error(e);
+                window.showToast("Failed to apply penalty.");
+            }
+        };
 
-                if (allFetchedPacks.length === 0) {
-                    grid.innerHTML = `<div class="col-span-full py-8 text-center"><p class="text-gray-400 font-serif italic">No packs found in the archives.</p></div>`;
-                    return;
-                }
+        window.issueWarning = () => executePenalty('warn');
+        window.issueMute = (hours) => executePenalty('mute', hours);
+        window.issueBan = () => executePenalty('ban');
 
-                grid.innerHTML = allFetchedPacks.map(pack => `
+        // Attach Enter key for DMs
+        document.getElementById('global-chat-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') window.sendGlobalMessage();
+        });
+        document.getElementById('active-dm-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') window.sendDirectMessage();
+        });
+
+        // --- STREAMING_CHUNK:Codex Packs Logic... ---
+        window.openPacksModal = () => {
+            const grid = document.getElementById('packs-grid');
+            grid.innerHTML = '';
+
+            if (allFetchedPacks.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-8 text-center"><p class="text-gray-400 font-serif italic">No packs found in the archives.</p></div>`;
+            } else {
+                grid.innerHTML = allFetchedPacks.map(pack => {
+                    const iconClass = pack.icon || 'fa-solid fa-book-journal-whills';
+                    const injectionCount = pack.downloads || 0; // "downloads" represents injections
+                    return `
                     <div class="card p-5 rounded-lg flex flex-col relative bg-black/60 border border-gray-700 ${pack.isDeleted ? 'opacity-70 grayscale' : ''}" onclick="window.openPackDetails('${pack.id}')">
                         ${pack.isDeleted ? '<div class="absolute top-2 left-2 bg-red-900 text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md z-10">Archived</div>' : ''}
                         ${pack.isPrivate ? '<div class="absolute top-2 right-2 text-gray-500" title="Private Pack"><i class="fa-solid fa-lock text-xs"></i></div>' : '<div class="absolute top-2 right-2 text-indigo-400" title="Public Pack"><i class="fa-solid fa-globe text-xs"></i></div>'}
-                        <i class="${pack.icon || 'fa-solid fa-book-journal-whills'} text-3xl mb-3 ${pack.isDeleted ? 'text-gray-500' : 'text-gold'}"></i>
+                        <i class="${iconClass} text-3xl mb-3 ${pack.isDeleted ? 'text-gray-500' : 'text-gold'}"></i>
                         <h3 class="font-heading text-sm font-bold text-white uppercase mb-1 drop-shadow-md">${pack.name}</h3>
                         <p class="text-xs text-gray-400 mb-3 line-clamp-3 font-serif">${pack.description || 'No description provided.'}</p>
                         <div class="border-t border-gray-700 pt-2 flex flex-col mt-auto gap-1">
@@ -1566,16 +2031,14 @@
                                 <span class="text-[9px] text-gray-500 italic">By ${pack.authorName || 'Unknown'}</span>
                             </div>
                             <div class="flex justify-start items-center text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">
-                                <i class="fa-solid fa-download mr-1"></i> ${pack.downloads || 0} Injections
+                                <i class="fa-solid fa-download mr-1"></i> ${injectionCount} Injections
                             </div>
                         </div>
                     </div>
-                `).join('');
-
-            } catch (err) {
-                console.error(err);
-                grid.innerHTML = `<div class="col-span-full py-8 text-center text-red-500 text-sm">Failed to load the archives.</div>`;
+                    `;
+                }).join('');
             }
+            document.getElementById('packs-modal').classList.remove('hidden');
         };
 
         window.openPackDetails = (id) => {
@@ -1590,29 +2053,13 @@
             
             document.getElementById('pd-author').innerText = `By ${currentViewingPack.authorName}`;
             document.getElementById('pd-version').innerText = `v${currentViewingPack.version || 1}`;
+            document.getElementById('pd-downloads').innerHTML = `<i class="fa-solid fa-download mr-1"></i>${currentViewingPack.downloads || 0}`;
             document.getElementById('pd-desc').innerText = currentViewingPack.description || 'No description provided.';
             document.getElementById('pd-notes').innerText = currentViewingPack.updateNotes || 'Initial publication.';
             
-            const isAdmin = currentViewingPack.authorId === currentUser.uid;
-            
-            // Hide admin controls if pack is deleted, even for author
-            if (currentViewingPack.isDeleted) {
-                const adminPanel = document.getElementById('pd-admin-panel');
-                if(adminPanel) adminPanel.classList.add('hidden');
-            } else {
-                const adminPanel = document.getElementById('pd-admin-panel');
-                if(adminPanel) adminPanel.classList.toggle('hidden', !isAdmin);
-            }
-            
-            // Global admin can always delete
-            const permDeleteBtn = document.getElementById('pd-admin-perm-delete');
-            if(permDeleteBtn) permDeleteBtn.classList.toggle('hidden', !adminModeActive);
-            
-            if(adminModeActive && currentViewingPack.isDeleted) {
-                 const adminPanel = document.getElementById('pd-admin-panel');
-                 if(adminPanel) adminPanel.classList.remove('hidden');
-                 const archiveBtn = document.getElementById('pd-btn-archive');
-                 if(archiveBtn) archiveBtn.classList.add('hidden'); // already archived
+            const pdOwnerPanel = document.getElementById('pd-owner-panel');
+            if (pdOwnerPanel) {
+                pdOwnerPanel.classList.toggle('hidden', !adminModeActive);
             }
 
             // Populate Campaigns
@@ -1816,309 +2263,7 @@
             }
         };
 
-        // --- ACTIONS ---
-
-        // Open Username Modal
-        window.openUsernameModal = () => {
-            const isForced = !currentUser.username || currentUser.username.trim() === '';
-            document.getElementById('missing-username-input').value = currentUser.username || '';
-            document.getElementById('close-username-modal').classList.toggle('hidden', isForced);
-            document.getElementById('username-modal-desc').innerText = isForced 
-                ? "The archives hold no record of your name, traveler. By what title shall the realm know you?"
-                : "By what new title shall the realm know you?";
-            document.getElementById('username-prompt-modal').classList.remove('hidden');
-        };
-
-        // Fix missing username
-        window.setUsername = async () => {
-            const newName = document.getElementById('missing-username-input').value.trim();
-            if (!newName) return window.showToast("Please enter a name.");
-            
-            try {
-                await updateDoc(doc(db, 'users', currentUser.uid), {
-                    username: newName
-                });
-                currentUser.username = newName;
-                document.getElementById('user-display-name').innerText = newName;
-                document.getElementById('username-prompt-modal').classList.add('hidden');
-                window.showToast("Identity updated!");
-            } catch (err) {
-                console.error(err);
-                window.showToast("Failed to save name.");
-            }
-        };
-
-        window.joinByCode = async () => {
-            if (currentUser?.isBanned) return window.showToast("You are banished. Action denied.");
-            const code = document.getElementById('invite-code-input').value.trim().toUpperCase();
-            if (!code) return window.showToast("Enter a code first.");
-
-            try {
-                const q = query(collection(db, 'campaigns'), where('inviteCode', '==', code));
-                const snap = await getDocs(q);
-                
-                if (snap.empty) {
-                    window.showToast("Invalid Invite Code.");
-                    return;
-                }
-
-                const camp = snap.docs[0];
-
-                if (currentUser && currentUser.uid) {
-                    await updateDoc(doc(db, 'users', currentUser.uid), {
-                        joinedCampaigns: arrayUnion(camp.id)
-                    });
-                }
-
-                window.showToast(`Joined ${camp.data().name}!`);
-                
-                setTimeout(() => {
-                    try { window.location.href = `characters.html?id=${camp.id}`; } 
-                    catch(e) { window.showToast("Redirect disabled in preview."); }
-                }, 1000);
-
-            } catch (err) {
-                console.error(err);
-                window.showToast("Error joining campaign.");
-            }
-        };
-
-        // Quick join for public campaigns
-        window.joinPublicCampaign = async (id, name) => {
-            if (currentUser?.isBanned) return window.showToast("You are banished. Action denied.");
-            if (!currentUser || currentUser.role !== 'player') return;
-            try {
-                const camp = allCampaigns.find(c => c.id === id);
-                if (camp && camp.visibility === 'public' && camp.maxPlayers) {
-                    const q = query(collection(db, 'users'), where('joinedCampaigns', 'array-contains', id));
-                    const snap = await getDocs(q);
-                    if (snap.size >= camp.maxPlayers) {
-                        return window.showToast("This public realm has reached its player limit.");
-                    }
-                }
-
-                await updateDoc(doc(db, 'users', currentUser.uid), {
-                    joinedCampaigns: arrayUnion(id)
-                });
-                window.showToast(`Joined the realm of ${name}!`);
-                if (document.getElementById('pack-details-modal').classList.contains('hidden') === false) {
-                    window.closePackDetails(); // Close details if joining from packs view
-                }
-            } catch(e) {
-                console.error(e);
-                window.showToast("Failed to join realm.");
-            }
-        };
-
-        window.createCampaign = async () => {
-            if (currentUser?.isBanned) return window.showToast("You are banished. Action denied.");
-            if (!currentUser || currentUser.role !== 'dm') return;
-            const name = document.getElementById('new-campaign-name').value.trim();
-            const desc = document.getElementById('new-campaign-desc').value.trim();
-            const vis = document.getElementById('new-campaign-vis').value;
-            const packId = document.getElementById('new-campaign-pack').value;
-            
-            if (!name) return window.showToast("Name is required.");
-
-            window.showToast("Forging Realm...");
-
-            try {
-                let packName = "Blank Slate";
-                let selectedPack = null;
-                if (packId) {
-                    selectedPack = availablePacks.find(p => p.id === packId);
-                    if (selectedPack) packName = selectedPack.name;
-                }
-
-                let maxPlayers = null;
-                if (vis === 'public') {
-                    const limitVal = document.getElementById('new-campaign-limit').value;
-                    if (limitVal && !isNaN(limitVal)) {
-                        maxPlayers = parseInt(limitVal);
-                    }
-                }
-
-                const newRef = await addDoc(collection(db, 'campaigns'), {
-                    name: name,
-                    description: desc,
-                    visibility: vis,
-                    maxPlayers: maxPlayers,
-                    dmId: currentUser.uid,
-                    dmName: currentUser.username,
-                    inviteCode: generateCode(),
-                    packName: packName,
-                    createdAt: Date.now()
-                });
-
-                // Batch inject scripts if a pack was selected
-                if (selectedPack && selectedPack.scripts && selectedPack.scripts.length > 0) {
-                    const batch = writeBatch(db);
-                    const codexRef = collection(db, 'artifacts', newRef.id, 'public', 'data', `scriptCodex_${newRef.id}`);
-                    selectedPack.scripts.forEach(script => {
-                        const docRef = doc(codexRef);
-                        batch.set(docRef, { ...script, createdAt: Date.now(), updatedAt: Date.now() });
-                    });
-                    
-                    // Increment Download Counter
-                    const pathArgs = selectedPack.isPrivate 
-                        ? ['artifacts', 'global_codex', 'users', selectedPack.authorId, 'scriptPacks', selectedPack.id]
-                        : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', selectedPack.id];
-                    batch.update(doc(db, ...pathArgs), { downloads: (selectedPack.downloads || 0) + 1 });
-
-                    await batch.commit();
-                }
-
-                await updateDoc(doc(db, 'users', currentUser.uid), {
-                    joinedCampaigns: arrayUnion(newRef.id)
-                });
-
-                document.getElementById('create-campaign-modal').classList.add('hidden');
-                document.getElementById('new-campaign-name').value = '';
-                document.getElementById('new-campaign-desc').value = '';
-                document.getElementById('new-campaign-pack').value = '';
-                document.getElementById('new-campaign-limit').value = '';
-                document.getElementById('new-campaign-vis').value = 'private';
-                document.getElementById('new-campaign-limit-container').classList.add('hidden');
-                document.getElementById('new-campaign-pack-preview').classList.add('hidden');
-                window.showToast("Realm Forged Successfully!");
-
-            } catch (err) {
-                console.error(err);
-                window.showToast("Failed to forge realm.");
-            }
-        };
-
-        // Open Edit Modal
-        window.openEditCampaign = (id) => {
-            const camp = allCampaigns.find(c => c.id === id);
-            if (!camp) return;
-
-            document.getElementById('edit-campaign-id').value = camp.id;
-            document.getElementById('edit-campaign-name').value = camp.name || '';
-            document.getElementById('edit-campaign-desc').value = camp.description || '';
-            document.getElementById('edit-campaign-vis').value = camp.visibility || 'private';
-            document.getElementById('edit-campaign-code').value = camp.inviteCode || '';
-            
-            document.getElementById('edit-campaign-limit-container').classList.toggle('hidden', camp.visibility !== 'public');
-            document.getElementById('edit-campaign-limit').value = camp.maxPlayers || '';
-            
-            const editPackSelect = document.getElementById('edit-campaign-pack');
-            if (editPackSelect) {
-                editPackSelect.value = '';
-                document.getElementById('edit-campaign-pack-preview').classList.add('hidden');
-            }
-
-            document.getElementById('edit-campaign-modal').classList.remove('hidden');
-        };
-
-        // Save Edit Changes
-        window.saveCampaignEdit = async () => {
-            const id = document.getElementById('edit-campaign-id').value;
-            const name = document.getElementById('edit-campaign-name').value.trim();
-            const desc = document.getElementById('edit-campaign-desc').value.trim();
-            const vis = document.getElementById('edit-campaign-vis').value;
-            const code = document.getElementById('edit-campaign-code').value.trim().toUpperCase();
-            const packId = document.getElementById('edit-campaign-pack').value;
-
-            if (!name) return window.showToast("Name is required.");
-            if (!code) return window.showToast("Invite code is required.");
-
-            try {
-                let maxPlayers = null;
-                if (vis === 'public') {
-                    const limitVal = document.getElementById('edit-campaign-limit').value;
-                    if (limitVal && !isNaN(limitVal)) {
-                        maxPlayers = parseInt(limitVal);
-                    }
-                }
-
-                const updates = {
-                    name: name,
-                    description: desc,
-                    visibility: vis,
-                    maxPlayers: maxPlayers,
-                    inviteCode: code
-                };
-
-                let selectedPack = null;
-                if (packId) {
-                    selectedPack = availablePacks.find(p => p.id === packId);
-                    if (selectedPack) {
-                        updates.packName = selectedPack.name; 
-                        
-                        // Batch inject the new scripts if selected
-                        if (selectedPack.scripts && selectedPack.scripts.length > 0) {
-                            window.showToast("Injecting scripts...");
-                            const batch = writeBatch(db);
-                            const codexRef = collection(db, 'artifacts', id, 'public', 'data', `scriptCodex_${id}`);
-                            selectedPack.scripts.forEach(script => {
-                                const docRef = doc(codexRef);
-                                batch.set(docRef, { ...script, createdAt: Date.now(), updatedAt: Date.now() });
-                            });
-                            
-                            // Increment Download Counter
-                            const pathArgs = selectedPack.isPrivate 
-                                ? ['artifacts', 'global_codex', 'users', selectedPack.authorId, 'scriptPacks', selectedPack.id]
-                                : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', selectedPack.id];
-                            batch.update(doc(db, ...pathArgs), { downloads: (selectedPack.downloads || 0) + 1 });
-
-                            await batch.commit();
-                        }
-                    }
-                }
-
-                await updateDoc(doc(db, 'campaigns', id), updates);
-                document.getElementById('edit-campaign-modal').classList.add('hidden');
-                window.showToast("Realm Updated!");
-            } catch (err) {
-                console.error(err);
-                window.showToast("Failed to update realm.");
-            }
-        };
-
-        // Delete Campaign
-        window.deleteCampaign = async (id, name, dmId) => {
-            if (adminModeActive && dmId !== currentUser.uid) {
-                window.pendingAdminDelete = { type: 'campaign', id, name, targetUserId: dmId };
-                document.getElementById('admin-del-title').innerText = `Delete Realm: ${name}`;
-                document.getElementById('admin-del-reason').value = '';
-                document.getElementById('admin-delete-prompt-modal').classList.remove('hidden');
-                return;
-            }
-
-            if (!confirm(`Are you sure you want to permanently destroy the realm of "${name}"? This cannot be undone.`)) return;
-            
-            try {
-                await deleteDoc(doc(db, 'campaigns', id));
-                window.showToast("Realm destroyed.");
-            } catch (err) {
-                console.error(err);
-                window.showToast("Failed to destroy realm.");
-            }
-        };
-
-        // Leave Campaign (Players Only)
-        window.leaveCampaign = async (id, name) => {
-            if (!confirm(`Are you sure you want to leave the realm of "${name}"? You will need the invite code to return.`)) return;
-            
-            try {
-                await updateDoc(doc(db, 'users', currentUser.uid), {
-                    joinedCampaigns: arrayRemove(id)
-                });
-                window.showToast("You have left the realm.");
-            } catch (err) {
-                console.error(err);
-                window.showToast("Failed to leave realm.");
-            }
-        };
-
-        window.logout = () => {
-            signOut(auth).then(() => {
-                try { window.location.href = "index.html"; } catch(e) {}
-            });
-        };
-
-        // --- AUTH & LISTENERS ---
+        // --- STREAMING_CHUNK:Auth & Database Listeners... ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {
@@ -2243,6 +2388,22 @@
                     roleBadge.innerText = 'PLAYER';
                     roleBadge.className = 'bg-gray-600 text-white px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-heading font-black shadow-md';
                     playerActions.classList.remove('hidden');
+                }
+                
+                // Fetch Packs for everyone to browse
+                try {
+                    const pubSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'public', 'data', 'scriptPacks'));
+                    let privSnap = { docs: [] };
+                    if (currentUser.role === 'dm') {
+                        privSnap = await getDocs(collection(db, 'artifacts', 'global_codex', 'users', currentUser.uid, 'scriptPacks'));
+                    }
+                    
+                    allFetchedPacks = [
+                        ...pubSnap.docs.map(d => ({id: d.id, isPrivate: false, ...d.data()})),
+                        ...privSnap.docs.map(d => ({id: d.id, isPrivate: true, ...d.data()}))
+                    ];
+                } catch(err) {
+                    console.error("Error fetching generic packs:", err);
                 }
 
                 document.getElementById('initial-loading').classList.add('hidden');

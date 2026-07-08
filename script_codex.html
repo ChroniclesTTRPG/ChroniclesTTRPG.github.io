@@ -889,11 +889,23 @@
                     html += `<button onclick="window.setLevelFilter('${i}')" class="level-tab ${isActive}" id="tab-lvl-${i}">${i}</button>`;
                 }
             } else {
-                let currLvlInt = parseInt(currentLevelFilter) || 0;
-                if (currLvlInt < 0) currentLevelFilter = '0';
-                if (currLvlInt > 9) currentLevelFilter = '9';
+                let minLvl = 0;
+                let maxLvl = 9;
 
-                for (let i = 0; i <= 9; i++) {
+                // Restrict spell levels based on Vocation (Class)
+                if (currentVocationFilter === 'class_heartbound' || currentVocationFilter === 'class_nomad') {
+                    minLvl = 1;
+                    maxLvl = 5;
+                } else if (currentVocationFilter === 'class_fabricator') {
+                    minLvl = 0;
+                    maxLvl = 5;
+                }
+
+                let currLvlInt = parseInt(currentLevelFilter) || 0;
+                if (currLvlInt < minLvl) currentLevelFilter = minLvl.toString();
+                if (currLvlInt > maxLvl) currentLevelFilter = maxLvl.toString();
+
+                for (let i = minLvl; i <= maxLvl; i++) {
                     const isActive = currentLevelFilter === i.toString() ? 'active' : '';
                     const label = i === 0 ? 'T' : i; 
                     html += `<button onclick="window.setLevelFilter('${i}')" class="level-tab ${isActive}" id="tab-lvl-${i}">${label}</button>`;
@@ -1540,7 +1552,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                         <h3 class="font-heading text-sm font-bold text-white uppercase mb-1 drop-shadow-md">${pack.name}</h3>
                         <p class="text-xs text-gray-400 mb-3 line-clamp-3 font-serif">${pack.description || 'No description provided.'}</p>
                         <div class="border-t border-gray-700 pt-2 flex justify-between items-center mt-auto">
-                            <span class="text-[9px] text-gold font-bold uppercase tracking-widest">v${pack.version || 1} • ${(pack.scripts || []).length} Scripts</span>
+                            <span class="text-[9px] text-gold font-bold uppercase tracking-widest">v${pack.version || 1} • ${(pack.scripts || []).length} Records</span>
                             <span class="text-[9px] text-gray-500 italic">By ${pack.authorName || 'Unknown'}</span>
                         </div>
                     </div>
@@ -1818,7 +1830,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
 
         window.openCreatePackModal = () => {
             if (activeRole !== 'dm') return;
-            if (scripts.length === 0) return window.showToast("No scripts to bundle! Inscribe some first.");
+            if (scripts.length === 0) return window.showToast("No records to bundle! Inscribe some first.");
             document.getElementById('pack-name').value = '';
             document.getElementById('pack-desc').value = '';
             document.getElementById('pack-vis').value = 'private';

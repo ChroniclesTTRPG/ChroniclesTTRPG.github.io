@@ -13,7 +13,7 @@
         }
     </script>
     <style>
-        body { font-family: 'Lora', serif; background-color: #1a110b; background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%232c1e16' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E"); color: #f1e5c5; overflow-x: hidden; }
+        body { font-family: 'Lora', serif; background-color: #1a110b; background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%232c1e16' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E"); color: #f1e5c5; overflow-x: hidden; }
         .parchment-bg { background-color: #f1e5c5; background-image: radial-gradient(circle at center, transparent 0%, rgba(200, 170, 120, 0.3) 100%), url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E"); box-shadow: inset 0 0 40px rgba(139, 90, 43, 0.4), 0 10px 30px rgba(0,0,0,0.7); border: 2px solid #c5a059; color: #2c1e16; }
         .fantasy-btn { background: linear-gradient(to bottom, #8a2b2b, #5a1111); color: #f1e5c5 !important; border: 2px solid #c5a059 !important; font-family: 'Cinzel', serif; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.2) !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
         .fantasy-btn:hover:not(:disabled) { background: linear-gradient(to bottom, #a33232, #7a1b1b); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.6) !important; border-color: #e8cd87 !important; }
@@ -286,7 +286,7 @@
                     </div>
                     <div class="text-right flex flex-col items-end gap-1">
                         <span id="pd-version" class="bg-indigo-900 text-indigo-200 border border-indigo-700 px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-heading font-black shadow-md">v1</span>
-                        <span id="pd-downloads" class="text-[10px] text-gray-500 font-bold tracking-widest font-heading" title="Times injected"><i class="fa-solid fa-download mr-1"></i>0</span>
+                        <span id="pd-downloads" class="text-[10px] text-gray-500 font-bold tracking-widest font-heading" title="Times Downloaded"><i class="fa-solid fa-download mr-1"></i>0</span>
                     </div>
                 </div>
                 
@@ -578,9 +578,9 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, getDoc, addDoc, query, where, getDocs, arrayUnion, arrayRemove, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, updateDoc, setDoc, onSnapshot, getDoc, addDoc, query, where, getDocs, arrayUnion, arrayRemove, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- GLOBAL ERROR BOUNDARY FOR GITHUB PAGES / CORS ISSUES ---
         window.addEventListener('error', (event) => {
@@ -601,50 +601,6 @@
             const t = document.getElementById('toast'); 
             if(t){ t.textContent=m; t.style.opacity=1; setTimeout(()=>t.style.opacity=0, 4000); } 
         };
-
-        // --- HORIZONTAL DRAG & SCROLL FIX ---
-        const enableDraggableHScroll = (id) => {
-            const slider = document.getElementById(id);
-            if (!slider) return;
-            let isDown = false;
-            let startX;
-            let scrollLeft;
-
-            slider.addEventListener('mousedown', (e) => {
-                isDown = true;
-                slider.classList.add('cursor-grabbing');
-                startX = e.pageX - slider.offsetLeft;
-                scrollLeft = slider.scrollLeft;
-            });
-            slider.addEventListener('mouseleave', () => {
-                isDown = false;
-                slider.classList.remove('cursor-grabbing');
-            });
-            slider.addEventListener('mouseup', () => {
-                isDown = false;
-                slider.classList.remove('cursor-grabbing');
-            });
-            slider.addEventListener('mousemove', (e) => {
-                if (!isDown) return;
-                e.preventDefault();
-                const x = e.pageX - slider.offsetLeft;
-                const walk = (x - startX) * 2; // Scroll-fast
-                slider.scrollLeft = scrollLeft - walk;
-            });
-            // Wheel scroll
-            slider.addEventListener('wheel', (e) => {
-                if (e.deltaY !== 0) {
-                    e.preventDefault();
-                    slider.scrollLeft += e.deltaY;
-                }
-            }, { passive: false });
-        };
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => { enableDraggableHScroll('vocation-tabs-container'); enableDraggableHScroll('main-nav'); });
-        } else {
-            enableDraggableHScroll('vocation-tabs-container'); enableDraggableHScroll('main-nav');
-        }
 
         // --- FIREBASE SETUP ---
         const firebaseConfig = {
@@ -770,6 +726,7 @@
             }
         };
 
+        // Generate Card HTML
         function createCampaignCard(camp, isMine) {
             const d = document.createElement('div');
             d.className = "bg-black bg-opacity-60 rounded-lg card p-5 flex flex-col justify-between group";
@@ -883,7 +840,7 @@
             }
         }
 
-        // --- STREAMING_CHUNK:Configuring Chat Functions... ---
+        // --- CHAT LOGIC ---
         window.toggleChatPanel = () => {
             const panel = document.getElementById('global-chat-panel');
             panel.classList.toggle('open');
@@ -1092,7 +1049,7 @@
             }
         };
 
-        // --- STREAMING_CHUNK:Direct Messaging Logic... ---
+        // DIRECT MESSAGING (WHISPERS)
         window.initDirectMessaging = () => {
             if (dmContactsUnsub) dmContactsUnsub();
             
@@ -1465,7 +1422,7 @@
             }
         };
 
-        // --- STREAMING_CHUNK:Friend Request and Block Logic... ---
+        // BLOCK USER
         window.promptBlockUser = (uid, name) => {
             if (confirm(`Block ${name}? You will no longer see their messages or receive whispers from them.`)) {
                 executeBlockUser(uid);
@@ -1494,6 +1451,8 @@
                 window.showToast("Failed to block user.");
             }
         }
+
+        // --- FRIENDS SYSTEM LOGIC ---
 
         window.initFriendsSync = () => {
             if (friendsUnsub) friendsUnsub();
@@ -1857,7 +1816,7 @@
             }
         };
 
-        // --- STREAMING_CHUNK:Reports and Escalations... ---
+        // REPORTS
         window.pendingReportData = null;
 
         window.promptReportUser = (uid, username, msgSnippet) => {
@@ -2263,17 +2222,317 @@
             }
         };
 
-        // --- STREAMING_CHUNK:Auth & Database Listeners... ---
+        // --- ACTIONS ---
+
+        // Open Username Modal
+        window.openUsernameModal = () => {
+            const isForced = !currentUser.username || currentUser.username.trim() === '';
+            document.getElementById('missing-username-input').value = currentUser.username || '';
+            document.getElementById('close-username-modal').classList.toggle('hidden', isForced);
+            document.getElementById('username-modal-desc').innerText = isForced 
+                ? "The archives hold no record of your name, traveler. By what title shall the realm know you?"
+                : "By what new title shall the realm know you?";
+            document.getElementById('username-prompt-modal').classList.remove('hidden');
+        };
+
+        // Fix missing username
+        window.setUsername = async () => {
+            const newName = document.getElementById('missing-username-input').value.trim();
+            if (!newName) return window.showToast("Please enter a name.");
+            
+            try {
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    username: newName
+                });
+                currentUser.username = newName;
+                document.getElementById('user-display-name').innerText = newName;
+                document.getElementById('username-prompt-modal').classList.add('hidden');
+                window.showToast("Identity updated!");
+            } catch (err) {
+                console.error(err);
+                window.showToast("Failed to save name.");
+            }
+        };
+
+        window.joinByCode = async () => {
+            if (currentUser?.isBanned) return window.showToast("You are banished. Action denied.");
+            const code = document.getElementById('invite-code-input').value.trim().toUpperCase();
+            if (!code) return window.showToast("Enter a code first.");
+
+            try {
+                const q = query(collection(db, 'campaigns'), where('inviteCode', '==', code));
+                const snap = await getDocs(q);
+                
+                if (snap.empty) {
+                    window.showToast("Invalid Invite Code.");
+                    return;
+                }
+
+                const camp = snap.docs[0];
+
+                if (currentUser && currentUser.uid) {
+                    await updateDoc(doc(db, 'users', currentUser.uid), {
+                        joinedCampaigns: arrayUnion(camp.id)
+                    });
+                }
+
+                window.showToast(`Joined ${camp.data().name}!`);
+                
+                setTimeout(() => {
+                    try { window.location.href = `characters.html?id=${camp.id}`; } 
+                    catch(e) { window.showToast("Redirect disabled in preview."); }
+                }, 1000);
+
+            } catch (err) {
+                console.error(err);
+                window.showToast("Error joining campaign.");
+            }
+        };
+
+        // Quick join for public campaigns
+        window.joinPublicCampaign = async (id, name) => {
+            if (currentUser?.isBanned) return window.showToast("You are banished. Action denied.");
+            if (!currentUser || currentUser.role !== 'player') return;
+            try {
+                const camp = allCampaigns.find(c => c.id === id);
+                if (camp && camp.visibility === 'public' && camp.maxPlayers) {
+                    const q = query(collection(db, 'users'), where('joinedCampaigns', 'array-contains', id));
+                    const snap = await getDocs(q);
+                    if (snap.size >= camp.maxPlayers) {
+                        return window.showToast("This public realm has reached its player limit.");
+                    }
+                }
+
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    joinedCampaigns: arrayUnion(id)
+                });
+                window.showToast(`Joined the realm of ${name}!`);
+                if (document.getElementById('pack-details-modal').classList.contains('hidden') === false) {
+                    window.closePackDetails(); // Close details if joining from packs view
+                }
+            } catch(e) {
+                console.error(e);
+                window.showToast("Failed to join realm.");
+            }
+        };
+
+        window.createCampaign = async () => {
+            if (currentUser?.isBanned) return window.showToast("You are banished. Action denied.");
+            if (!currentUser || currentUser.role !== 'dm') return;
+            const name = document.getElementById('new-campaign-name').value.trim();
+            const desc = document.getElementById('new-campaign-desc').value.trim();
+            const vis = document.getElementById('new-campaign-vis').value;
+            const packId = document.getElementById('new-campaign-pack').value;
+            
+            if (!name) return window.showToast("Name is required.");
+
+            window.showToast("Forging Realm...");
+
+            try {
+                let packName = "Blank Slate";
+                let selectedPack = null;
+                if (packId) {
+                    selectedPack = availablePacks.find(p => p.id === packId);
+                    if (selectedPack) packName = selectedPack.name;
+                }
+
+                let maxPlayers = null;
+                if (vis === 'public') {
+                    const limitVal = document.getElementById('new-campaign-limit').value;
+                    if (limitVal && !isNaN(limitVal)) {
+                        maxPlayers = parseInt(limitVal);
+                    }
+                }
+
+                const newRef = await addDoc(collection(db, 'campaigns'), {
+                    name: name,
+                    description: desc,
+                    visibility: vis,
+                    maxPlayers: maxPlayers,
+                    dmId: currentUser.uid,
+                    dmName: currentUser.username,
+                    inviteCode: generateCode(),
+                    packName: packName,
+                    createdAt: Date.now()
+                });
+
+                // Batch inject scripts if a pack was selected
+                if (selectedPack) {
+                    // Update download count on the pack
+                    const pathArgs = selectedPack.isPrivate 
+                        ? ['artifacts', 'global_codex', 'users', selectedPack.authorId, 'scriptPacks', selectedPack.id]
+                        : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', selectedPack.id];
+                    
+                    const currentDownloads = selectedPack.downloads || 0;
+                    await updateDoc(doc(db, ...pathArgs), { downloads: currentDownloads + 1 });
+
+                    if (selectedPack.scripts && selectedPack.scripts.length > 0) {
+                        const batch = writeBatch(db);
+                        const codexRef = collection(db, 'artifacts', newRef.id, 'public', 'data', `scriptCodex_${newRef.id}`);
+                        selectedPack.scripts.forEach(script => {
+                            const docRef = doc(codexRef);
+                            batch.set(docRef, { ...script, createdAt: Date.now(), updatedAt: Date.now() });
+                        });
+                        await batch.commit();
+                    }
+                }
+
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    joinedCampaigns: arrayUnion(newRef.id)
+                });
+
+                document.getElementById('create-campaign-modal').classList.add('hidden');
+                document.getElementById('new-campaign-name').value = '';
+                document.getElementById('new-campaign-desc').value = '';
+                document.getElementById('new-campaign-pack').value = '';
+                document.getElementById('new-campaign-limit').value = '';
+                document.getElementById('new-campaign-vis').value = 'private';
+                document.getElementById('new-campaign-limit-container').classList.add('hidden');
+                document.getElementById('new-campaign-pack-preview').classList.add('hidden');
+                window.showToast("Realm Forged Successfully!");
+
+            } catch (err) {
+                console.error(err);
+                window.showToast("Failed to forge realm.");
+            }
+        };
+
+        // Open Edit Modal
+        window.openEditCampaign = (id) => {
+            const camp = allCampaigns.find(c => c.id === id);
+            if (!camp) return;
+
+            document.getElementById('edit-campaign-id').value = camp.id;
+            document.getElementById('edit-campaign-name').value = camp.name || '';
+            document.getElementById('edit-campaign-desc').value = camp.description || '';
+            document.getElementById('edit-campaign-vis').value = camp.visibility || 'private';
+            document.getElementById('edit-campaign-code').value = camp.inviteCode || '';
+            
+            document.getElementById('edit-campaign-limit-container').classList.toggle('hidden', camp.visibility !== 'public');
+            document.getElementById('edit-campaign-limit').value = camp.maxPlayers || '';
+            
+            const editPackSelect = document.getElementById('edit-campaign-pack');
+            if (editPackSelect) {
+                editPackSelect.value = '';
+                document.getElementById('edit-campaign-pack-preview').classList.add('hidden');
+            }
+
+            document.getElementById('edit-campaign-modal').classList.remove('hidden');
+        };
+
+        // Save Edit Changes
+        window.saveCampaignEdit = async () => {
+            const id = document.getElementById('edit-campaign-id').value;
+            const name = document.getElementById('edit-campaign-name').value.trim();
+            const desc = document.getElementById('edit-campaign-desc').value.trim();
+            const vis = document.getElementById('edit-campaign-vis').value;
+            const code = document.getElementById('edit-campaign-code').value.trim().toUpperCase();
+            const packId = document.getElementById('edit-campaign-pack').value;
+
+            if (!name) return window.showToast("Name is required.");
+            if (!code) return window.showToast("Invite code is required.");
+
+            try {
+                let maxPlayers = null;
+                if (vis === 'public') {
+                    const limitVal = document.getElementById('edit-campaign-limit').value;
+                    if (limitVal && !isNaN(limitVal)) {
+                        maxPlayers = parseInt(limitVal);
+                    }
+                }
+
+                const updates = {
+                    name: name,
+                    description: desc,
+                    visibility: vis,
+                    maxPlayers: maxPlayers,
+                    inviteCode: code
+                };
+
+                let selectedPack = null;
+                if (packId) {
+                    selectedPack = availablePacks.find(p => p.id === packId);
+                    if (selectedPack) {
+                        updates.packName = selectedPack.name; 
+                        
+                        // Update download count on the pack
+                        const pathArgs = selectedPack.isPrivate 
+                            ? ['artifacts', 'global_codex', 'users', selectedPack.authorId, 'scriptPacks', selectedPack.id]
+                            : ['artifacts', 'global_codex', 'public', 'data', 'scriptPacks', selectedPack.id];
+                        
+                        const currentDownloads = selectedPack.downloads || 0;
+                        await updateDoc(doc(db, ...pathArgs), { downloads: currentDownloads + 1 });
+                        
+                        // Batch inject the new scripts if selected
+                        if (selectedPack.scripts && selectedPack.scripts.length > 0) {
+                            window.showToast("Injecting scripts...");
+                            const batch = writeBatch(db);
+                            const codexRef = collection(db, 'artifacts', id, 'public', 'data', `scriptCodex_${id}`);
+                            selectedPack.scripts.forEach(script => {
+                                const docRef = doc(codexRef);
+                                batch.set(docRef, { ...script, createdAt: Date.now(), updatedAt: Date.now() });
+                            });
+                            await batch.commit();
+                        }
+                    }
+                }
+
+                await updateDoc(doc(db, 'campaigns', id), updates);
+                document.getElementById('edit-campaign-modal').classList.add('hidden');
+                window.showToast("Realm Updated!");
+            } catch (err) {
+                console.error(err);
+                window.showToast("Failed to update realm.");
+            }
+        };
+
+        // Delete Campaign
+        window.deleteCampaign = async (id, name, dmId) => {
+            if (adminModeActive && dmId !== currentUser.uid) {
+                window.pendingAdminDelete = { type: 'campaign', id, name, targetUserId: dmId };
+                document.getElementById('admin-del-title').innerText = `Delete Realm: ${name}`;
+                document.getElementById('admin-del-reason').value = '';
+                document.getElementById('admin-delete-prompt-modal').classList.remove('hidden');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to permanently destroy the realm of "${name}"? This cannot be undone.`)) return;
+            
+            try {
+                await deleteDoc(doc(db, 'campaigns', id));
+                window.showToast("Realm destroyed.");
+            } catch (err) {
+                console.error(err);
+                window.showToast("Failed to destroy realm.");
+            }
+        };
+
+        // Leave Campaign (Players Only)
+        window.leaveCampaign = async (id, name) => {
+            if (!confirm(`Are you sure you want to leave the realm of "${name}"? You will need the invite code to return.`)) return;
+            
+            try {
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    joinedCampaigns: arrayRemove(id)
+                });
+                window.showToast("You have left the realm.");
+            } catch (err) {
+                console.error(err);
+                window.showToast("Failed to leave realm.");
+            }
+        };
+
+        window.logout = () => {
+            signOut(auth).then(() => {
+                try { window.location.href = "index.html"; } catch(e) {}
+            });
+        };
+
+        // --- AUTH & DATA SYNC ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {
-                    document.getElementById('initial-loading').innerHTML = `
-                        <div class="parchment-bg p-8 rounded border border-blood max-w-md text-center">
-                            <h2 class="font-heading text-xl text-blood font-bold mb-4">Authentication Required</h2>
-                            <p class="text-sm font-serif text-ink mb-4">You must be logged in to view this page.</p>
-                            <button onclick="window.location.href='index.html'" class="fantasy-btn px-6 py-2 rounded text-xs">Return to Login</button>
-                        </div>
-                    `;
+                    document.getElementById('initial-loading').innerHTML = `<h2 class="font-heading text-2xl text-blood">Authentication Required</h2>`;
                 }
                 return;
             }
@@ -2379,14 +2638,15 @@
 
                         populatePackSelect('new-campaign-pack', 'new-campaign-pack-preview', 'Blank Slate (No Scripts)');
                         populatePackSelect('edit-campaign-pack', 'edit-campaign-pack-preview', 'No Additional Pack');
-
-                    } catch (e) {
-                        console.error("Failed to fetch available packs", e);
+                        
+                    } catch(err) {
+                        console.error("Error fetching packs:", err);
                     }
-                    
+
                 } else {
                     roleBadge.innerText = 'PLAYER';
                     roleBadge.className = 'bg-gray-600 text-white px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-heading font-black shadow-md';
+                    createBtn.classList.add('hidden');
                     playerActions.classList.remove('hidden');
                 }
                 
@@ -2406,51 +2666,47 @@
                     console.error("Error fetching generic packs:", err);
                 }
 
+                // Hide loading overlay
                 document.getElementById('initial-loading').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
 
-                // Real-time listener for campaigns
-                onSnapshot(collection(db, 'campaigns'), (snapshot) => {
-                    allCampaigns = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Listen for Campaign updates
+                onSnapshot(collection(db, 'campaigns'), (snap) => {
+                    allCampaigns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderCampaigns();
                 });
 
-                // Listen for changes to current user data (e.g., being blocked, muted, or banned)
-                onSnapshot(doc(db, 'users', currentUser.uid), (docSnap) => {
-                    if (docSnap.exists()) {
-                        const userData = docSnap.data();
-                        currentUser = { ...currentUser, ...userData };
+                // Listen for User Profile updates
+                onSnapshot(userDocRef, (userSnap) => {
+                    if (userSnap.exists()) {
+                        currentUser = { uid: u.uid, ...userSnap.data() };
+                        if (!currentUser.joinedCampaigns) currentUser.joinedCampaigns = [];
+                        if (!currentUser.blockedUsers) currentUser.blockedUsers = [];
                         
-                        // Handle Ban State
-                        const bannedBanner = document.getElementById('banned-banner');
-                        if (userData.isBanned) {
-                            if (bannedBanner) bannedBanner.classList.remove('hidden');
-                            // Force them out of create/join options
-                            const createBtn = document.getElementById('btn-create-campaign');
-                            if (createBtn) createBtn.classList.add('hidden');
-                            const playerActions = document.getElementById('player-actions');
-                            if (playerActions) playerActions.classList.add('hidden');
+                        // Keep display name actively updated in case they just saved it in the modal
+                        let updatedDisplay = currentUser.username || (u.email ? u.email.split('@')[0] : 'Traveler');
+                        document.getElementById('user-display-name').innerText = updatedDisplay;
+                        
+                        // Check Ban Status
+                        const banBanner = document.getElementById('banned-banner');
+                        if (currentUser.isBanned) {
+                            if (banBanner) banBanner.classList.remove('hidden');
                         } else {
-                            if (bannedBanner) bannedBanner.classList.add('hidden');
-                            if (currentUser.role === 'dm' && !adminModeActive) {
-                                const createBtn = document.getElementById('btn-create-campaign');
-                                if (createBtn) createBtn.classList.remove('hidden');
-                            }
+                            if (banBanner) banBanner.classList.add('hidden');
                         }
-
-                        // Handle Mute State
+                        
+                        // Check Mute Status
                         const muteBanner = document.getElementById('muted-banner');
-                        const now = Date.now();
-                        if (userData.mutedUntil && userData.mutedUntil > now) {
+                        if (currentUser.mutedUntil && currentUser.mutedUntil > Date.now()) {
                             if (muteBanner) muteBanner.classList.remove('hidden');
                         } else {
                             if (muteBanner) muteBanner.classList.add('hidden');
                         }
 
-                        // Handle Notifications
-                        if (userData.notifications && userData.notifications.length > 0) {
+                        // Check for Admin Notifications
+                        if (currentUser.notifications && currentUser.notifications.length > 0) {
                             const notifContainer = document.getElementById('notifications-list');
-                            notifContainer.innerHTML = userData.notifications.map(n => `
+                            notifContainer.innerHTML = currentUser.notifications.map(n => `
                                 <div class="bg-parchment border-2 border-blood/50 p-4 rounded mb-3 shadow-inner">
                                     <h4 class="font-heading font-black text-blood text-sm uppercase tracking-widest">${n.type}: ${n.itemName}</h4>
                                     <p class="text-[10px] text-gray-500 font-serif mb-2 italic border-b border-gray-300 pb-1">${new Date(n.timestamp).toLocaleString()}</p>
@@ -2459,11 +2715,9 @@
                             `).join('');
                             document.getElementById('user-notifications-modal').classList.remove('hidden');
                         }
-                        
-                        // Re-render UI based on new data
-                        document.getElementById('user-display-name').innerText = currentUser.username;
+
                         renderCampaigns();
-                        if(window.renderGlobalChat) window.renderGlobalChat();
+                        if(window.renderGlobalChat) window.renderGlobalChat(); // Re-render chat if blocks changed
                     }
                 });
 

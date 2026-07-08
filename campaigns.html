@@ -2007,7 +2007,7 @@
             if (e.key === 'Enter') window.sendDirectMessage();
         });
 
-        // --- STREAMING_CHUNK:Codex Packs Logic... ---
+        // --- CODEX PACKS LOGIC ---
         window.openPacksModal = () => {
             const grid = document.getElementById('packs-grid');
             grid.innerHTML = '';
@@ -2017,7 +2017,7 @@
             } else {
                 grid.innerHTML = allFetchedPacks.map(pack => {
                     const iconClass = pack.icon || 'fa-solid fa-book-journal-whills';
-                    const injectionCount = pack.downloads || 0; // "downloads" represents injections
+                    const downloadCount = pack.downloads || 0;
                     return `
                     <div class="card p-5 rounded-lg flex flex-col relative bg-black/60 border border-gray-700 ${pack.isDeleted ? 'opacity-70 grayscale' : ''}" onclick="window.openPackDetails('${pack.id}')">
                         ${pack.isDeleted ? '<div class="absolute top-2 left-2 bg-red-900 text-white px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-heading shadow-md z-10">Archived</div>' : ''}
@@ -2031,7 +2031,7 @@
                                 <span class="text-[9px] text-gray-500 italic">By ${pack.authorName || 'Unknown'}</span>
                             </div>
                             <div class="flex justify-start items-center text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">
-                                <i class="fa-solid fa-download mr-1"></i> ${injectionCount} Injections
+                                <i class="fa-solid fa-download mr-1"></i> ${downloadCount} Downloads
                             </div>
                         </div>
                     </div>

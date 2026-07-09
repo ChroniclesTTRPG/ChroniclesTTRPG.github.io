@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chronicles - Script Codex</title>
+    <title>Chronicles - Records Codex</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
@@ -139,7 +139,7 @@
                 <div class="absolute -bottom-1.5 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-50"></div>
                 
                 <div class="text-center md:text-left w-full md:w-auto">
-                    <h1 id="main-campaign-title-label" class="text-4xl md:text-5xl text-gray-400 font-bold mb-1 font-heading tracking-tight leading-none drop-shadow-md">Script Codex</h1>
+                    <h1 id="main-campaign-title-label" class="text-4xl md:text-5xl text-gray-400 font-bold mb-1 font-heading tracking-tight leading-none drop-shadow-md">Records Codex</h1>
                     <div class="flex flex-col md:flex-row items-center gap-3 mt-2">
                         <p class="text-gray-500 text-xs uppercase tracking-[0.2em] font-bold font-heading">Campaign Management Suite</p>
                         <div class="bg-black bg-opacity-60 border border-gray-700 px-3 py-1 rounded flex items-center gap-2 shadow-inner">
@@ -197,6 +197,7 @@
                         <button id="btn-publish-pack" onclick="window.openCreatePackModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-[10px] uppercase font-bold tracking-widest shadow-lg border-indigo-700 text-indigo-400 hover:text-white hover:border-indigo-400"><i class="fa-solid fa-upload mr-2"></i>Publish Pack</button>
                         <button onclick="document.getElementById('definitions-modal').classList.remove('hidden')" class="fantasy-btn-alt px-4 py-2.5 rounded text-[10px] uppercase font-bold tracking-widest shadow-lg"><i class="fa-solid fa-book-open mr-2"></i>Definitions</button>
                         <button id="btn-wipe-codex" onclick="window.confirmWipeCodex()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-[10px] uppercase font-bold tracking-widest shadow-lg !border-red-900 !text-red-500 hover:!bg-red-900 hover:!text-white transition-colors"><i class="fa-solid fa-skull mr-2"></i>Wipe Codex</button>
+                        <!-- FIX applied here to explicitly pass null -->
                         <button id="btn-create-script" onclick="window.openScriptModal(null)" class="hidden fantasy-btn px-6 py-2.5 rounded text-[10px] uppercase font-bold tracking-widest shadow-lg"><i class="fa-solid fa-plus mr-2"></i>Inscribe</button>
                     </div>
                 </div>
@@ -641,7 +642,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- PROGRESSION TABLE MODAL -->
     <div id="progression-modal" class="modal-overlay hidden z-[900]">
         <div class="modal-container max-w-[85vw] max-h-[90vh] overflow-y-auto custom-scrollbar relative p-8 border-4 border-double border-gold/40 shadow-2xl" style="background-color: #f1e5c5; background-image: radial-gradient(circle at center, transparent 0%, rgba(200, 170, 120, 0.4) 100%), url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.05\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100\' height=\'100\' filter=\'url(%23noise)\' opacity=\'0.08\'/%3E%3C/svg%3E');">
@@ -1664,13 +1665,38 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
             document.getElementById('progression-title').innerHTML = titleHtml;
 
-            const data = progressionTablesData[currentVocationFilter] || { customHeaders: ["RAGE", "DMG", "MASTERY"], rows: {} };
+            let defaultHeaders = ["RAGE", "DMG", "MASTERY", ""];
+            if (currentVocationFilter === 'class_warrior') defaultHeaders = ["2ND WIND", "MASTERY", "", ""];
+            else if (currentVocationFilter === 'class_vanguard') defaultHeaders = ["RAGE", "DMG", "MASTERY", ""];
+            else if (currentVocationFilter === 'class_peacemaker') defaultHeaders = ["MA DIE", "FOCUS", "SPEED", ""];
+            else if (currentVocationFilter === 'class_scavenger') defaultHeaders = ["SNEAK ATTACK", "", "", ""];
+            else if (currentVocationFilter === 'class_nomad') defaultHeaders = ["FE", "PREP.", "", ""];
+            else if (currentVocationFilter === 'class_chronicler') defaultHeaders = ["CD", "CANT.", "PREP.", ""];
+            else if (currentVocationFilter === 'class_warden') defaultHeaders = ["WS", "CANT.", "PREP.", ""];
+            else if (currentVocationFilter === 'class_scriptweaver') defaultHeaders = ["SP", "CANT.", "PREP.", "META"];
+            else if (currentVocationFilter === 'class_wartouched') defaultHeaders = ["INVOC.", "ARC.", "CANT.", "PREP."];
+            else if (currentVocationFilter === 'class_archivist') defaultHeaders = ["BOOK", "CANT.", "PREP.", ""];
+            else if (currentVocationFilter === 'class_orator') defaultHeaders = ["INSP.", "CANT.", "PREP.", ""];
+            else if (isCaster) defaultHeaders = ["CANT.", "PREP.", "", ""];
+            
+            const data = progressionTablesData[currentVocationFilter] || { customHeaders: defaultHeaders, rows: {} };
             const isDM = activeRole === 'dm';
             document.getElementById('progression-admin-actions').classList.toggle('hidden', !isDM);
             
-            const h1Val = data.customHeaders?.[0] || '';
-            const h2Val = data.customHeaders?.[1] || '';
-            const h3Val = data.customHeaders?.[2] || '';
+            const savedHeaders = data.customHeaders || defaultHeaders;
+            const h1Val = savedHeaders[0] !== undefined ? savedHeaders[0] : '';
+            const h2Val = savedHeaders[1] !== undefined ? savedHeaders[1] : '';
+            const h3Val = savedHeaders[2] !== undefined ? savedHeaders[2] : '';
+            const h4Val = savedHeaders[3] !== undefined ? savedHeaders[3] : '';
+
+            let maxSlots = 0;
+            if (isCaster) {
+                if (['class_heartbound', 'class_nomad', 'class_fabricator', 'class_wartouched'].includes(currentVocationFilter)) {
+                    maxSlots = 5; // Half-casters and Pact Magic
+                } else {
+                    maxSlots = 9; // Full-casters
+                }
+            }
 
             // BUILD THEAD
             let theadHtml = `
@@ -1678,30 +1704,41 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                     <th class="py-3 text-center w-12 text-ink">Lvl</th>
                     <th class="py-3 text-center w-16 text-ink">Prof.</th>
                     <th class="py-3 text-left text-ink">Class Features</th>
-                    ${isDM ? 
-                        `<th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h1" value="${h1Val}" placeholder="Cust 1" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
-                         <th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h2" value="${h2Val}" placeholder="Cust 2" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
-                         <th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h3" value="${h3Val}" placeholder="Cust 3" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>` 
-                        : 
-                        (h1Val ? `<th class="py-3 text-center w-24 text-ink">${h1Val}</th>` : '') +
-                        (h2Val ? `<th class="py-3 text-center w-24 text-ink">${h2Val}</th>` : '') +
-                        (h3Val ? `<th class="py-3 text-center w-24 text-ink">${h3Val}</th>` : '')
-                    }
             `;
 
-            if (isCaster) {
+            if (isDM) {
                 theadHtml += `
-                    <th class="py-3 text-center w-10 text-ink border-l border-gold/20" title="1st Level Slots">1ST</th>
-                    <th class="py-3 text-center w-10 text-ink" title="2nd Level Slots">2ND</th>
-                    <th class="py-3 text-center w-10 text-ink" title="3rd Level Slots">3RD</th>
-                    <th class="py-3 text-center w-10 text-ink" title="4th Level Slots">4TH</th>
-                    <th class="py-3 text-center w-10 text-ink" title="5th Level Slots">5TH</th>
-                    <th class="py-3 text-center w-10 text-ink" title="6th Level Slots">6TH</th>
-                    <th class="py-3 text-center w-10 text-ink" title="7th Level Slots">7TH</th>
-                    <th class="py-3 text-center w-10 text-ink" title="8th Level Slots">8TH</th>
-                    <th class="py-3 text-center w-10 text-ink" title="9th Level Slots">9TH</th>
+                    <th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h1" value="${h1Val}" placeholder="Cust 1" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
+                    <th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h2" value="${h2Val}" placeholder="Cust 2" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
+                    <th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h3" value="${h3Val}" placeholder="Cust 3" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
                 `;
+                if (currentVocationFilter !== 'class_scriptweaver') {
+                    theadHtml += `<th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h4" value="${h4Val}" placeholder="Cust 4" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>`;
+                }
+            } else {
+                if (h1Val) theadHtml += `<th class="py-3 text-center w-24 text-ink">${h1Val}</th>`;
+                if (h2Val) theadHtml += `<th class="py-3 text-center w-24 text-ink">${h2Val}</th>`;
+                if (h3Val) theadHtml += `<th class="py-3 text-center w-24 text-ink">${h3Val}</th>`;
+                if (currentVocationFilter !== 'class_scriptweaver') {
+                    if (h4Val) theadHtml += `<th class="py-3 text-center w-24 text-ink">${h4Val}</th>`;
+                }
             }
+
+            if (maxSlots > 0) {
+                const ordinals = ["1ST", "2ND", "3RD", "4TH", "5TH", "6TH", "7TH", "8TH", "9TH"];
+                for (let s = 1; s <= maxSlots; s++) {
+                    theadHtml += `<th class="py-3 text-center w-10 text-ink ${s===1 ? 'border-l border-gold/20' : ''}" title="${s} Level Slots">${ordinals[s-1]}</th>`;
+                }
+            }
+
+            if (currentVocationFilter === 'class_scriptweaver') {
+                if (isDM) {
+                    theadHtml += `<th class="py-3 text-center w-24 text-ink ${maxSlots > 0 ? 'border-l border-gold/20' : ''}"><input type="text" id="prog-h4" value="${h4Val}" placeholder="Cust 4" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>`;
+                } else {
+                    if (h4Val) theadHtml += `<th class="py-3 text-center w-24 text-ink ${maxSlots > 0 ? 'border-l border-gold/20' : ''}">${h4Val}</th>`;
+                }
+            }
+            
             theadHtml += `</tr>`;
             document.getElementById('progression-thead').innerHTML = theadHtml;
 
@@ -1716,25 +1753,31 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 const c1Val = rData.c1 || '';
                 const c2Val = rData.c2 || '';
                 const c3Val = rData.c3 || '';
+                const c4Val = rData.c4 || '';
                 
-                let tdC1 = '', tdC2 = '', tdC3 = '';
+                let tdC1 = '', tdC2 = '', tdC3 = '', tdC4 = '';
                 
                 if (isDM) {
                     tdC1 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c1" value="${c1Val}" class="prog-input text-gray-700 font-bold" /></td>`;
                     tdC2 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c2" value="${c2Val}" class="prog-input text-gray-700 font-bold" /></td>`;
                     tdC3 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c3" value="${c3Val}" class="prog-input text-gray-700 font-bold" /></td>`;
+                    
+                    let borderClass = currentVocationFilter === 'class_scriptweaver' && maxSlots > 0 ? 'border-l border-gold/20' : '';
+                    tdC4 = `<td class="py-2 px-1 ${borderClass}"><input type="text" id="prog-r${i}-c4" value="${c4Val}" class="prog-input text-gray-700 font-bold" /></td>`;
                 } else {
                     if (h1Val) tdC1 = `<td class="py-2 text-center text-gray-700 font-bold">${c1Val}</td>`;
                     if (h2Val) tdC2 = `<td class="py-2 text-center text-gray-700 font-bold">${c2Val}</td>`;
                     if (h3Val) tdC3 = `<td class="py-2 text-center text-gray-700 font-bold">${c3Val}</td>`;
+                    
+                    let borderClass = currentVocationFilter === 'class_scriptweaver' && maxSlots > 0 ? 'border-l border-gold/20' : '';
+                    if (h4Val) tdC4 = `<td class="py-2 text-center text-gray-700 font-bold ${borderClass}">${c4Val}</td>`;
                 }
 
                 let slotCells = '';
-                if (isCaster) {
-                    for(let s = 1; s <= 9; s++) {
+                if (maxSlots > 0) {
+                    for(let s = 1; s <= maxSlots; s++) {
                         const slotVal = rData[`s${s}`] || (s===1 && i===1 ? '2' : (s===1 && i>1 ? '4' : ''));
                         
-                        // Check if this slot was JUST unlocked to add the highlight from reference image
                         let isUnlockedNow = false;
                         if (!isDM && slotVal !== '' && slotVal !== '-' && i > 1) {
                             const prevVal = data.rows?.[i-1]?.[`s${s}`];
@@ -1770,7 +1813,9 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                     ${tdC1}
                     ${tdC2}
                     ${tdC3}
+                    ${currentVocationFilter !== 'class_scriptweaver' ? tdC4 : ''}
                     ${slotCells}
+                    ${currentVocationFilter === 'class_scriptweaver' ? tdC4 : ''}
                 </tr>`;
             }
             
@@ -1871,11 +1916,21 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             const voc = VOC_KEYS.find(v => v.id === currentVocationFilter);
             const isCaster = voc && (voc.type === 'scripts' || voc.type === 'both');
             
+            let maxSlots = 0;
+            if (isCaster) {
+                if (['class_heartbound', 'class_nomad', 'class_fabricator', 'class_wartouched'].includes(currentVocationFilter)) {
+                    maxSlots = 5; 
+                } else {
+                    maxSlots = 9; 
+                }
+            }
+
             const data = {
                 customHeaders: [
                     document.getElementById('prog-h1')?.value.trim() || '',
                     document.getElementById('prog-h2')?.value.trim() || '',
-                    document.getElementById('prog-h3')?.value.trim() || ''
+                    document.getElementById('prog-h3')?.value.trim() || '',
+                    document.getElementById('prog-h4')?.value.trim() || ''
                 ],
                 rows: {},
                 featureDetails: progressionTablesData[currentVocationFilter]?.featureDetails || {}, 
@@ -1888,11 +1943,12 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                     features: document.getElementById(`prog-r${i}-feat`)?.value.trim() || '',
                     c1: document.getElementById(`prog-r${i}-c1`)?.value.trim() || '',
                     c2: document.getElementById(`prog-r${i}-c2`)?.value.trim() || '',
-                    c3: document.getElementById(`prog-r${i}-c3`)?.value.trim() || ''
+                    c3: document.getElementById(`prog-r${i}-c3`)?.value.trim() || '',
+                    c4: document.getElementById(`prog-r${i}-c4`)?.value.trim() || ''
                 };
                 
-                if (isCaster) {
-                    for(let s = 1; s <= 9; s++) {
+                if (maxSlots > 0) {
+                    for(let s = 1; s <= maxSlots; s++) {
                         data.rows[i][`s${s}`] = document.getElementById(`prog-r${i}-s${s}`)?.value.trim() || '';
                     }
                 }
@@ -2430,13 +2486,6 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'characters'), (snap) => {
                     characters = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 });
-
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'progressionTables'), (snap) => {
-                    progressionTablesData = {};
-                    snap.docs.forEach(d => {
-                        progressionTablesData[d.id] = d.data();
-                    });
-                }, (err) => console.error("Progression Tables Sync Error:", err));
 
                 const VOCATIONS_COLLECTION = `handbookVocations_${appId}`;
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', VOCATIONS_COLLECTION), (snap) => {

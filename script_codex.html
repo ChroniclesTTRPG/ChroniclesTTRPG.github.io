@@ -1807,7 +1807,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                     <td class="py-2 px-1 text-left text-ink align-middle">
                         ${isDM ? `<input type="text" id="prog-r${i}-feat" value="${featVal}" oninput="window.refreshFeatureLinks(${i})" class="prog-input prog-input-left text-ink font-bold mb-1" placeholder="Enter features (comma separated)..." />` : ''}
                         <div id="prog-r${i}-links" class="flex flex-wrap items-center pt-0.5">
-                            ${window.generateFeatureLinks(featVal, currentVocationFilter, i)}
+                            ${window.generateFeatureLinks(featVal, currentVocationFilter, i, isCaster)}
                         </div>
                     </td>
                     ${tdC1}
@@ -1823,12 +1823,16 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             document.getElementById('progression-modal').classList.remove('hidden');
         };
 
-        window.generateFeatureLinks = (featStr, vocId, level) => {
+        window.generateFeatureLinks = (featStr, vocId, level, isClickable = true) => {
             if (!featStr) return '';
             const features = featStr.split(',').map(f => f.trim()).filter(f => f);
             return features.map(cleanF => {
                 const safeName = cleanF.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                return `<a href="#" onclick="window.openFeatureDetail('${vocId}', ${level}, '${safeName}'); return false;" class="text-blood hover:text-red-700 underline decoration-gold/50 decoration-dashed transition-colors cursor-pointer mr-1 whitespace-nowrap leading-tight text-[13px] font-bold">${cleanF}</a>`;
+                if (isClickable) {
+                    return `<a href="#" onclick="window.openFeatureDetail('${vocId}', ${level}, '${safeName}'); return false;" class="text-blood hover:text-red-700 underline decoration-gold/50 decoration-dashed transition-colors cursor-pointer mr-1 whitespace-nowrap leading-tight text-[13px] font-bold">${cleanF}</a>`;
+                } else {
+                    return `<span class="text-ink font-bold mr-1 whitespace-nowrap leading-tight text-[13px]">${cleanF}</span>`;
+                }
             }).join('<span class="text-gray-400 mr-2 text-[13px]">,</span>');
         };
 
@@ -1836,7 +1840,9 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             const input = document.getElementById(`prog-r${rowIdx}-feat`);
             const container = document.getElementById(`prog-r${rowIdx}-links`);
             if (input && container) {
-                container.innerHTML = window.generateFeatureLinks(input.value, currentVocationFilter, rowIdx);
+                const voc = VOC_KEYS.find(v => v.id === currentVocationFilter);
+                const isCaster = voc && (voc.type === 'scripts' || voc.type === 'both');
+                container.innerHTML = window.generateFeatureLinks(input.value, currentVocationFilter, rowIdx, isCaster);
             }
         };
 

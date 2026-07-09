@@ -162,7 +162,7 @@
                         <a href="#" onclick="window.routeTo('beasts.html'); return false;" id="nav-beasts" class="nav-link">Bestiary</a>
                         <a href="#" onclick="window.routeTo('backpack.html'); return false;" id="nav-backpack" class="nav-link">Backpack</a>
                         <a href="#" onclick="window.routeTo('handbook.html'); return false;" id="nav-handbook" class="nav-link">Handbook</a>
-                        <a href="#" onclick="window.routeTo('script_codex.html'); return false;" class="nav-link active">Script Codex</a>
+                        <a href="#" onclick="window.routeTo('script_codex.html'); return false;" class="nav-link active">Records Codex</a>
                         <a href="#" onclick="window.routeTo('graveyard.html'); return false;" id="nav-graveyard" class="nav-link">Graveyard</a>
                     </nav>
                 </div>
@@ -2437,7 +2437,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                     const campDoc = await getDoc(doc(db, 'campaigns', appId));
                     if (campDoc.exists() && campDoc.data().name) {
                         const titleEl = document.getElementById('main-campaign-title-label');
-                        if (titleEl && titleEl.innerText === 'Script Codex') titleEl.innerText = `${campDoc.data().name} Codex`;
+                        if (titleEl && titleEl.innerText === 'Records Codex') titleEl.innerText = `${campDoc.data().name} Codex`;
                         document.title = `${campDoc.data().name} - Scripts`;
                     }
                 }
@@ -2483,7 +2483,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                         safeSet('type-toggle-scriptcasting', t.nav_scripts);
 
                         const titleEl = document.getElementById('main-campaign-title-label');
-                        if (titleEl) titleEl.innerText = t.book_scriptcodex || 'Script Codex';
+                        if (titleEl) titleEl.innerText = t.book_scriptcodex || 'Records Codex';
                         
                         window.renderVocationTabs();
                         window.setLevelFilter(currentLevelFilter);
@@ -2518,6 +2518,12 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
 
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'gearArtifacts'), (snap) => {
                     materialComponents = snap.docs.map(d => d.data()).filter(item => item.visibility === 'public' && item.type === 'Material Component');
+                });
+
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'progressionTables'), (snap) => {
+                    snap.docs.forEach(d => {
+                        progressionTablesData[d.id] = d.data();
+                    });
                 });
 
             } catch (error) {

@@ -179,15 +179,9 @@
                 
                 <hr class="border-t border-[rgba(139,90,43,0.2)] mb-4 mt-2">
 
-                <!-- Title, Levels & Action Buttons -->
-                <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
-                    
-                    <div class="flex flex-col md:flex-row items-center gap-4 w-full lg:w-auto justify-center lg:justify-start">
-                        <h2 id="view-title" class="text-2xl md:text-3xl font-heading text-gold font-bold uppercase tracking-widest drop-shadow whitespace-nowrap">All Records — Tricks</h2>
-                        <div class="flex flex-wrap items-center justify-center gap-1 max-w-xs md:max-w-md" id="level-tabs-container">
-                            <!-- Populated by JS based on Category/Vocation -->
-                        </div>
-                    </div>
+                <!-- Title & Action Buttons -->
+                <div class="flex flex-col lg:flex-row justify-between items-center gap-4 mb-4">
+                    <h2 id="view-title" class="text-2xl md:text-3xl font-heading text-gold font-bold uppercase tracking-widest drop-shadow text-center lg:text-left w-full lg:w-auto">All Records — Tricks</h2>
                     
                     <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-center lg:justify-end shrink-0">
                         <button id="btn-import" onclick="window.openImportModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-[10px] uppercase font-bold tracking-widest shadow-lg"><i class="fa-solid fa-download mr-2"></i>Codex Packs</button>
@@ -196,6 +190,11 @@
                         <button id="btn-wipe-codex" onclick="window.confirmWipeCodex()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-[10px] uppercase font-bold tracking-widest shadow-lg !border-red-900 !text-red-500 hover:!bg-red-900 hover:!text-white transition-colors"><i class="fa-solid fa-skull mr-2"></i>Wipe Codex</button>
                         <button id="btn-create-script" onclick="window.openScriptModal()" class="hidden fantasy-btn px-6 py-2.5 rounded text-[10px] uppercase font-bold tracking-widest shadow-lg"><i class="fa-solid fa-plus mr-2"></i>Inscribe</button>
                     </div>
+                </div>
+
+                <!-- Level Filters Row -->
+                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-1 w-full bg-black/30 p-2.5 rounded-lg border border-[rgba(139,90,43,0.15)] shadow-inner" id="level-tabs-container">
+                    <!-- Populated by JS based on Category/Vocation -->
                 </div>
             </div>
 
@@ -437,6 +436,22 @@
         </div>
     </div>
     
+    <!-- WIPE CODEX MODAL -->
+    <div id="wipe-codex-modal" class="modal-overlay hidden z-[995]">
+        <div class="modal-container !max-w-md text-center border-2 !border-red-600 !bg-wood shadow-[0_0_40px_rgba(220,38,38,0.4)]">
+            <i class="fa-solid fa-triangle-exclamation text-5xl text-red-600 mb-6 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]"></i>
+            <h2 class="font-heading text-2xl font-black text-red-500 uppercase tracking-widest mb-4">Wipe Codex</h2>
+            <p class="text-[15px] font-serif text-gray-300 mb-8 leading-relaxed">
+                Are you sure you would like to wipe all your records?<br>
+                <span class="text-red-400 font-bold">If so they will be gone forever.</span>
+            </p>
+            <div class="flex justify-center gap-4 font-heading mt-4">
+                <button onclick="document.getElementById('wipe-codex-modal').classList.add('hidden')" class="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-white px-4 transition-colors">Cancel</button>
+                <button onclick="window.executeWipeCodex()" class="bg-red-900 hover:bg-red-700 text-white px-6 py-2.5 rounded text-xs border border-red-500 font-bold uppercase tracking-widest shadow-lg transition-colors">Wipe All Records</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ADMIN DELETE REASON MODAL -->
     <div id="admin-delete-prompt-modal" class="modal-overlay hidden z-[990]">
         <div class="modal-container !max-w-md text-center border-2 !border-red-600 !bg-wood">
@@ -653,27 +668,28 @@
             if (activeRole !== 'dm') return;
             if (scripts.length === 0) return window.showToast("Codex is already empty.");
             
-            window.customConfirm("Are you absolutely sure you want to completely erase all Records in this Codex? This cannot be undone.", async (confirmed) => {
-                if (!confirmed) return;
+            document.getElementById('wipe-codex-modal').classList.remove('hidden');
+        };
+
+        window.executeWipeCodex = async () => {
+            document.getElementById('wipe-codex-modal').classList.add('hidden');
+            window.showToast("Wiping Codex...");
+            
+            try {
+                const batch = writeBatch(db);
+                const q = collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION);
+                const snap = await getDocs(q);
                 
-                window.showToast("Wiping Codex...");
+                snap.docs.forEach(d => {
+                    batch.delete(d.ref);
+                });
                 
-                try {
-                    const batch = writeBatch(db);
-                    const q = collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION);
-                    const snap = await getDocs(q);
-                    
-                    snap.docs.forEach(d => {
-                        batch.delete(d.ref);
-                    });
-                    
-                    await batch.commit();
-                    window.showToast("Codex wiped clean.");
-                } catch (err) {
-                    console.error(err);
-                    window.showToast("Failed to wipe Codex.");
-                }
-            });
+                await batch.commit();
+                window.showToast("Codex wiped clean.");
+            } catch (err) {
+                console.error(err);
+                window.showToast("Failed to wipe Codex.");
+            }
         };
 
         // --- HORIZONTAL DRAG & SCROLL FIX ---

@@ -69,6 +69,14 @@
         .level-tab:hover { background: #3d2a1f; color: #f1e5c5; border-color: #c5a059; }
         .level-tab.active { background: #7a1b1b; color: #f1e5c5; border-color: #c5a059; box-shadow: 0 0 10px rgba(122, 27, 27, 0.8), inset 0 0 5px rgba(255,255,255,0.2); transform: scale(1.1);}
 
+        .level-tab-wide { height: 28px; border-radius: 14px; background: #2c1e16; color: #888; border: 1px solid #555; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-weight: 900; font-size: 11px; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); margin: 2px; flex-shrink: 0; padding: 0 16px; white-space: nowrap;}
+        .level-tab-wide:hover { background: #3d2a1f; color: #f1e5c5; border-color: #c5a059; }
+        .level-tab-wide.active { background: #7a1b1b; color: #f1e5c5; border-color: #c5a059; box-shadow: 0 0 10px rgba(122, 27, 27, 0.8), inset 0 0 5px rgba(255,255,255,0.2); transform: scale(1.05);}
+
+        .prog-input { width: 100%; background: transparent; border: none; outline: none; border-bottom: 1px dashed transparent; text-align: center; font-family: 'Lora', serif; color: #2c1e16; transition: border-color 0.2s; }
+        .prog-input:focus { border-color: rgba(197, 160, 89, 0.5); background: rgba(255,255,255,0.2); }
+        .prog-input-left { text-align: left; }
+
         .script-card { background: rgba(255,255,255,0.4); border: 1px solid rgba(139, 90, 43, 0.4); box-shadow: inset 0 0 15px rgba(255,255,255,0.5), 0 4px 6px rgba(0,0,0,0.1); border-radius: 6px; padding: 20px; display: flex; flex-direction: column; position: relative; transition: all 0.2s; cursor: pointer; }
         .script-card:hover { border-color: #c5a059; box-shadow: inset 0 0 15px rgba(255,255,255,0.5), 0 8px 15px rgba(0,0,0,0.2); transform: translateY(-2px);}
         .script-card:active { transform: translateY(0); }
@@ -184,6 +192,7 @@
                     <h2 id="view-title" class="text-2xl md:text-3xl font-heading text-gold font-bold uppercase tracking-widest drop-shadow text-center lg:text-left w-full lg:w-auto">All Records — Tricks</h2>
                     
                     <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-center lg:justify-end shrink-0">
+                        <button id="btn-view-progression" onclick="window.openProgressionModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-[10px] uppercase font-bold tracking-widest shadow-lg border-indigo-700 text-indigo-400 hover:text-white hover:border-indigo-400"><i class="fa-solid fa-list-ol mr-2"></i>Progression</button>
                         <button id="btn-import" onclick="window.openImportModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-[10px] uppercase font-bold tracking-widest shadow-lg"><i class="fa-solid fa-download mr-2"></i>Codex Packs</button>
                         <button id="btn-publish-pack" onclick="window.openCreatePackModal()" class="hidden fantasy-btn-alt px-4 py-2.5 rounded text-[10px] uppercase font-bold tracking-widest shadow-lg border-indigo-700 text-indigo-400 hover:text-white hover:border-indigo-400"><i class="fa-solid fa-upload mr-2"></i>Publish Pack</button>
                         <button onclick="document.getElementById('definitions-modal').classList.remove('hidden')" class="fantasy-btn-alt px-4 py-2.5 rounded text-[10px] uppercase font-bold tracking-widest shadow-lg"><i class="fa-solid fa-book-open mr-2"></i>Definitions</button>
@@ -205,422 +214,36 @@
         </div>
     </div>
 
-    <!-- CAMPAIGN TERMINOLOGY MODAL (DM ONLY) -->
-    <div id="campaign-settings-modal" class="modal-overlay hidden z-[970]">
-        <div class="modal-container max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide p-8">
-            <h2 class="font-heading text-2xl font-black text-blood uppercase tracking-widest mb-2 border-b-2 border-gold pb-2 text-center">Campaign Terminology</h2>
-            <p class="text-xs font-serif text-ink italic mb-6 text-center">Rename the core pillars of your world. These names will update across all ledgers and navigation links.</p>
+    <div id="progression-modal" class="modal-overlay hidden z-[900]">
+        <div class="modal-container max-w-5xl max-h-[90vh] overflow-y-auto custom-scrollbar relative p-8 border-4 border-double border-gold/40 shadow-2xl" style="background-color: #f1e5c5; background-image: radial-gradient(circle at center, transparent 0%, rgba(200, 170, 120, 0.4) 100%), url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.05\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100\' height=\'100\' filter=\'url(%23noise)\' opacity=\'0.08\'/%3E%3C/svg%3E');">
             
-            <div class="space-y-8">
-                <div>
-                    <h3 class="font-heading text-sm font-bold text-ink uppercase mb-3 border-b border-gray-300 pb-1">Core Classifications</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div><label class="tiny-label">All Records</label><input type="text" id="term-nav_all_records" class="form-input" placeholder="All Records"></div>
-                        <div><label class="tiny-label">Combat Features</label><input type="text" id="term-nav_features" class="form-input" placeholder="Combat Features"></div>
-                        <div><label class="tiny-label">Spellcasting</label><input type="text" id="term-nav_scripts" class="form-input" placeholder="Scriptcasting"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="font-heading text-sm font-bold text-ink uppercase mb-3 border-b border-gray-300 pb-1">Vocations (Classes)</h3>
-                    
-                    <h4 class="text-[10px] font-bold text-gray-500 uppercase font-heading mb-2">Combat & Strategy (Features Only)</h4>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                        <div><label class="tiny-label">Barbarian</label><input type="text" id="term-class_vanguard" class="form-input" placeholder="Vanguard"></div>
-                        <div><label class="tiny-label">Fighter</label><input type="text" id="term-class_warrior" class="form-input" placeholder="Warrior"></div>
-                        <div><label class="tiny-label">Monk</label><input type="text" id="term-class_peacemaker" class="form-input" placeholder="Peacemaker"></div>
-                        <div><label class="tiny-label">Rogue</label><input type="text" id="term-class_scavenger" class="form-input" placeholder="Scavenger"></div>
-                    </div>
-
-                    <h4 class="text-[10px] font-bold text-gray-500 uppercase font-heading mb-2">Hybrid Paths (Features & Scripts)</h4>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                        <div><label class="tiny-label">Paladin</label><input type="text" id="term-class_heartbound" class="form-input" placeholder="Heartbound"></div>
-                        <div><label class="tiny-label">Ranger</label><input type="text" id="term-class_nomad" class="form-input" placeholder="Nomad"></div>
-                    </div>
-
-                    <h4 class="text-[10px] font-bold text-gray-500 uppercase font-heading mb-2">Pure Scriptcasting</h4>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div><label class="tiny-label">Druid</label><input type="text" id="term-class_warden" class="form-input" placeholder="Wilderness Warden"></div>
-                        <div><label class="tiny-label">Cleric</label><input type="text" id="term-class_chronicler" class="form-input" placeholder="Chronicler"></div>
-                        <div><label class="tiny-label">Bard</label><input type="text" id="term-class_orator" class="form-input" placeholder="Orator"></div>
-                        <div><label class="tiny-label">Sorcerer</label><input type="text" id="term-class_scriptweaver" class="form-input" placeholder="Scriptweaver"></div>
-                        <div><label class="tiny-label">Warlock</label><input type="text" id="term-class_wartouched" class="form-input" placeholder="War-Touched"></div>
-                        <div><label class="tiny-label">Wizard</label><input type="text" id="term-class_archivist" class="form-input" placeholder="Archivist"></div>
-                        <div><label class="tiny-label">Artificer</label><input type="text" id="term-class_fabricator" class="form-input" placeholder="Fabricator"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-4 font-heading mt-8 pt-4 border-t border-gold">
-                <button onclick="window.closeCampaignSettings()" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink px-4">Cancel</button>
-                <button onclick="window.saveCampaignSettings()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Save Terminology</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- COMPENDIUM IMPORT MODAL (DM ONLY) -->
-    <div id="import-modal" class="modal-overlay hidden z-[960]">
-        <div class="modal-container max-w-5xl text-center bg-wood !border-gray-600 shadow-2xl max-h-[85vh] overflow-y-auto scrollbar-hide">
-            <h2 class="font-heading text-3xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Codex Archives</h2>
-            <p class="text-sm font-serif text-gray-400 italic mb-8 mt-4">Browse and import script packs crafted by masters across the realms. <br>Warning: Importing a pack will add its contents to your current codex.</p>
+            <button onclick="document.getElementById('progression-modal').classList.add('hidden')" class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-blood transition-colors"><i class="fa-solid fa-times"></i></button>
             
-            <div id="import-loading" class="hidden text-gold mb-8"><i class="fa-solid fa-spinner fa-spin text-3xl"></i></div>
-            <div id="import-packs-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-left">
-                <!-- Packs populate here -->
+            <div class="mb-6">
+                <h2 class="font-heading text-3xl font-black text-ink uppercase tracking-widest flex items-center gap-2">Features <span class="text-blood italic font-serif capitalize">Progression</span></h2>
+                <p id="progression-subtitle" class="font-serif italic text-sm text-gray-600 mt-1">Class Name</p>
             </div>
 
-            <div class="flex justify-center">
-                <button onclick="window.closeImportModal()" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Close Menu</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- PACK DETAILS / MESSAGE BOARD MODAL -->
-    <div id="pack-details-modal" class="modal-overlay hidden z-[965]">
-        <div class="modal-container max-w-5xl bg-wood !border-gray-600 shadow-2xl flex flex-col md:flex-row gap-6 p-6 h-[85vh]">
-            <!-- Left Column: Details & Management -->
-            <div class="w-full md:w-1/2 flex flex-col overflow-y-auto scrollbar-hide pb-4">
-                <div class="flex justify-between items-start mb-4 border-b border-gray-700 pb-4">
-                    <div>
-                        <h2 id="pd-title" class="font-heading text-2xl font-black text-gold uppercase tracking-widest drop-shadow-md">Pack Name</h2>
-                        <p id="pd-author" class="text-xs font-serif text-gray-400 italic mt-1">By Author</p>
-                    </div>
-                    <div class="text-right flex flex-col items-end gap-1">
-                        <span id="pd-version" class="bg-indigo-900 text-indigo-200 border border-indigo-700 px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-heading font-black shadow-md">v1</span>
-                        <span id="pd-downloads" class="text-[10px] text-gray-500 font-bold tracking-widest font-heading" title="Times injected"><i class="fa-solid fa-download mr-1"></i>0</span>
-                    </div>
-                </div>
-                
-                <div class="flex-grow text-sm font-serif text-gray-300">
-                    <h3 class="font-heading text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Description</h3>
-                    <p id="pd-desc" class="mb-6">Description goes here</p>
-                    
-                    <h3 class="font-heading text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Latest Update Notes</h3>
-                    <p id="pd-notes" class="mb-4 bg-black/30 p-3 rounded border border-gray-800 text-xs italic">Initial publication.</p>
-                </div>
-
-                <div id="pd-admin-panel" class="hidden mt-auto border-t border-gray-700 pt-4 space-y-2 pb-4">
-                    <h3 class="font-heading text-xs font-bold text-red-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-crown mr-1"></i> Author Management</h3>
-                    <div class="flex gap-2">
-                        <button id="pd-btn-update" onclick="window.openUpdatePackModal()" class="flex-1 bg-indigo-900 hover:bg-indigo-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-indigo-700">Push Update</button>
-                        <button id="pd-btn-archive" onclick="window.deleteCurrentPack(false)" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-gray-600">Archive</button>
-                        <button id="pd-btn-unarchive" onclick="window.unarchiveCurrentPack()" class="hidden flex-1 bg-green-900 hover:bg-green-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-green-700">Unarchive</button>
-                        <button id="pd-admin-perm-delete" onclick="window.deleteCurrentPack(true)" class="flex-1 bg-red-900 hover:bg-red-800 text-white py-2 rounded text-[10px] uppercase tracking-widest font-heading font-bold transition-colors border border-red-700">Full Delete</button>
-                    </div>
-                </div>
-
-                <div class="mt-auto pt-4 border-t border-gray-700">
-                    <button id="pd-btn-import" onclick="window.confirmImportPack()" class="w-full fantasy-btn py-2 rounded text-xs shadow-lg">Inject into Codex</button>
-                    <button onclick="window.closePackDetails()" class="w-full mt-3 text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white py-2">Close Details</button>
-                </div>
-            </div>
-
-            <!-- Right Column: Discussion Board -->
-            <div class="w-full md:w-1/2 flex flex-col border-t md:border-t-0 md:border-l border-gray-700 pt-6 md:pt-0 md:pl-6 h-[40vh] md:h-auto">
-                <h3 class="font-heading text-lg font-bold text-white uppercase tracking-widest mb-4 border-b border-gray-700 pb-2 flex justify-between items-center">
-                    <span><i class="fa-solid fa-comments mr-2 text-gold"></i>Discussion</span>
-                </h3>
-                
-                <div id="pd-messages-container" class="flex-grow overflow-y-auto mb-4 pr-2 space-y-3 scrollbar-hide bg-black/20 rounded p-2 border border-gray-800">
-                    <!-- Messages go here -->
-                </div>
-
-                <div class="mt-auto flex gap-2">
-                    <input type="text" id="pd-new-message" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold text-xs w-full" placeholder="Ask a question or leave feedback...">
-                    <button onclick="window.postPackMessage()" class="bg-gray-800 hover:bg-gray-700 text-gold px-4 py-2 rounded text-xs font-bold uppercase tracking-widest font-heading transition-colors border border-gray-600"><i class="fa-solid fa-paper-plane"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- UPDATE PACK MODAL (DM ONLY) -->
-    <div id="pack-update-modal" class="modal-overlay hidden z-[980]">
-        <div class="modal-container max-w-lg text-center bg-wood !border-gray-600 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h2 class="font-heading text-xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Edit / Push Update</h2>
-            <p class="text-xs font-serif text-gray-400 italic mb-6 mt-4">Modify the pack's details and overwrite it with your current Codex records to release a new version.</p>
-            
-            <div class="space-y-4 text-left mb-8">
-                <div>
-                    <label class="tiny-label text-gray-400">Pack Name</label>
-                    <input type="text" id="pack-update-name" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold">
-                </div>
-                <div>
-                    <label class="tiny-label text-gray-400 mt-2">Description</label>
-                    <textarea id="pack-update-desc" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-20 resize-none"></textarea>
-                </div>
-                <div>
-                    <label class="tiny-label text-gray-400 mt-2">Pack Icon</label>
-                    <div class="flex flex-wrap gap-2 justify-start mt-2" id="pack-update-icon-selectors">
-                        <button class="icon-selector-btn active" data-icon="fa-solid fa-book-journal-whills" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-book-journal-whills"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-dragon" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-dragon"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-wand-sparkles" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-wand-sparkles"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-brands fa-jedi-order" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-brands fa-jedi-order"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-khanda" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-khanda"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-flask" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-flask"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-skull" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-skull"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-shield-halved" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-shield-halved"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-scroll" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-scroll"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-fire-flame-curved" onclick="window.selectPackIcon(this, 'pack-update-selected-icon')"><i class="fa-solid fa-fire-flame-curved"></i></button>
-                    </div>
-                    <input type="hidden" id="pack-update-selected-icon" value="fa-solid fa-book-journal-whills">
-                </div>
-                <div>
-                    <label class="tiny-label text-gray-400 mt-2">Update Notes / Changelog</label>
-                    <textarea id="pack-update-notes" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-16 resize-none" placeholder="What changed in this version?"></textarea>
-                </div>
-            </div>
-
-            <div class="flex justify-center gap-4 font-heading">
-                <button onclick="document.getElementById('pack-update-modal').classList.add('hidden')" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Cancel</button>
-                <button onclick="window.executePackUpdate()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Confirm Update</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- PUBLISH PACK MODAL (DM ONLY) -->
-    <div id="create-pack-modal" class="modal-overlay hidden z-[960]">
-        <div class="modal-container max-w-lg text-center bg-wood !border-gray-600 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h2 class="font-heading text-2xl font-black text-gold uppercase tracking-widest mb-2 border-b-2 border-gray-700 pb-4">Publish Script Pack</h2>
-            <p class="text-xs font-serif text-gray-400 italic mb-6 mt-4">Bundle your current codex into a reusable pack for yourself or the public.</p>
-            
-            <div class="space-y-4 text-left mb-8">
-                <div>
-                    <label class="tiny-label text-gray-400">Pack Name</label>
-                    <input type="text" id="pack-name" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold" placeholder="e.g. Dark Fantasy Magic">
-                </div>
-                <div>
-                    <label class="tiny-label text-gray-400 mt-2">Description</label>
-                    <textarea id="pack-desc" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold h-20 resize-none" placeholder="What kind of records does this contain?"></textarea>
-                </div>
-                <div>
-                    <label class="tiny-label text-gray-400 mt-2">Pack Icon</label>
-                    <div class="flex flex-wrap gap-2 justify-start mt-2" id="pack-icon-selectors">
-                        <button class="icon-selector-btn active" data-icon="fa-solid fa-book-journal-whills" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-book-journal-whills"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-dragon" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-dragon"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-wand-sparkles" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-wand-sparkles"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-brands fa-jedi-order" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-brands fa-jedi-order"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-khanda" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-khanda"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-flask" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-flask"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-skull" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-skull"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-shield-halved" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-shield-halved"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-scroll" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-scroll"></i></button>
-                        <button class="icon-selector-btn" data-icon="fa-solid fa-fire-flame-curved" onclick="window.selectPackIcon(this, 'pack-selected-icon')"><i class="fa-solid fa-fire-flame-curved"></i></button>
-                    </div>
-                    <input type="hidden" id="pack-selected-icon" value="fa-solid fa-book-journal-whills">
-                </div>
-                <div>
-                    <label class="tiny-label text-gray-400 mt-2">Visibility</label>
-                    <select id="pack-vis" class="form-input text-white bg-black/50 border-gray-600 focus:border-gold">
-                        <option value="private">Private (Only usable in your own realms)</option>
-                        <option value="public">Public (Available to all DMs)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="flex justify-center gap-4 font-heading">
-                <button onclick="document.getElementById('create-pack-modal').classList.add('hidden')" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Cancel</button>
-                <button onclick="window.savePack()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Publish Bundle</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- CUSTOM CONFIRM MODAL -->
-    <div id="confirm-modal" class="modal-overlay hidden z-[990]">
-        <div class="modal-container !max-w-sm text-center !p-8">
-            <h2 class="font-heading text-2xl font-black text-blood uppercase tracking-widest mb-4">Confirm Action</h2>
-            <p class="text-sm font-serif text-ink mb-8" id="confirm-modal-text">Are you sure you wish to proceed?</p>
-            <div class="flex justify-center gap-4 font-heading">
-                <button onclick="window.closeConfirmModal(false)" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink px-4">Cancel</button>
-                <button onclick="window.closeConfirmModal(true)" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg bg-red-800">Proceed</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- WIPE CODEX MODAL -->
-    <div id="wipe-codex-modal" class="modal-overlay hidden z-[995]">
-        <div class="modal-container !max-w-md text-center border-2 !border-red-600 !bg-wood shadow-[0_0_40px_rgba(220,38,38,0.4)]">
-            <i class="fa-solid fa-triangle-exclamation text-5xl text-red-600 mb-6 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]"></i>
-            <h2 class="font-heading text-2xl font-black text-red-500 uppercase tracking-widest mb-4">Wipe Codex</h2>
-            <p class="text-[15px] font-serif text-gray-300 mb-8 leading-relaxed">
-                Are you sure you would like to wipe all your records?<br>
-                <span class="text-red-400 font-bold">If so they will be gone forever.</span>
-            </p>
-            <div class="flex justify-center gap-4 font-heading mt-4">
-                <button onclick="document.getElementById('wipe-codex-modal').classList.add('hidden')" class="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-white px-4 transition-colors">Cancel</button>
-                <button onclick="window.executeWipeCodex()" class="bg-red-900 hover:bg-red-700 text-white px-6 py-2.5 rounded text-xs border border-red-500 font-bold uppercase tracking-widest shadow-lg transition-colors">Wipe All Records</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ADMIN DELETE REASON MODAL -->
-    <div id="admin-delete-prompt-modal" class="modal-overlay hidden z-[990]">
-        <div class="modal-container !max-w-md text-center border-2 !border-red-600 !bg-wood">
-            <h2 id="admin-del-title" class="font-heading text-2xl font-black text-red-500 uppercase tracking-widest mb-2 border-b-2 border-red-900 pb-2">Admin Delete Action</h2>
-            <p class="text-xs font-serif text-gray-400 italic mb-6">Leave an optional message for the Dungeon Master explaining why their Pack is being removed.</p>
-            
-            <textarea id="admin-del-reason" class="w-full bg-black/50 border border-gray-600 focus:border-red-500 text-white py-2 px-3 text-sm font-serif outline-none h-24 mb-6 rounded" placeholder="E.g. Violation of community guidelines, test campaign cleanup..."></textarea>
-            
-            <div class="flex justify-center gap-4 font-heading mt-4">
-                <button onclick="document.getElementById('admin-delete-prompt-modal').classList.add('hidden'); window.pendingAdminDelete = null;" class="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white px-4">Cancel</button>
-                <button onclick="window.executeAdminDelete()" class="bg-red-900 hover:bg-red-700 text-white px-6 py-2 rounded text-xs border border-red-500 font-bold uppercase tracking-widest shadow-lg transition-colors">Obliterate Record</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPT EDIT/CREATE MODAL (DM ONLY) -->
-    <div id="script-modal" class="modal-overlay hidden z-[950]">
-        <div class="modal-container max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide">
-            <h2 id="script-modal-title" class="font-heading text-2xl font-black text-blood uppercase tracking-widest mb-4 border-b-2 border-gold pb-2 text-center">Inscribe Entry</h2>
-            <input type="hidden" id="script-id">
-            
-            <div class="flex justify-center gap-2 mb-6" id="script-modal-type-toggle">
-                <button onclick="window.setScriptFormType('scriptcasting')" id="btn-form-script" class="px-4 py-1.5 rounded-l text-[10px] font-bold uppercase tracking-widest font-heading transition-colors bg-blood text-parchment border border-gold">Arcane Script</button>
-                <button onclick="window.setScriptFormType('features')" id="btn-form-feature" class="px-4 py-1.5 rounded-r text-[10px] font-bold uppercase tracking-widest font-heading transition-colors bg-[rgba(255,255,255,0.4)] border border-[rgba(139,90,43,0.4)] text-ink hover:bg-[rgba(197,160,89,0.2)]">Combat Feature</button>
-            </div>
-            
-            <input type="hidden" id="script-form-type" value="scriptcasting">
-
-            <div class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label id="label-name" class="tiny-label">Script Name</label><input type="text" id="script-name" class="form-input font-heading font-bold text-blood uppercase" placeholder="E.g. Aegis of Light"></div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label id="label-level" class="tiny-label">Level (0 = Trick)</label><input type="number" id="script-level" class="form-input text-center" placeholder="1" min="0" max="20"></div>
-                        <div id="field-school"><label class="tiny-label">School</label><input type="text" id="script-school" class="form-input" placeholder="Evocation"></div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div id="field-type"><label class="tiny-label">Type (Optional)</label><input type="text" id="script-type" class="form-input" placeholder="Ritual"></div>
-                    <div><label id="label-activation" class="tiny-label">Activation</label><input type="text" id="script-activation" class="form-input" placeholder="1 Action"></div>
-                    <div><label class="tiny-label">Range</label><input type="text" id="script-range" class="form-input" placeholder="60 feet"></div>
-                    <div><label class="tiny-label">Duration</label><input type="text" id="script-duration" class="form-input" placeholder="Instantaneous"></div>
-                </div>
-
-                <div id="field-comp">
-                    <label class="tiny-label">Components</label>
-                    <input type="text" id="script-comp" class="form-input" placeholder="V, S, M (a pinch of ash)">
-                </div>
-
-                <div>
-                    <label id="label-desc" class="tiny-label">Description (Use **bold** for emphasis)</label>
-                    <textarea id="script-desc" class="form-input h-48 leading-relaxed font-serif" placeholder="Describe the effects here..."></textarea>
-                </div>
-
-                <div id="field-scaling">
-                    <label class="tiny-label">At Higher Levels (Optional)</label>
-                    <textarea id="script-scaling" class="form-input h-20 leading-relaxed font-serif" placeholder="When you cast this at 2nd level or higher..."></textarea>
-                </div>
-
-                <div>
-                    <label id="label-lists" class="tiny-label">Authorized Vocations / Lists</label>
-                    <input type="text" id="script-lists" class="form-input italic text-gray-600" placeholder="Heartbound, Chronicler...">
-                </div>
-            </div>
-
-            <div class="flex justify-between items-center mt-8 pt-4 border-t border-gold font-heading">
-                <button id="script-delete-btn" onclick="window.requestDeleteScript()" class="hidden text-[10px] font-black uppercase text-blood hover:text-red-700 underline tracking-widest">Erase Entry</button>
-                <div class="flex gap-4 ml-auto">
-                    <button onclick="window.closeScriptModal()" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink">Cancel</button>
-                    <button onclick="window.saveScript()" class="fantasy-btn px-8 py-2 rounded text-xs shadow-lg">Save Record</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPT VIEW MODAL (BOOK VIEW) -->
-    <div id="script-view-modal" class="modal-overlay hidden z-[860]" onclick="if(event.target===this) window.closeViewModal()">
-        <div class="modal-container max-w-3xl max-h-[90vh] overflow-y-auto scrollbar-hide relative p-8 md:p-12 border-4 border-double border-gold/40 shadow-2xl" style="background-color: #f1e5c5; background-image: radial-gradient(circle at center, transparent 0%, rgba(200, 170, 120, 0.4) 100%), url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.05\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100\' height=\'100\' filter=\'url(%23noise)\' opacity=\'0.08\'/%3E%3C/svg%3E');">
-            
-            <button onclick="window.closeViewModal()" class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-blood transition-colors bg-black/5 rounded-full w-10 h-10 flex items-center justify-center border border-gold/30"><i class="fa-solid fa-times"></i></button>
-            
-            <div class="border-b-2 border-gold pb-4 mb-6 text-center">
-                <h2 id="view-modal-title" class="font-heading text-3xl md:text-4xl font-black text-blood uppercase tracking-widest drop-shadow-sm mb-2">Spell Name</h2>
-                <p id="view-modal-meta" class="font-serif italic text-sm text-ink/80 font-bold">Level 1 — Evocation</p>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-[rgba(139,90,43,0.05)] rounded border border-gold/30 text-sm font-serif shadow-inner" id="view-modal-grid">
-                <div><b id="view-modal-label-time" class="block text-blood font-heading uppercase text-[10px] mb-1">Activation</b><span id="view-modal-time">1 Action</span></div>
-                <div><b class="block text-blood font-heading uppercase text-[10px] mb-1">Range / Area</b><span id="view-modal-range">120 ft</span></div>
-                <div id="view-modal-comp-container"><b class="block text-blood font-heading uppercase text-[10px] mb-1">Components</b><span id="view-modal-comp">V, S</span></div>
-                <div><b class="block text-blood font-heading uppercase text-[10px] mb-1">Duration</b><span id="view-modal-duration">Instantaneous</span></div>
-            </div>
-
-            <div id="view-modal-desc" class="font-serif text-sm md:text-base text-ink leading-relaxed whitespace-pre-wrap mb-6">
-                Description goes here...
-            </div>
-
-            <div id="view-modal-higher-container" class="hidden border-t border-dashed border-gold/50 pt-6 mb-6">
-                <h3 class="font-heading text-blood font-bold text-sm uppercase mb-2">At Higher Levels</h3>
-                <div id="view-modal-higher" class="font-serif text-sm md:text-base text-ink leading-relaxed whitespace-pre-wrap"></div>
-            </div>
-
-            <div class="text-center border-t border-gold/30 pt-4 mt-8">
-                <p class="font-heading text-[10px] font-bold text-gray-500 uppercase tracking-widest">Authorized Vocations / Lists</p>
-                <p id="view-modal-lists" class="font-serif italic text-xs text-ink/70 mt-1">Universal</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- DEFINITIONS MODAL -->
-    <div id="definitions-modal" class="modal-overlay hidden z-[850]">
-        <div class="modal-container max-w-4xl max-h-[85vh] overflow-y-auto scrollbar-hide relative !p-0 flex flex-col">
-            <div class="sticky top-0 bg-[#f1e5c5] p-6 border-b-2 border-gold z-10 flex justify-between items-center shadow-md">
-                <div>
-                    <h2 class="font-heading text-2xl font-black text-blood uppercase tracking-widest leading-none">Codex Definitions</h2>
-                    <p class="text-xs font-serif text-ink italic mt-1">Foundational rules of magic and spellcasting.</p>
-                </div>
-                <div class="flex items-center gap-4">
-                    <button id="btn-edit-definitions" onclick="window.toggleDefinitionsEditMode(true)" class="hidden text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink"><i class="fa-solid fa-pen mr-1"></i>Edit</button>
-                    <button onclick="document.getElementById('definitions-modal').classList.add('hidden')" class="text-2xl text-gray-500 hover:text-blood transition-colors"><i class="fa-solid fa-times"></i></button>
-                </div>
-            </div>
-            
-            <!-- View Mode -->
-            <div id="definitions-view" class="p-6 md:p-8 space-y-4 font-serif text-[13px] text-ink leading-relaxed overflow-y-auto">
-                <!-- Rendered Markdown Content -->
-            </div>
-
-            <!-- Edit Mode -->
-            <div id="definitions-edit" class="hidden p-6 md:p-8 flex flex-col h-full bg-black/5">
-                <p class="text-xs font-serif italic text-gray-600 mb-2">Use Markdown formatting: ### for headers, **bold**, *italic*, and - for bullets.</p>
-                <textarea id="definitions-textarea" class="form-input flex-grow min-h-[400px] font-serif text-sm leading-relaxed mb-4 bg-white/70" placeholder="Enter codex definitions here..."></textarea>
-                <div class="flex justify-end gap-4 font-heading mt-auto pt-4 border-t border-gold/30">
-                    <button onclick="window.toggleDefinitionsEditMode(false)" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink px-4">Cancel</button>
-                    <button onclick="window.saveDefinitions()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Save Definitions</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TRANSFER SCRIPT MODAL -->
-    <div id="transfer-modal" class="modal-overlay hidden z-[900]">
-        <div class="modal-container !max-w-md text-center">
-            <h2 class="font-heading text-xl font-black text-blood uppercase tracking-widest mb-2 border-b-2 border-gold pb-2">Transfer Knowledge</h2>
-            <p class="text-xs font-serif text-ink italic mb-6">Select a character or vocation to inject this entry directly into their ledger.</p>
-            
-            <div class="space-y-4 mb-8">
-                <div>
-                    <label class="tiny-label text-left">To Character</label>
-                    <select id="transfer-char-select" class="form-input text-center text-sm font-bold uppercase font-heading cursor-pointer">
-                        <option value="">Select Target...</option>
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-[13px] font-serif border-collapse" id="progression-table">
+                    <thead>
+                        <tr class="text-[10px] text-gray-500 font-heading uppercase tracking-widest border-b-2 border-gold/40">
+                            <th class="py-3 text-center w-12 text-ink">Lvl</th>
+                            <th class="py-3 text-center w-16 text-ink">Prof.</th>
+                            <th class="py-3 text-left text-ink">Class Features</th>
+                            <th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h1" placeholder="Cust 1" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
+                            <th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h2" placeholder="Cust 2" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
+                            <th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h3" placeholder="Cust 3" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
+                        </tr>
+                    </thead>
+                    <tbody id="progression-table-body">
                         <!-- Populated by JS -->
-                    </select>
-                </div>
-                
-                <div class="transfer-or-divider text-xs font-heading text-blood font-black">-- OR --</div>
-                
-                <div class="transfer-voc-container">
-                    <label class="tiny-label text-left">To Vocation (Terminal Scripts/Features)</label>
-                    <select id="transfer-voc-select" class="form-input text-center text-sm font-bold uppercase font-heading cursor-pointer">
-                        <option value="">Select Vocation...</option>
-                        <!-- Populated by JS -->
-                    </select>
-                </div>
+                    </tbody>
+                </table>
             </div>
-
-            <div class="flex justify-center gap-4 font-heading">
-                <button onclick="document.getElementById('transfer-modal').classList.add('hidden')" class="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-ink px-4">Cancel</button>
-                <button onclick="window.executeTransfer()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Inject Record</button>
+            
+            <div class="flex justify-end mt-6 border-t border-gold/40 pt-4 hidden" id="progression-admin-actions">
+                <button onclick="window.saveProgressionTable()" class="fantasy-btn px-6 py-2 rounded text-xs shadow-lg">Save Progression</button>
             </div>
         </div>
     </div>
@@ -782,6 +405,8 @@
         let customDefinitions = null;
         let materialComponents = []; 
         
+        let progressionTablesData = {};
+
         let allFetchedPacks = [];
         let currentViewingPack = null;
         let packMessagesUnsubscribe = null;
@@ -850,14 +475,13 @@
             let html = '';
             
             if (isFeatureMode) {
-                let currLvlInt = parseInt(currentLevelFilter) || 1;
-                if (currLvlInt < 1) currentLevelFilter = '1';
-                if (currLvlInt > 20) currentLevelFilter = '20';
+                const FEATURE_GROUPS = ['1-4', '5-10', '11-16', '17-20'];
+                if (!FEATURE_GROUPS.includes(currentLevelFilter)) currentLevelFilter = '1-4';
 
-                for (let i = 1; i <= 20; i++) {
-                    const isActive = currentLevelFilter === i.toString() ? 'active' : '';
-                    html += `<button onclick="window.setLevelFilter('${i}')" class="level-tab ${isActive}" id="tab-lvl-${i}">${i}</button>`;
-                }
+                FEATURE_GROUPS.forEach(grp => {
+                    const isActive = currentLevelFilter === grp ? 'active' : '';
+                    html += `<button onclick="window.setLevelFilter('${grp}')" class="level-tab-wide ${isActive}" id="tab-lvl-${grp}">Lv. ${grp}</button>`;
+                });
             } else {
                 let minLvl = 0;
                 let maxLvl = 9;
@@ -904,7 +528,7 @@
 
                 let lvlTxt = "";
                 if (isFeatureMode) {
-                    lvlTxt = `Level ${lvl}`;
+                    lvlTxt = `Levels ${lvl}`;
                 } else {
                     lvlTxt = lvl === '0' ? 'Tricks' : `Lv. ${lvl}`;
                 }
@@ -928,6 +552,15 @@
             window.renderVocationTabs();
             window.renderLevelTabs();
             window.setLevelFilter(currentLevelFilter); 
+
+            const progBtn = document.getElementById('btn-view-progression');
+            if (progBtn) {
+                if (vocId !== 'All') {
+                    progBtn.classList.remove('hidden');
+                } else {
+                    progBtn.classList.add('hidden');
+                }
+            }
         };
 
         window.renderVocationTabs = () => {
@@ -1176,12 +809,25 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             const grid = document.getElementById('scripts-grid');
             if (!grid) return;
 
-            let visibleScripts = scripts.filter(s => (s.level || '0') === currentLevelFilter);
+            let visibleScripts = scripts;
             
             if (mainTypeFilter === 'features') {
                 visibleScripts = visibleScripts.filter(s => s.entryType === 'features');
             } else if (mainTypeFilter === 'scriptcasting') {
                 visibleScripts = visibleScripts.filter(s => s.entryType !== 'features');
+            }
+
+            let isFeatureMode = mainTypeFilter === 'features' || (currentVocationFilter !== 'All' && VOC_KEYS.find(v => v.id === currentVocationFilter)?.type === 'features');
+
+            if (isFeatureMode) {
+                const [minLvl, maxLvl] = currentLevelFilter.split('-').map(Number);
+                visibleScripts = visibleScripts.filter(s => {
+                    if (s.entryType !== 'features') return false;
+                    const l = parseInt(s.level) || 1;
+                    return l >= minLvl && l <= maxLvl;
+                });
+            } else {
+                visibleScripts = visibleScripts.filter(s => (s.level || '0') === currentLevelFilter && s.entryType !== 'features');
             }
 
             if (currentVocationFilter !== 'All') {
@@ -1310,7 +956,15 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 window.setScriptFormType(targetType);
 
                 document.getElementById('script-name').value = '';
-                document.getElementById('script-level').value = currentLevelFilter === '0' && targetType === 'features' ? '1' : currentLevelFilter;
+                
+                let defaultLvl = currentLevelFilter;
+                if (targetType === 'features') {
+                    if (defaultLvl === '0' || defaultLvl.includes('-')) {
+                        defaultLvl = defaultLvl.split('-')[0] || '1';
+                    }
+                }
+                document.getElementById('script-level').value = defaultLvl;
+                
                 document.getElementById('script-school').value = '';
                 document.getElementById('script-type').value = '';
                 document.getElementById('script-activation').value = '';
@@ -1857,6 +1511,116 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             window.pendingAdminDelete = null;
         };
 
+        window.openProgressionModal = () => {
+            if (currentVocationFilter === 'All') return window.showToast("Select a specific vocation first.");
+            
+            const voc = VOC_KEYS.find(v => v.id === currentVocationFilter);
+            const displayName = campaignSettings?.terms?.[voc.id] || voc.default;
+            
+            document.getElementById('progression-subtitle').innerText = displayName;
+            
+            const data = progressionTablesData[currentVocationFilter] || { customHeaders: ["RAGE", "DMG", "MASTERY"], rows: {} };
+            
+            const isDM = activeRole === 'dm';
+            document.getElementById('progression-admin-actions').classList.toggle('hidden', !isDM);
+            
+            const h1 = document.getElementById('prog-h1');
+            const h2 = document.getElementById('prog-h2');
+            const h3 = document.getElementById('prog-h3');
+            
+            h1.value = data.customHeaders?.[0] || '';
+            h2.value = data.customHeaders?.[1] || '';
+            h3.value = data.customHeaders?.[2] || '';
+
+            h1.disabled = !isDM; h2.disabled = !isDM; h3.disabled = !isDM;
+            if (!isDM) {
+                h1.parentElement.classList.toggle('hidden', !h1.value);
+                h2.parentElement.classList.toggle('hidden', !h2.value);
+                h3.parentElement.classList.toggle('hidden', !h3.value);
+            } else {
+                h1.parentElement.classList.remove('hidden');
+                h2.parentElement.classList.remove('hidden');
+                h3.parentElement.classList.remove('hidden');
+            }
+
+            const tbody = document.getElementById('progression-table-body');
+            let html = '';
+            
+            for (let i = 1; i <= 20; i++) {
+                const rData = data.rows?.[i] || {};
+                const profVal = rData.prof || `+${Math.ceil(i/4) + 1}`;
+                const featVal = rData.features || '';
+                const c1Val = rData.c1 || '';
+                const c2Val = rData.c2 || '';
+                const c3Val = rData.c3 || '';
+                
+                let tdC1 = '', tdC2 = '', tdC3 = '';
+                
+                if (isDM) {
+                    tdC1 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c1" value="${c1Val}" class="prog-input text-gray-700" /></td>`;
+                    tdC2 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c2" value="${c2Val}" class="prog-input text-gray-700" /></td>`;
+                    tdC3 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c3" value="${c3Val}" class="prog-input text-gray-700" /></td>`;
+                } else {
+                    if (h1.value) tdC1 = `<td class="py-2 text-center text-gray-700">${c1Val}</td>`;
+                    if (h2.value) tdC2 = `<td class="py-2 text-center text-gray-700">${c2Val}</td>`;
+                    if (h3.value) tdC3 = `<td class="py-2 text-center text-gray-700">${c3Val}</td>`;
+                }
+
+                html += `
+                <tr class="border-b border-gold/20 hover:bg-black/5 transition-colors">
+                    <td class="py-2 text-center text-blood font-bold font-heading">${i}</td>
+                    <td class="py-2 px-1 text-center font-bold text-gray-700">
+                        ${isDM ? `<input type="text" id="prog-r${i}-prof" value="${profVal}" class="prog-input text-gray-700 text-center font-bold" />` : profVal}
+                    </td>
+                    <td class="py-2 px-1 text-left text-ink">
+                        ${isDM ? `<input type="text" id="prog-r${i}-feat" value="${featVal}" class="prog-input prog-input-left text-ink" placeholder="Enter features..." />` : featVal}
+                    </td>
+                    ${tdC1}
+                    ${tdC2}
+                    ${tdC3}
+                </tr>`;
+            }
+            
+            tbody.innerHTML = html;
+            document.getElementById('progression-modal').classList.remove('hidden');
+        };
+
+        window.saveProgressionTable = async () => {
+            if (activeRole !== 'dm') return;
+            if (currentVocationFilter === 'All') return;
+
+            window.showToast("Saving Progression...");
+            
+            const data = {
+                customHeaders: [
+                    document.getElementById('prog-h1').value.trim(),
+                    document.getElementById('prog-h2').value.trim(),
+                    document.getElementById('prog-h3').value.trim()
+                ],
+                rows: {},
+                updatedAt: Date.now()
+            };
+            
+            for (let i = 1; i <= 20; i++) {
+                data.rows[i] = {
+                    prof: document.getElementById(`prog-r${i}-prof`).value.trim(),
+                    features: document.getElementById(`prog-r${i}-feat`).value.trim(),
+                    c1: document.getElementById(`prog-r${i}-c1`).value.trim(),
+                    c2: document.getElementById(`prog-r${i}-c2`).value.trim(),
+                    c3: document.getElementById(`prog-r${i}-c3`).value.trim()
+                };
+            }
+            
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'progressionTables', currentVocationFilter), data);
+                window.showToast("Progression Table Saved!");
+                document.getElementById('progression-modal').classList.add('hidden');
+            } catch (e) {
+                console.error(e);
+                window.showToast("Failed to save table.");
+            }
+        };
+
         window.openCreatePackModal = () => {
             if (activeRole !== 'dm') return;
             if (scripts.length === 0) return window.showToast("No records to bundle! Inscribe some first.");
@@ -2009,6 +1773,13 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'characters'), (snap) => {
                     characters = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 });
+
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'progressionTables'), (snap) => {
+                    progressionTablesData = {};
+                    snap.docs.forEach(d => {
+                        progressionTablesData[d.id] = d.data();
+                    });
+                }, (err) => console.error("Progression Tables Sync Error:", err));
 
                 const VOCATIONS_COLLECTION = `handbookVocations_${appId}`;
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', VOCATIONS_COLLECTION), (snap) => {

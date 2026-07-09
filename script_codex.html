@@ -1647,6 +1647,16 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
         };
 
         // --- PROGRESSION BUILDER ---
+        const escapeHtml = (str) => {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        };
+
         window.openProgressionModal = () => {
             if (currentVocationFilter === 'All') return window.showToast("Select a specific vocation first.");
             
@@ -1749,28 +1759,28 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             for (let i = 1; i <= 20; i++) {
                 const rData = data.rows?.[i] || {};
                 const profVal = rData.prof || `+${Math.ceil(i/4) + 1}`;
-                const featVal = rData.features || '';
-                const c1Val = rData.c1 || '';
-                const c2Val = rData.c2 || '';
-                const c3Val = rData.c3 || '';
-                const c4Val = rData.c4 || '';
+                const featVal = rData.features !== undefined ? rData.features : '';
+                const c1Val = rData.c1 !== undefined ? rData.c1 : '';
+                const c2Val = rData.c2 !== undefined ? rData.c2 : '';
+                const c3Val = rData.c3 !== undefined ? rData.c3 : '';
+                const c4Val = rData.c4 !== undefined ? rData.c4 : '';
                 
                 let tdC1 = '', tdC2 = '', tdC3 = '', tdC4 = '';
                 
                 if (isDM) {
-                    tdC1 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c1" value="${c1Val}" class="prog-input text-gray-700 font-bold" /></td>`;
-                    tdC2 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c2" value="${c2Val}" class="prog-input text-gray-700 font-bold" /></td>`;
-                    tdC3 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c3" value="${c3Val}" class="prog-input text-gray-700 font-bold" /></td>`;
+                    tdC1 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c1" value="${escapeHtml(c1Val)}" class="prog-input text-gray-700 font-bold" /></td>`;
+                    tdC2 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c2" value="${escapeHtml(c2Val)}" class="prog-input text-gray-700 font-bold" /></td>`;
+                    tdC3 = `<td class="py-2 px-1"><input type="text" id="prog-r${i}-c3" value="${escapeHtml(c3Val)}" class="prog-input text-gray-700 font-bold" /></td>`;
                     
                     let borderClass = currentVocationFilter === 'class_scriptweaver' && maxSlots > 0 ? 'border-l border-gold/20' : '';
-                    tdC4 = `<td class="py-2 px-1 ${borderClass}"><input type="text" id="prog-r${i}-c4" value="${c4Val}" class="prog-input text-gray-700 font-bold" /></td>`;
+                    tdC4 = `<td class="py-2 px-1 ${borderClass}"><input type="text" id="prog-r${i}-c4" value="${escapeHtml(c4Val)}" class="prog-input text-gray-700 font-bold" /></td>`;
                 } else {
-                    if (h1Val) tdC1 = `<td class="py-2 text-center text-gray-700 font-bold">${c1Val}</td>`;
-                    if (h2Val) tdC2 = `<td class="py-2 text-center text-gray-700 font-bold">${c2Val}</td>`;
-                    if (h3Val) tdC3 = `<td class="py-2 text-center text-gray-700 font-bold">${c3Val}</td>`;
+                    if (h1Val) tdC1 = `<td class="py-2 text-center text-gray-700 font-bold">${escapeHtml(c1Val)}</td>`;
+                    if (h2Val) tdC2 = `<td class="py-2 text-center text-gray-700 font-bold">${escapeHtml(c2Val)}</td>`;
+                    if (h3Val) tdC3 = `<td class="py-2 text-center text-gray-700 font-bold">${escapeHtml(c3Val)}</td>`;
                     
                     let borderClass = currentVocationFilter === 'class_scriptweaver' && maxSlots > 0 ? 'border-l border-gold/20' : '';
-                    if (h4Val) tdC4 = `<td class="py-2 text-center text-gray-700 font-bold ${borderClass}">${c4Val}</td>`;
+                    if (h4Val) tdC4 = `<td class="py-2 text-center text-gray-700 font-bold ${borderClass}">${escapeHtml(c4Val)}</td>`;
                 }
 
                 let slotCells = '';
@@ -1789,9 +1799,9 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                         else cellClass += ` bg-transparent`;
 
                         if (isDM) {
-                            slotCells += `<td class="${cellClass}"><input type="text" id="prog-r${i}-s${s}" value="${slotVal}" class="prog-input text-gray-700 font-bold text-center w-8" placeholder="-" /></td>`;
+                            slotCells += `<td class="${cellClass}"><input type="text" id="prog-r${i}-s${s}" value="${escapeHtml(slotVal)}" class="prog-input text-gray-700 font-bold text-center w-8" placeholder="-" /></td>`;
                         } else {
-                            slotCells += `<td class="${cellClass}">${slotVal || '<span class="text-gray-300 font-normal">·</span>'}</td>`;
+                            slotCells += `<td class="${cellClass}">${escapeHtml(slotVal) || '<span class="text-gray-300 font-normal">·</span>'}</td>`;
                         }
                     }
                 }
@@ -1802,10 +1812,10 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 <tr class="border-b border-gold/20 hover:bg-black/5 transition-colors ${rowBg}">
                     <td class="py-2 text-center text-blood font-bold font-heading">${i}</td>
                     <td class="py-2 px-1 text-center font-bold text-gray-700">
-                        ${isDM ? `<input type="text" id="prog-r${i}-prof" value="${profVal}" class="prog-input text-gray-700 text-center font-bold" />` : profVal}
+                        ${isDM ? `<input type="text" id="prog-r${i}-prof" value="${escapeHtml(profVal)}" class="prog-input text-gray-700 text-center font-bold" />` : escapeHtml(profVal)}
                     </td>
                     <td class="py-2 px-1 text-left text-ink align-middle">
-                        ${isDM ? `<input type="text" id="prog-r${i}-feat" value="${featVal}" oninput="window.refreshFeatureLinks(${i})" class="prog-input prog-input-left text-ink font-bold mb-1" placeholder="Enter features (comma separated)..." />` : ''}
+                        ${isDM ? `<input type="text" id="prog-r${i}-feat" value="${escapeHtml(featVal)}" oninput="window.refreshFeatureLinks(${i})" class="prog-input prog-input-left text-ink font-bold mb-1" placeholder="Enter features (comma separated)..." />` : ''}
                         <div id="prog-r${i}-links" class="flex flex-wrap items-center pt-0.5">
                             ${window.generateFeatureLinks(featVal, currentVocationFilter, i, isCaster)}
                         </div>
@@ -1931,12 +1941,17 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 }
             }
 
+            const safeVal = (id) => {
+                const el = document.getElementById(id);
+                return el ? el.value.trim() : '';
+            };
+
             const data = {
                 customHeaders: [
-                    document.getElementById('prog-h1')?.value.trim() || '',
-                    document.getElementById('prog-h2')?.value.trim() || '',
-                    document.getElementById('prog-h3')?.value.trim() || '',
-                    document.getElementById('prog-h4')?.value.trim() || ''
+                    safeVal('prog-h1'),
+                    safeVal('prog-h2'),
+                    safeVal('prog-h3'),
+                    safeVal('prog-h4')
                 ],
                 rows: {},
                 featureDetails: progressionTablesData[currentVocationFilter]?.featureDetails || {}, 
@@ -1945,17 +1960,17 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             
             for (let i = 1; i <= 20; i++) {
                 data.rows[i] = {
-                    prof: document.getElementById(`prog-r${i}-prof`)?.value.trim() || '',
-                    features: document.getElementById(`prog-r${i}-feat`)?.value.trim() || '',
-                    c1: document.getElementById(`prog-r${i}-c1`)?.value.trim() || '',
-                    c2: document.getElementById(`prog-r${i}-c2`)?.value.trim() || '',
-                    c3: document.getElementById(`prog-r${i}-c3`)?.value.trim() || '',
-                    c4: document.getElementById(`prog-r${i}-c4`)?.value.trim() || ''
+                    prof: safeVal(`prog-r${i}-prof`),
+                    features: safeVal(`prog-r${i}-feat`),
+                    c1: safeVal(`prog-r${i}-c1`),
+                    c2: safeVal(`prog-r${i}-c2`),
+                    c3: safeVal(`prog-r${i}-c3`),
+                    c4: safeVal(`prog-r${i}-c4`)
                 };
                 
                 if (maxSlots > 0) {
                     for(let s = 1; s <= maxSlots; s++) {
-                        data.rows[i][`s${s}`] = document.getElementById(`prog-r${i}-s${s}`)?.value.trim() || '';
+                        data.rows[i][`s${s}`] = safeVal(`prog-r${i}-s${s}`);
                     }
                 }
             }
@@ -2465,7 +2480,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                         safeSet('type-toggle-scriptcasting', t.nav_scripts);
 
                         const titleEl = document.getElementById('main-campaign-title-label');
-                        if (titleEl) titleEl.innerText = t.book_scriptcodex || 'Script Codex';
+                        if (titleEl) titleEl.innerText = t.book_scriptcodex || 'Records Codex';
                         
                         window.renderVocationTabs();
                         window.setLevelFilter(currentLevelFilter);

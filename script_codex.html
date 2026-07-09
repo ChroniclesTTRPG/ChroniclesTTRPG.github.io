@@ -1675,18 +1675,20 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             }
             document.getElementById('progression-title').innerHTML = titleHtml;
 
-            let defaultHeaders = ["RAGE", "DMG", "MASTERY", ""];
-            if (currentVocationFilter === 'class_warrior') defaultHeaders = ["2ND WIND", "MASTERY", "", ""];
-            else if (currentVocationFilter === 'class_vanguard') defaultHeaders = ["RAGE", "DMG", "MASTERY", ""];
+            let defaultHeaders = ["", "", "", ""];
+            if (currentVocationFilter === 'class_vanguard') defaultHeaders = ["RAGE", "DMG", "MASTERY", ""];
+            else if (currentVocationFilter === 'class_warrior') defaultHeaders = ["2ND WIND", "MASTERY", "", ""];
             else if (currentVocationFilter === 'class_peacemaker') defaultHeaders = ["MA DIE", "FOCUS", "SPEED", ""];
             else if (currentVocationFilter === 'class_scavenger') defaultHeaders = ["SNEAK ATTACK", "", "", ""];
             else if (currentVocationFilter === 'class_nomad') defaultHeaders = ["FE", "PREP.", "", ""];
+            else if (currentVocationFilter === 'class_heartbound') defaultHeaders = ["CD", "PREP.", "", ""];
             else if (currentVocationFilter === 'class_chronicler') defaultHeaders = ["CD", "CANT.", "PREP.", ""];
             else if (currentVocationFilter === 'class_warden') defaultHeaders = ["WS", "CANT.", "PREP.", ""];
+            else if (currentVocationFilter === 'class_orator') defaultHeaders = ["INSP.", "CANT.", "PREP.", ""];
             else if (currentVocationFilter === 'class_scriptweaver') defaultHeaders = ["SP", "CANT.", "PREP.", "META"];
             else if (currentVocationFilter === 'class_wartouched') defaultHeaders = ["INVOC.", "ARC.", "CANT.", "PREP."];
             else if (currentVocationFilter === 'class_archivist') defaultHeaders = ["BOOK", "CANT.", "PREP.", ""];
-            else if (currentVocationFilter === 'class_orator') defaultHeaders = ["INSP.", "CANT.", "PREP.", ""];
+            else if (currentVocationFilter === 'class_fabricator') defaultHeaders = ["INFUS.", "CANT.", "PREP.", ""];
             else if (isCaster) defaultHeaders = ["CANT.", "PREP.", "", ""];
             
             const data = progressionTablesData[currentVocationFilter] || { customHeaders: defaultHeaders, rows: {} };
@@ -1702,9 +1704,9 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             let maxSlots = 0;
             if (isCaster) {
                 if (['class_heartbound', 'class_nomad', 'class_fabricator', 'class_wartouched'].includes(currentVocationFilter)) {
-                    maxSlots = 5; // Half-casters and Pact Magic
+                    maxSlots = 5; 
                 } else {
-                    maxSlots = 9; // Full-casters
+                    maxSlots = 9; 
                 }
             }
 
@@ -1713,24 +1715,24 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 <tr class="text-[10px] text-gray-500 font-heading uppercase tracking-widest border-b-2 border-gold/40">
                     <th class="py-3 text-center w-12 text-ink">Lvl</th>
                     <th class="py-3 text-center w-16 text-ink">Prof.</th>
-                    <th class="py-3 text-left text-ink">Class Features</th>
+                    <th class="py-3 text-left text-ink min-w-[200px]">Class Features</th>
             `;
 
             if (isDM) {
                 theadHtml += `
-                    <th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h1" value="${h1Val}" placeholder="Cust 1" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
-                    <th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h2" value="${h2Val}" placeholder="Cust 2" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
-                    <th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h3" value="${h3Val}" placeholder="Cust 3" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
+                    <th class="py-3 text-center w-20 text-ink"><input type="text" id="prog-h1" value="${escapeHtml(h1Val)}" placeholder="Cust 1" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
+                    <th class="py-3 text-center w-20 text-ink"><input type="text" id="prog-h2" value="${escapeHtml(h2Val)}" placeholder="Cust 2" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
+                    <th class="py-3 text-center w-20 text-ink"><input type="text" id="prog-h3" value="${escapeHtml(h3Val)}" placeholder="Cust 3" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>
                 `;
                 if (currentVocationFilter !== 'class_scriptweaver') {
-                    theadHtml += `<th class="py-3 text-center w-24 text-ink"><input type="text" id="prog-h4" value="${h4Val}" placeholder="Cust 4" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>`;
+                    theadHtml += `<th class="py-3 text-center w-20 text-ink"><input type="text" id="prog-h4" value="${escapeHtml(h4Val)}" placeholder="Cust 4" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>`;
                 }
             } else {
-                if (h1Val) theadHtml += `<th class="py-3 text-center w-24 text-ink">${h1Val}</th>`;
-                if (h2Val) theadHtml += `<th class="py-3 text-center w-24 text-ink">${h2Val}</th>`;
-                if (h3Val) theadHtml += `<th class="py-3 text-center w-24 text-ink">${h3Val}</th>`;
+                if (h1Val) theadHtml += `<th class="py-3 text-center w-20 text-ink">${escapeHtml(h1Val)}</th>`;
+                if (h2Val) theadHtml += `<th class="py-3 text-center w-20 text-ink">${escapeHtml(h2Val)}</th>`;
+                if (h3Val) theadHtml += `<th class="py-3 text-center w-20 text-ink">${escapeHtml(h3Val)}</th>`;
                 if (currentVocationFilter !== 'class_scriptweaver') {
-                    if (h4Val) theadHtml += `<th class="py-3 text-center w-24 text-ink">${h4Val}</th>`;
+                    if (h4Val) theadHtml += `<th class="py-3 text-center w-20 text-ink">${escapeHtml(h4Val)}</th>`;
                 }
             }
 
@@ -1743,9 +1745,9 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
 
             if (currentVocationFilter === 'class_scriptweaver') {
                 if (isDM) {
-                    theadHtml += `<th class="py-3 text-center w-24 text-ink ${maxSlots > 0 ? 'border-l border-gold/20' : ''}"><input type="text" id="prog-h4" value="${h4Val}" placeholder="Cust 4" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>`;
+                    theadHtml += `<th class="py-3 text-center w-20 text-ink ${maxSlots > 0 ? 'border-l border-gold/20' : ''}"><input type="text" id="prog-h4" value="${escapeHtml(h4Val)}" placeholder="Cust 4" class="w-full bg-transparent text-center uppercase outline-none font-bold placeholder-gray-400" /></th>`;
                 } else {
-                    if (h4Val) theadHtml += `<th class="py-3 text-center w-24 text-ink ${maxSlots > 0 ? 'border-l border-gold/20' : ''}">${h4Val}</th>`;
+                    if (h4Val) theadHtml += `<th class="py-3 text-center w-20 text-ink ${maxSlots > 0 ? 'border-l border-gold/20' : ''}">${escapeHtml(h4Val)}</th>`;
                 }
             }
             
@@ -1839,9 +1841,9 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
             return features.map(cleanF => {
                 const safeName = cleanF.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 if (isClickable) {
-                    return `<a href="#" onclick="window.openFeatureDetail('${vocId}', ${level}, '${safeName}'); return false;" class="text-blood hover:text-red-700 underline decoration-gold/50 decoration-dashed transition-colors cursor-pointer mr-1 whitespace-nowrap leading-tight text-[13px] font-bold">${cleanF}</a>`;
+                    return `<a href="#" onclick="window.openFeatureDetail('${vocId}', ${level}, '${safeName}'); return false;" class="text-blood hover:text-red-700 underline decoration-gold/50 decoration-dashed transition-colors cursor-pointer mr-1 whitespace-nowrap leading-tight text-[13px] font-bold">${escapeHtml(cleanF)}</a>`;
                 } else {
-                    return `<span class="text-ink font-bold mr-1 whitespace-nowrap leading-tight text-[13px]">${cleanF}</span>`;
+                    return `<span class="text-ink font-bold mr-1 whitespace-nowrap leading-tight text-[13px]">${escapeHtml(cleanF)}</span>`;
                 }
             }).join('<span class="text-gray-400 mr-2 text-[13px]">,</span>');
         };
@@ -1941,6 +1943,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                 }
             }
 
+            // SAFE EXTRACTOR: Ensures hidden columns don't crash the script
             const safeVal = (id) => {
                 const el = document.getElementById(id);
                 return el ? el.value.trim() : '';
@@ -2480,7 +2483,7 @@ Every Script belongs to a **Tier** from 0 to 9. A Script's Tier represents the c
                         safeSet('type-toggle-scriptcasting', t.nav_scripts);
 
                         const titleEl = document.getElementById('main-campaign-title-label');
-                        if (titleEl) titleEl.innerText = t.book_scriptcodex || 'Records Codex';
+                        if (titleEl) titleEl.innerText = t.book_scriptcodex || 'Script Codex';
                         
                         window.renderVocationTabs();
                         window.setLevelFilter(currentLevelFilter);

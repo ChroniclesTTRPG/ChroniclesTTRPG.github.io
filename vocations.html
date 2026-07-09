@@ -59,13 +59,16 @@
         .sidebar-link:hover { background: rgba(0,0,0,0.8); border-color: #c5a059; transform: translateX(4px); }
         .sidebar-link.active-page { background: #7a1b1b; border-color: #c5a059; color: white; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
 
+        .toc-link { display: block; padding: 12px 20px; color: #a0a0a0; font-family: 'Lora', serif; font-size: 13px; text-decoration: none; transition: all 0.2s ease; border-left: 2px solid transparent; cursor: pointer; }
+        .toc-link:hover { color: #f1e5c5; background: rgba(255, 255, 255, 0.03); border-left-color: rgba(197, 160, 89, 0.5); }
+        .toc-link.active { color: #c5a059; background: rgba(197, 160, 89, 0.05); border-left-color: #c5a059; font-weight: 600; }
+
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2c1e16; border: 1px solid #c5a059; color: #f1e5c5; padding: 12px 24px; border-radius: 4px; z-index: 100000; pointer-events: none; opacity: 0; transition: opacity 0.3s; font-family: 'Cinzel', serif; box-shadow: 0 10px 20px rgba(0,0,0,0.8); }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 200000; padding: 20px; backdrop-filter: blur(4px); }
         
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* GRID VIEW */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; padding: 10px 0; }
 
         .background-card {
@@ -96,12 +99,10 @@
         .reorder-btn { width: 24px; height: 24px; color: #c5a059; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .reorder-btn:hover:not(:disabled) { color: #f1e5c5; transform: scale(1.1); }
 
-        /* SMOOTH VIEW TRANSITIONS */
         .view-section { transition: opacity 0.4s ease-in-out, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .view-hidden { opacity: 0; pointer-events: none; position: absolute; transform: translateY(15px); width: calc(100% - 120px); }
         .view-active { opacity: 1; pointer-events: auto; position: relative; transform: translateY(0); }
 
-        /* DM EDITABLE STATES */
         .dm-active-edit .dm-editable { 
             background: rgba(255, 255, 255, 0.3); 
             outline: 1px dashed rgba(139, 90, 43, 0.5); 
@@ -118,7 +119,6 @@
             content: "Click to add entry..."; color: #888; font-style: italic; pointer-events: none; display: block;
         }
 
-        /* TABLES */
         .prog-table { width: 100%; border-collapse: separate; border-spacing: 0; font-family: 'Lora', serif; font-size: 13px; margin: 25px 0; background: rgba(255,255,255,0.5); border: 2px solid #c5a059; border-radius: 4px; overflow: hidden; }
         .prog-table th { font-family: 'Cinzel', serif; text-transform: uppercase; font-size: 11px; color: #f1e5c5; background: #2c1e16; padding: 14px 12px; text-align: left; font-weight: 900; letter-spacing: 1px; border-bottom: 2px solid #7a1b1b; }
         .prog-table td { padding: 12px; border-bottom: 1px dashed rgba(139, 90, 43, 0.3); border-right: 1px dashed rgba(139, 90, 43, 0.3); color: #2c1e16; }
@@ -126,7 +126,6 @@
         .prog-table th:last-child, .prog-table td:last-child { border-right: none; }
         .prog-table tr:last-child td { border-bottom: none; }
 
-        /* TAB NAVIGATION STYLING */
         .vocation-tab-nav {
             display: flex;
             background: linear-gradient(to right, #2c1e16, #1a110b);
@@ -173,7 +172,6 @@
             box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
         }
         
-        /* SPECIFIC VIEW SECTIONS */
         .tab-section {
             display: none;
             animation: fadeIn 0.4s ease-in-out;
@@ -194,7 +192,6 @@
 
     <div id="toast" class="toast">Message</div>
 
-    <!-- Initial Loading State -->
     <div id="initial-loading" class="flex flex-col items-center justify-center h-screen fade-in w-full text-center">
         <i class="fa-solid fa-compass fa-spin text-6xl text-gold mb-6"></i>
         <h2 class="font-heading text-2xl text-parchment animate-pulse">Charting the Tomes...</h2>
@@ -203,7 +200,6 @@
     <!-- MAIN DASHBOARD -->
     <div id="dashboard-screen" class="min-h-screen p-4 md:p-8 hidden w-full">
         <div class="max-w-[1400px] mx-auto">
-            <!-- HEADER & NAVIGATION -->
             <header class="flex flex-col items-center md:items-start md:flex-row justify-between mb-8 border-b border-gray-700 pb-6 gap-6 relative">
                 <div class="absolute -bottom-1.5 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-50"></div>
                 
@@ -235,17 +231,30 @@
                 </div>
             </header>
 
-            <!-- HANDBOOK SPLIT LAYOUT -->
             <div class="flex flex-col lg:flex-row gap-8 items-start">
                 
-                <!-- LEFT SIDEBAR: Library Navigation -->
-                <div class="w-full lg:w-64 flex-shrink-0">
-                    <div class="bg-black/60 border border-gray-700 rounded-lg p-4 sticky top-4">
+                <!-- LEFT SIDEBAR: Navigational Columns -->
+                <div class="w-full lg:w-64 flex-shrink-0 flex flex-col gap-4">
+                    
+                    <!-- Main Library Navigation (Visible on Grid View) -->
+                    <div id="library-nav-wrapper" class="bg-black/60 border border-gray-700 rounded-lg p-4 sticky top-4 transition-all">
                         <h2 class="text-gold font-heading font-bold text-lg mb-4 text-center border-b border-gray-700 pb-2">The Archives</h2>
                         <nav id="library-nav" class="flex flex-col">
                             <!-- Links generated dynamically by JS -->
                         </nav>
                     </div>
+
+                    <!-- Vocation TOC Sidebar (Visible on Details View) -->
+                    <div id="vocation-toc-wrapper" class="hidden bg-[#150f0a] border border-gold/30 rounded shadow-[0_4px_20px_rgba(0,0,0,0.8)] sticky top-4 overflow-hidden">
+                        <div class="p-5 border-b border-gold/20 pb-4 bg-gradient-to-b from-[#1a110b] to-[#150f0a]">
+                            <div id="toc-source" class="font-heading text-gold tracking-[0.2em] uppercase text-[10px] font-bold mb-2">D&D 2024</div>
+                            <div id="toc-name" class="font-heading text-[#e8e0cd] tracking-widest uppercase text-xl line-clamp-1">BARBARIAN</div>
+                        </div>
+                        <nav id="vocation-toc-links" class="flex flex-col py-2 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                            <!-- Links populated by JS dynamically -->
+                        </nav>
+                    </div>
+
                 </div>
 
                 <!-- RIGHT AREA: The Parchment Document -->
@@ -258,9 +267,8 @@
                         </div>
                     </div>
                     
-                    <div class="parchment-paper p-6 md:p-12 min-h-[600px] mb-24 overflow-hidden" id="content-pane">
+                    <div class="parchment-paper p-6 md:p-12 min-h-[600px] mb-24 overflow-hidden relative" id="content-pane">
                         
-                        <!-- VIEW: GRID -->
                         <div id="view-grid" class="view-section view-active">
                             <div class="border-b border-gold pb-4 mb-6">
                                 <h3 class="font-heading text-2xl font-bold uppercase text-blood tracking-tight">Vocation Stacks</h3>
@@ -269,24 +277,21 @@
                             <div id="vocation-grid" class="grid-container"></div>
                         </div>
 
-                        <!-- VIEW: DETAILS (Tabbed System) -->
-                        <div id="view-details" class="view-section view-hidden">
+                        <div id="view-details" class="view-section view-hidden relative">
                             <div class="flex flex-col sm:flex-row justify-between items-center sm:items-start mb-6 gap-4 relative z-[2000]">
                                 <button onclick="window.setView('grid')" class="text-[11px] font-heading font-black uppercase tracking-[0.2em] text-ink hover:text-blood transition-colors flex items-center gap-2">
                                     <i class="fa-solid fa-arrow-left"></i> Return to Directory
                                 </button>
                                 <div id="dm-bottom-controls" class="hidden flex gap-2">
-                                    <button onclick="window.addLoreBlock()" class="fantasy-btn-alt px-3 py-1.5 rounded font-black uppercase text-[9px]">+ Note</button>
                                     <button onclick="window.triggerDel()" class="border border-blood text-blood hover:bg-blood hover:text-parchment px-3 py-1.5 rounded font-black uppercase text-[9px] transition-colors">Expunge</button>
                                 </div>
                             </div>
                             
-                            <!-- HEADER AREA (Always visible in details) -->
+                            <!-- HEADER AREA -->
                             <div id="vocation-header-area" class="mb-8 border-b-2 border-gold/40 pb-8">
-                                <!-- Populated dynamically by JS based on user request -->
+                                <!-- Populated dynamically by JS -->
                             </div>
                             
-                            <!-- TAB NAVIGATION -->
                             <div class="vocation-tab-nav">
                                 <button onclick="window.switchDetailTab('description')" id="tab-btn-description" class="vocation-tab-btn active">
                                     <i class="fa-solid fa-scroll"></i> Description
@@ -294,19 +299,19 @@
                                 <button onclick="window.switchDetailTab('traits')" id="tab-btn-traits" class="vocation-tab-btn">
                                     <i class="fa-solid fa-shield-halved"></i> Traits
                                 </button>
-                                <button onclick="window.switchDetailTab('features')" id="tab-btn-features" class="vocation-tab-btn">
-                                    <i class="fa-solid fa-table-cells"></i> Features
+                                <button onclick="window.switchDetailTab('features')" id="tab-btn-features" class="vocation-tab-btn text-gold/70 hover:!text-gold">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Features
                                 </button>
                             </div>
                             
-                            <!-- TAB CONTENT SECTIONS -->
                             <div id="tab-content-description" class="tab-section active">
-                                <div id="content-intro" class="mb-8"></div>
+                                <div id="content-intro" class="mb-8 scroll-mt-6"></div>
                                 <div id="additional-lore"></div>
+                                <div id="subclasses-container"></div>
                             </div>
                             
                             <div id="tab-content-traits" class="tab-section">
-                                <h2 class="font-heading text-2xl font-black text-blood mb-6 border-b border-gold inline-block pb-1 pr-10 dm-editable break-words" id="header-core" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'headerCore', this.innerText)">Class Traits</h2>
+                                <h2 class="font-heading text-2xl font-black text-blood mb-6 border-b border-gold inline-block pb-1 pr-10 dm-editable break-words scroll-mt-6" id="header-core" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'headerCore', this.innerText)">Class Traits</h2>
                                 
                                 <table class="prog-table w-full mb-10">
                                     <tbody>
@@ -359,7 +364,7 @@
                                     </svg>
                                 </div>
                                 
-                                <h2 class="font-heading text-3xl font-black text-ink mb-6 text-center italic">Becoming a <span id="becoming-name" class="text-blood not-italic">Vocation</span></h2>
+                                <h2 id="becoming-section" class="font-heading text-3xl font-black text-ink mb-6 text-center italic scroll-mt-6">Becoming a <span id="becoming-name" class="text-blood not-italic">Vocation</span></h2>
                                 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                                     <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner">
@@ -383,7 +388,7 @@
                                     <i class="fa-solid fa-compass fa-spin text-4xl text-gold mb-6"></i>
                                     <h3 class="font-heading text-2xl font-bold text-blood mb-2 uppercase tracking-widest">Accessing Records Codex</h3>
                                     <p class="font-serif italic text-ink mb-6 text-sm max-w-md mx-auto">Vocation features, evolutionary paths, and scriptcasting capabilities are managed dynamically in the central Records Codex.</p>
-                                    <button id="btn-redirect-features" class="fantasy-btn px-6 py-3 rounded uppercase tracking-widest font-bold shadow-lg">View Vocation Progression</button>
+                                    <button id="btn-redirect-features" onclick="window.routeTo('script_codex.html')" class="fantasy-btn px-6 py-3 rounded uppercase tracking-widest font-bold shadow-lg">View Vocation Progression</button>
                                 </div>
                             </div>
                             
@@ -395,13 +400,11 @@
         </div>
     </div>
 
-    <!-- LIGHTBOX FOR MEDIA -->
     <div id="lightbox" class="fixed inset-0 z-[9999] bg-black/95 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" onclick="window.closeLightbox()">
         <button class="absolute top-6 right-8 text-gray-400 text-4xl hover:text-gold z-[10001] transition-colors drop-shadow-lg">&times;</button>
         <div id="lightbox-content" class="relative max-w-[95vw] max-h-[95vh] w-full h-full flex items-center justify-center pointer-events-none"></div>
     </div>
 
-    <!-- PURGE MODAL -->
     <div id="del-modal" class="modal-overlay hidden">
         <div class="parchment-paper p-8 max-w-sm w-full text-center border-2 border-blood shadow-2xl">
             <h3 class="font-heading font-black text-2xl text-blood uppercase tracking-widest mb-2">Purge Record</h3>
@@ -418,7 +421,6 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
         import { getFirestore, collection, doc, updateDoc, onSnapshot, addDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-        // --- CORE UI FUNCTIONS ---
         window.showToast = (m) => { 
             const t = document.getElementById('toast'); 
             if(t){ t.textContent=m; t.style.opacity=1; setTimeout(()=>t.style.opacity=0, 4000); } 
@@ -438,7 +440,6 @@
             }
         };
 
-        // --- FIREBASE SETUP ---
         const firebaseConfig = {
             apiKey: "AIzaSyCKRN5dfi4og69_D8ZAvV1BQfwCK_f2uis",
             authDomain: "dndcampaigns-f3d48.firebaseapp.com",
@@ -452,7 +453,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- CAMPAIGN & PAGE SCOPING ---
         const urlParams = new URLSearchParams(window.location.search);
         let appId = urlParams.get('id') || urlParams.get('campaignId');
         const isPreviewEnv = window.location.href.startsWith('blob:') || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -490,7 +490,6 @@
             }).join('');
         }
 
-        // --- STATE ---
         let vocations = [];
         let currentUser = null;
         let activeRole = 'player';
@@ -535,20 +534,36 @@
             renderGrid();
         };
 
+        window.scrollToSection = (tabName, elementId) => {
+            if (tabName === 'features') {
+                window.routeTo('script_codex.html');
+                return;
+            }
+            
+            window.switchDetailTab(tabName);
+            setTimeout(() => {
+                const el = document.getElementById(elementId);
+                if (el) {
+                    const y = el.getBoundingClientRect().top + window.scrollY - 100;
+                    window.scrollTo({top: y, behavior: 'smooth'});
+                }
+                
+                document.querySelectorAll('.toc-link').forEach(link => link.classList.remove('active'));
+                const activeLinks = document.querySelectorAll(`.toc-link[onclick*="${elementId}"]`);
+                if(activeLinks.length > 0) activeLinks[0].classList.add('active');
+            }, 50);
+        };
+
         window.switchDetailTab = (tabName) => {
+            if (tabName === 'features') {
+                window.routeTo('script_codex.html');
+                return;
+            }
             document.querySelectorAll('.vocation-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`tab-btn-${tabName}`).classList.add('active');
             
             document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
             document.getElementById(`tab-content-${tabName}`).classList.add('active');
-            
-            if (tabName === 'features') {
-                const v = vocations.find(x => x.id === activeVocId);
-                if (v) {
-                    const btn = document.getElementById('btn-redirect-features');
-                    btn.onclick = () => { window.routeTo(`script_codex.html`); };
-                }
-            }
         };
 
         window.setView = (v, id = null) => {
@@ -556,6 +571,8 @@
             
             const gridView = document.getElementById('view-grid');
             const detailsView = document.getElementById('view-details');
+            const libNav = document.getElementById('library-nav-wrapper');
+            const tocNav = document.getElementById('vocation-toc-wrapper');
 
             if (currentView === 'grid') {
                 gridView.classList.remove('view-active');
@@ -569,18 +586,28 @@
             activeVocId = id; 
             
             if(v === 'grid') {
+                libNav.classList.remove('hidden');
+                tocNav.classList.add('hidden');
+                
                 renderGrid();
                 setTimeout(() => {
                     gridView.classList.remove('view-hidden');
                     gridView.classList.add('view-active');
                 }, 150);
             } else {
+                libNav.classList.add('hidden');
+                tocNav.classList.remove('hidden');
+                
                 window.switchDetailTab('description');
                 renderDetails();
                 document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
                 setTimeout(() => {
                     detailsView.classList.remove('view-hidden');
                     detailsView.classList.add('view-active');
+                    
+                    document.querySelectorAll('.toc-link').forEach(link => link.classList.remove('active'));
+                    const overviewLink = document.querySelectorAll(`.toc-link[onclick*="content-intro"]`);
+                    if(overviewLink.length > 0) overviewLink[0].classList.add('active');
                 }, 150);
             }
         };
@@ -657,32 +684,36 @@
             if(!v) return;
             const isDM = activeRole === 'dm';
 
-            // Make DM elements editable
             document.querySelectorAll('.dm-editable').forEach(el => {
                 if(el.tagName !== 'TH' && el.tagName !== 'TD') {
                     el.contentEditable = isDM;
                 }
             });
 
-            // HEADER AREA: Dynamic updating of title based on campaignName and terms
             const terminologyVocations = campaignSettings?.terms?.nav_vocations || 'CLASS';
             const headerTitle = `${campaignName.toUpperCase()} · ${terminologyVocations.toUpperCase()} GUIDE`;
             const sourceLabel = v.source || campaignName || 'Core Rules';
+            const subVocLabel = 'SUB' + terminologyVocations.toUpperCase();
 
+            // HEADER
             document.getElementById('vocation-header-area').innerHTML = `
                 <div class="flex flex-col md:flex-row gap-8 items-start mb-4">
-                    <div class="flex-grow">
-                        <p class="font-heading text-[10px] text-gold font-black uppercase tracking-[0.2em] mb-1 flex items-center justify-start">
+                    <div class="flex-grow w-full">
+                        <p class="font-heading text-[10px] text-gold font-black uppercase tracking-[0.2em] mb-2 flex items-center justify-start">
                             <i class="fa-solid fa-star text-[8px] mr-2"></i> ${headerTitle} <i class="fa-solid fa-star text-[8px] ml-2"></i>
                         </p>
-                        <h1 class="font-heading text-5xl md:text-7xl font-bold text-ink mb-4 pb-2 border-b border-gold dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'name', this.innerText)">The <span class="italic text-blood">${v.name}</span></h1>
                         
-                        <div class="mb-6 flex flex-wrap gap-2 items-center justify-start">
-                            <span class="border border-gold px-3 py-1 text-[10px] font-heading font-black text-ink uppercase tracking-widest bg-[rgba(197,160,89,0.2)] rounded-sm dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'source', this.innerText)">${sourceLabel}</span>
-                            ${isDM ? `<span class="dm-editable min-w-[30px] border border-gray-400 px-2 py-1 text-[8px] font-mono text-gray-500 rounded-sm" contenteditable="${isDM}" title="Custodian ID" oninput="window.dbUp('${v.id}', 'custodianId', this.innerText)">ID: ${v.custodianId || '994'}</span>` : ''}
+                        <div class="border border-dashed border-gold/50 rounded p-2 md:p-4 mb-4 bg-white/20 flex items-baseline flex-wrap gap-x-3">
+                            <span class="font-heading text-5xl md:text-7xl font-bold text-ink">The</span>
+                            <h1 class="font-heading text-5xl md:text-7xl font-bold text-blood italic uppercase dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'name', this.innerText)">${v.name}</h1>
                         </div>
                         
-                        <div class="font-serif text-sm leading-relaxed text-ink/80 max-w-2xl dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'tagline', this.innerText)">
+                        <div class="mb-6 flex flex-wrap gap-2 items-center justify-start">
+                            <span class="border-2 border-[#c5a059] px-3 py-1.5 text-[11px] font-heading font-black text-ink uppercase tracking-widest bg-[#e8cd87] rounded-sm dm-editable shadow-sm" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'source', this.innerText)">${sourceLabel}</span>
+                            ${isDM ? `<span class="dm-editable min-w-[30px] border border-dashed border-gray-400 px-3 py-1.5 text-[11px] font-mono text-gray-500 rounded-sm bg-white/30 tracking-widest" contenteditable="${isDM}" title="Custodian ID" oninput="window.dbUp('${v.id}', 'custodianId', this.innerText)">ID: ${v.custodianId || '994'}</span>` : ''}
+                        </div>
+                        
+                        <div class="font-serif text-sm leading-relaxed text-ink/80 max-w-2xl dm-editable mt-4" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'tagline', this.innerText)">
                             ${v.tagline || 'Add a compelling summary here...'}
                         </div>
                     </div>
@@ -707,8 +738,37 @@
                 </div>` : ''}
             `;
 
-            // TAB: DESCRIPTION
+            // TOC SIDEBAR
+            document.getElementById('toc-source').innerText = sourceLabel;
+            document.getElementById('toc-name').innerText = v.name || 'Unknown';
+            let tocHtml = '';
+            
+            tocHtml += `<a href="javascript:void(0)" onclick="window.scrollToSection('description', 'content-intro')" class="toc-link active">Overview</a>`;
+            
             const lore = JSON.parse(v.loreBlocks || '[]');
+            lore.forEach((block, idx) => {
+                const safeTitle = block.title ? block.title.replace(/</g, "&lt;") : "Section";
+                tocHtml += `<a href="javascript:void(0)" onclick="window.scrollToSection('description', 'lore-block-${idx}')" class="toc-link">${safeTitle}</a>`;
+            });
+            
+            if (isDM) {
+                tocHtml += `<button onclick="window.addLoreBlock()" class="w-full text-left toc-link text-blood hover:text-red-700 italic border-t border-[#c5a059]/20 mt-2 pt-3"><i class="fa-solid fa-plus mr-2"></i>Add Lore Section</button>`;
+            }
+
+            const subSubtitle = v.subclassHeaderSubtitle || 'The Paths';
+            tocHtml += `<a href="javascript:void(0)" onclick="window.scrollToSection('description', 'subclasses-section')" class="toc-link">${subSubtitle}</a>`;
+
+            tocHtml += `<div class="mt-4 pt-4 border-t border-gold/10"></div>`;
+            const coreHeader = v.headerCore || 'Class Traits';
+            tocHtml += `<a href="javascript:void(0)" onclick="window.scrollToSection('traits', 'header-core')" class="toc-link">${coreHeader}</a>`;
+            tocHtml += `<a href="javascript:void(0)" onclick="window.scrollToSection('traits', 'becoming-section')" class="toc-link">Becoming a ${v.name || 'Vocation'}</a>`;
+            
+            tocHtml += `<div class="mt-4 pt-4 border-t border-gold/10"></div>`;
+            tocHtml += `<a href="javascript:void(0)" onclick="window.routeTo('script_codex.html')" class="toc-link text-gold/70 hover:text-gold"><i class="fa-solid fa-arrow-up-right-from-square mr-2 text-[10px]"></i>Features Progression</a>`;
+            
+            document.getElementById('vocation-toc-links').innerHTML = tocHtml;
+
+            // TAB: DESCRIPTION
             document.getElementById('content-intro').innerHTML = `
                 <div class="font-serif text-ink leading-relaxed break-words dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'intro', this.innerHTML)">
                     ${v.intro || '<p class="text-gray-500 italic">Click to add detailed description...</p>'}
@@ -716,15 +776,79 @@
             `;
             
             document.getElementById('additional-lore').innerHTML = lore.map((block, idx) => `
-                <div class="mb-8 relative group">
+                <div id="lore-block-${idx}" class="mb-8 relative group scroll-mt-6 border-l-2 border-gold/30 pl-4 py-2">
                     <h3 class="font-heading font-black text-xl text-ink uppercase tracking-widest mb-3 dm-editable break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'loreBlocks', 'title', this.innerText)">${block.title}</h3>
                     <div class="dm-editable font-serif leading-relaxed text-sm text-ink min-h-[40px] break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'loreBlocks', 'text', this.innerHTML)">${block.text||''}</div>
                     ${isDM ? `<button onclick="window.removeCollectionItem(${idx}, 'loreBlocks')" class="absolute top-0 right-0 text-blood hover:text-red-600 px-2 py-1 text-[10px] uppercase font-black transition-colors opacity-0 group-hover:opacity-100"><i class="fa-solid fa-trash"></i></button>` : ''}
                 </div>
             `).join('');
 
+            // SUBCLASSES SECTION (Inside Description Tab)
+            const subclasses = JSON.parse(v.subclasses || '[]');
+            
+            document.getElementById('subclasses-container').innerHTML = `
+                <div id="subclasses-section" class="mt-16 mb-8 scroll-mt-6 pt-12 border-t border-gold/30">
+                    <div class="text-center mb-8">
+                        <h2 class="font-heading text-3xl md:text-4xl font-black text-[#c5a059] mb-4 flex justify-center items-center gap-3 flex-wrap">
+                            <span class="dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'subclassHeaderTitle', this.innerText)">${v.subclassHeaderTitle || `${v.name || 'Vocation'} ${subVocLabel}ES`}</span> 
+                            <span class="text-ink/50 font-normal text-2xl">·</span> 
+                            <span class="text-[#e8e0cd] italic dm-editable font-serif text-3xl drop-shadow-md" style="text-shadow: 1px 1px 0px #000;" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'subclassHeaderSubtitle', this.innerText)">${v.subclassHeaderSubtitle || 'The Paths'}</span>
+                        </h2>
+                        <div class="font-serif text-sm text-[#2c1e16] font-bold max-w-3xl mx-auto dm-editable leading-relaxed" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'subclassIntro', this.innerText)">
+                            ${v.subclassIntro || `At level 3 you pick a Path. Each one rewires your abilities. Short verdict on each, below.`}
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center mb-10">
+                        <button onclick="window.routeTo('sub-vocations.html?vocId=${v.id}')" class="border border-[#c5a059] text-ink hover:bg-[#1a110b] hover:text-[#c5a059] px-6 py-2 text-[10px] font-heading font-black uppercase tracking-widest transition-colors rounded shadow-sm">
+                            See All ${v.name || 'Vocation'} ${subVocLabel}ES &rarr;
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        ${subclasses.map((sub, idx) => `
+                            <div class="bg-[#1a110b] border-2 border-[#c5a059] rounded overflow-hidden flex flex-col group relative transition-transform hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(0,0,0,0.6)]">
+                                <div class="h-48 bg-[#e8e0cd] border-b-2 border-[#c5a059] relative cursor-zoom-in" onclick="window.zoomMedia('${sub.imgUrl}')">
+                                    ${sub.imgUrl ? `<img src="${sub.imgUrl}" class="w-full h-full object-cover" style="image-rendering: pixelated;" alt="${sub.name}">` : `<div class="w-full h-full flex items-center justify-center text-[#2c1e16]/40 text-xs italic font-serif bg-[rgba(139,90,43,0.1)]">No Image</div>`}
+                                </div>
+                                <div class="p-4 flex flex-col flex-grow bg-gradient-to-b from-[#1a110b] to-[#150f0a]">
+                                    <div class="flex justify-between items-start mb-2 gap-2">
+                                        <h3 class="font-heading font-black text-[#c5a059] text-sm leading-tight dm-editable break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'subclasses', 'name', this.innerText)">${sub.name || 'New Path'}</h3>
+                                        <span class="font-heading text-[8px] font-black tracking-widest uppercase px-1.5 py-0.5 rounded text-white dm-editable" style="background-color: ${sub.tagColor || '#4a5d23'};" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'subclasses', 'tag', this.innerText)">${sub.tag || 'BALANCED'}</span>
+                                    </div>
+                                    <div class="font-serif text-[11px] text-[#e8e0cd] opacity-80 leading-relaxed mb-6 dm-editable flex-grow break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'subclasses', 'desc', this.innerText)">
+                                        ${sub.desc || 'Path description goes here...'}
+                                    </div>
+                                    <button onclick="window.routeTo('sub-vocations.html?vocId=${v.id}&subIdx=${idx}')" class="mt-auto pt-3 border-t border-[#c5a059]/30 text-[9px] font-heading font-black text-[#888] hover:text-[#c5a059] uppercase tracking-widest text-left flex justify-between items-center transition-colors">
+                                        View This Subclass <i class="fa-solid fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                                
+                                ${isDM ? `
+                                    <div class="absolute top-2 left-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                                        <input type="text" class="w-full text-[9px] p-1 bg-black/80 text-white border border-gold rounded" placeholder="Image URL" value="${sub.imgUrl || ''}" oninput="window.updateCollectionField(${idx}, 'subclasses', 'imgUrl', this.value)">
+                                        <input type="text" class="w-full text-[9px] p-1 bg-black/80 text-white border border-gold rounded" placeholder="Tag Color (Hex)" value="${sub.tagColor || '#4a5d23'}" oninput="window.updateCollectionField(${idx}, 'subclasses', 'tagColor', this.value)">
+                                        <div class="flex justify-end gap-1">
+                                            <button onclick="window.moveCollectionItem(${idx}, -1, 'subclasses')" class="bg-black/80 text-white hover:text-gold px-2 py-1 rounded text-[10px]"><i class="fa-solid fa-arrow-left"></i></button>
+                                            <button onclick="window.moveCollectionItem(${idx}, 1, 'subclasses')" class="bg-black/80 text-white hover:text-gold px-2 py-1 rounded text-[10px]"><i class="fa-solid fa-arrow-right"></i></button>
+                                            <button onclick="window.removeCollectionItem(${idx}, 'subclasses')" class="bg-blood/90 text-white hover:bg-red-600 px-2 py-1 rounded text-[10px]"><i class="fa-solid fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    ${isDM ? `
+                        <div class="mt-8 text-center">
+                            <button onclick="window.addSubclass()" class="fantasy-btn px-4 py-2 rounded text-[10px]"><i class="fa-solid fa-plus mr-1"></i> Add Path / Subclass</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
             // TAB: TRAITS
-            document.getElementById('header-core').innerText = v.headerCore || 'Class Traits';
+            document.getElementById('header-core').innerText = coreHeader;
             document.getElementById('trait-primaryAbility').innerText = v.primaryAbility || '...';
             document.getElementById('trait-hitDie').innerText = v.hitDie || '...';
             document.getElementById('trait-saves').innerText = v.saves || '...';
@@ -746,6 +870,18 @@
             const items = JSON.parse(v.loreBlocks || '[]');
             items.push({ title: "NEW LOG ENTRY", text: "" });
             performUpdate(activeVocId, { loreBlocks: JSON.stringify(items) });
+            setTimeout(() => {
+                renderDetails();
+                const newIdx = items.length - 1;
+                window.scrollToSection('description', `lore-block-${newIdx}`);
+            }, 100);
+        };
+
+        window.addSubclass = () => {
+            const v = vocations.find(x => x.id === activeVocId);
+            const items = JSON.parse(v.subclasses || '[]');
+            items.push({ name: "New Path", tag: "BALANCED", tagColor: "#c5a059", desc: "Short description of the mechanics.", imgUrl: "" });
+            performUpdate(activeVocId, { subclasses: JSON.stringify(items) });
             setTimeout(renderDetails, 100);
         };
 
@@ -755,6 +891,19 @@
             items.splice(idx, 1);
             performUpdate(activeVocId, { [collField]: JSON.stringify(items) });
             setTimeout(renderDetails, 100);
+        };
+
+        window.moveCollectionItem = (idx, dir, collField) => {
+            const v = vocations.find(x => x.id === activeVocId);
+            const items = JSON.parse(v[collField] || '[]');
+            const targetIdx = idx + dir;
+            if (targetIdx >= 0 && targetIdx < items.length) {
+                const temp = items[idx];
+                items[idx] = items[targetIdx];
+                items[targetIdx] = temp;
+                performUpdate(activeVocId, { [collField]: JSON.stringify(items) });
+                setTimeout(renderDetails, 100);
+            }
         };
 
         window.moveRecord = async (id, direction) => {
@@ -782,8 +931,6 @@
         window.addVocation = async () => {
             if (!currentUser) return;
             const maxOrder = vocations.length > 0 ? Math.max(...vocations.map(l => l.order || l.createdAt || 0)) : Date.now();
-            
-            // Generate a random 3-digit Dossier ID (from 001 to 999)
             const randomId = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
             
             window.showToast("Inking new archive...");
@@ -793,6 +940,7 @@
                 quickBuild: "", multiclass: "",
                 headerCore: "Class Traits",
                 loreBlocks: "[]",
+                subclassHeaderTitle: "SUBCLASSES", subclassHeaderSubtitle: "The Paths", subclassIntro: "At level 3 you pick a Path. Each one rewires what your abilities mean. Short verdict on each, below.", subclasses: "[]",
                 createdAt: Date.now(), order: maxOrder + 1000 
             });
         };
@@ -817,7 +965,7 @@
             if (url.includes('.mp4') || url.includes('.webm')) {
                 content.innerHTML = `<video src="${url}" autoplay controls loop class="max-w-full max-h-full object-contain rounded border-2 border-gold shadow-2xl"></video>`;
             } else {
-                content.innerHTML = `<img src="${url}" class="max-w-full max-h-full object-contain rounded border-2 border-gold shadow-2xl">`;
+                content.innerHTML = `<img src="${url}" class="max-w-full max-h-full object-contain rounded border-2 border-gold shadow-2xl" style="image-rendering: pixelated;">`;
             }
             
             lb.classList.remove('hidden');
@@ -835,7 +983,6 @@
             }, 300); 
         };
 
-        // --- AUTHENTICATION SYNC ---
         onAuthStateChanged(auth, async (u) => {
             if (!u) {
                 try { window.location.href = "index.html"; } catch(e) {

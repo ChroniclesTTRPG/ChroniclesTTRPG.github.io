@@ -158,6 +158,68 @@
         .leather-tile-label { font-family: 'Cinzel', serif; font-size: 10px; color: #7a1b1b; display: block; margin-bottom: 6px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid rgba(139, 90, 43, 0.3); padding-bottom: 4px; font-weight: 900; }
         .leather-tile-value { font-family: 'Lora', serif; font-size: 14px; color: #2c1e16; }
 
+        /* TAB NAVIGATION STYLING */
+        .vocation-tab-nav {
+            display: flex;
+            background: linear-gradient(to right, #2c1e16, #1a110b);
+            border: 2px solid #c5a059;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        .vocation-tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            color: #888;
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-right: 1px solid rgba(197, 160, 89, 0.2);
+        }
+        
+        .vocation-tab-btn:last-child {
+            border-right: none;
+        }
+        
+        .vocation-tab-btn:hover {
+            color: #c5a059;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .vocation-tab-btn.active {
+            background: linear-gradient(to bottom, #c5a059, #a37c35);
+            color: #1a110b;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+        
+        /* SPECIFIC VIEW SECTIONS */
+        .tab-section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        
+        .tab-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* SCRIPT MODULE STYLING */
         .script-protocol-container { 
             padding: 20px; 
@@ -278,44 +340,122 @@
 
                         <!-- VIEW: DETAILS (4-Page Flip) -->
                         <div id="view-details" class="view-section view-hidden">
-                            <div class="flex flex-col sm:flex-row justify-between items-center sm:items-start mb-8 gap-4 border-b border-gold pb-4 relative z-[2000]">
+                            <div class="flex flex-col sm:flex-row justify-between items-center sm:items-start mb-6 gap-4 relative z-[2000]">
                                 <button onclick="window.setView('grid')" class="text-[11px] font-heading font-black uppercase tracking-[0.2em] text-ink hover:text-blood transition-colors flex items-center gap-2">
                                     <i class="fa-solid fa-arrow-left"></i> Return to Directory
                                 </button>
-                                <button onclick="window.flipPage()" id="btn-flip" class="fantasy-btn-alt px-6 py-2 rounded text-[10px] flex items-center gap-2">
-                                    <i class="fa-solid fa-scroll"></i> <span>Features</span>
+                                <div id="dm-bottom-controls" class="hidden flex gap-2">
+                                    <button onclick="window.addLoreBlock()" class="fantasy-btn-alt px-3 py-1.5 rounded font-black uppercase text-[9px]">+ Note</button>
+                                    <button onclick="window.triggerDel()" class="border border-blood text-blood hover:bg-blood hover:text-parchment px-3 py-1.5 rounded font-black uppercase text-[9px] transition-colors">Expunge</button>
+                                </div>
+                            </div>
+                            
+                            <!-- HEADER AREA (Always visible in details) -->
+                            <div id="vocation-header-area" class="mb-8">
+                                <!-- Populated by JS -->
+                            </div>
+                            
+                            <!-- TAB NAVIGATION -->
+                            <div class="vocation-tab-nav">
+                                <button onclick="window.switchDetailTab('description')" id="tab-btn-description" class="vocation-tab-btn active">
+                                    <i class="fa-solid fa-scroll"></i> Description
+                                </button>
+                                <button onclick="window.switchDetailTab('traits')" id="tab-btn-traits" class="vocation-tab-btn">
+                                    <i class="fa-solid fa-shield-halved"></i> Traits
+                                </button>
+                                <button onclick="window.switchDetailTab('features')" id="tab-btn-features" class="vocation-tab-btn">
+                                    <i class="fa-solid fa-table-cells"></i> Features
                                 </button>
                             </div>
                             
-                            <div id="dossier-book" class="dossier-stack min-h-[600px]">
-                                <div id="leaf-0" class="dossier-leaf" style="z-index: 400;">
-                                    <div class="leaf-side leaf-front" id="content-intro"></div>
-                                    <div class="leaf-side leaf-back flex items-center justify-center"><div class="font-serif italic opacity-30 text-center w-full">Vocation Profile Registry</div></div>
-                                </div>
-                                <div id="leaf-1" class="dossier-leaf" style="z-index: 300;">
-                                    <div class="leaf-side leaf-front" id="content-features"></div>
-                                    <div class="leaf-side leaf-back flex items-center justify-center"><div class="font-serif italic opacity-30 text-center w-full">Core Capability Database</div></div>
-                                </div>
-                                <div id="leaf-2" class="dossier-leaf" style="z-index: 200;">
-                                    <div class="leaf-side leaf-front" id="content-archetypes"></div>
-                                    <div class="leaf-side leaf-back flex items-center justify-center"><div class="font-serif italic opacity-30 text-center w-full">Evolutionary Paths</div></div>
-                                </div>
-                                <div id="leaf-3" class="dossier-leaf" style="z-index: 100;">
-                                    <div class="leaf-side leaf-front" id="content-scripts"></div>
-                                    <div class="leaf-side leaf-back flex items-center justify-center"><div class="font-serif italic opacity-30 text-center w-full">Terminal Data Block</div></div>
-                                </div>
+                            <!-- TAB CONTENT SECTIONS -->
+                            <div id="tab-content-description" class="tab-section active">
+                                <div id="content-intro" class="mb-8"></div>
+                                <div id="additional-lore"></div>
                             </div>
-
-                            <div class="font-heading text-xs font-black text-ink opacity-60 mt-10 text-center tracking-[0.2em]" id="page-num">SEGMENT 01 / 04</div>
                             
-                            <div id="dm-bottom-controls" class="hidden flex flex-wrap justify-center md:justify-start gap-3 mt-12 pt-8 border-t border-gold">
-                                <button onclick="window.addLoreBlock()" class="fantasy-btn px-4 py-2 rounded font-black uppercase text-[9px]">+ Add Note</button>
-                                <button onclick="window.addFeatureBlock()" class="fantasy-btn px-4 py-2 rounded font-black uppercase text-[9px]">+ Add Feature</button>
-                                <button onclick="window.addArchetype()" class="fantasy-btn px-4 py-2 rounded font-black uppercase text-[9px]">+ Add Archetype</button>
-                                <button onclick="window.addTable()" class="fantasy-btn px-4 py-2 rounded font-black uppercase text-[9px]">+ Add Table</button>
-                                <button onclick="window.addScriptTier()" class="fantasy-btn px-4 py-2 rounded font-black uppercase text-[9px]">+ Add Scripts</button>
-                                <button onclick="window.triggerDel()" class="border border-blood text-blood hover:bg-blood hover:text-parchment px-4 py-2 rounded font-black uppercase text-[9px] transition-colors mt-4 sm:mt-0 sm:ml-auto">Expunge Record</button>
+                            <div id="tab-content-traits" class="tab-section">
+                                <h2 class="font-heading text-2xl font-black text-blood mb-6 border-b border-gold inline-block pb-1 pr-10 dm-editable break-words" id="header-core" contenteditable="false" oninput="window.updateHeaderCore(this.innerText)">Class Traits</h2>
+                                
+                                <table class="prog-table w-full mb-10">
+                                    <tbody>
+                                        <tr>
+                                            <th class="w-1/4">Primary Ability</th>
+                                            <td id="trait-primaryAbility" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'primaryAbility', this.innerText)"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Hit Point Die</th>
+                                            <td id="trait-hitDie" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'hitDie', this.innerText)"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Saving Throws</th>
+                                            <td id="trait-saves" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'saves', this.innerText)"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Skill Proficiencies</th>
+                                            <td id="trait-skills" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'skills', this.innerText)"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Weapon Proficiencies</th>
+                                            <td id="trait-weapons" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'weapons', this.innerText)"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Armor Training</th>
+                                            <td id="trait-armor" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'armor', this.innerText)"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tool Proficiencies</th>
+                                            <td id="trait-tools" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'tools', this.innerText)">None</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Starting Equipment</th>
+                                            <td id="trait-equipment" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'equipment', this.innerText)"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <div class="text-center my-8">
+                                    <svg class="mx-auto" width="40" height="20" viewBox="0 0 40 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M20 20L0 0H40L20 20Z" fill="url(#paint0_linear)"/>
+                                        <path d="M20 18L3 1H37L20 18Z" fill="#f1e5c5"/>
+                                        <path d="M20 16L6 2H34L20 16Z" fill="#8a2b2b"/>
+                                        <defs>
+                                            <linearGradient id="paint0_linear" x1="20" y1="0" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+                                                <stop stop-color="#c5a059"/>
+                                                <stop offset="1" stop-color="#8a2b2b"/>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                
+                                <h2 class="font-heading text-3xl font-black text-ink mb-6 text-center italic">Becoming a <span id="becoming-name" class="text-blood not-italic">Vocation</span></h2>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                                    <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner">
+                                        <b class="text-[12px] uppercase font-black text-blood block mb-3 border-b border-gold/50 pb-2 tracking-widest font-heading">Level 1 · Starting Out</b>
+                                        <div class="dm-editable text-sm leading-relaxed break-words min-h-[40px] font-serif text-ink" id="trait-quickBuild" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'quickBuild', this.innerText)">
+                                            <!-- Content -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner">
+                                        <b class="text-[12px] uppercase font-black text-blood block mb-3 border-b border-gold/50 pb-2 tracking-widest font-heading">Multiclass · Add Vocation</b>
+                                        <div class="dm-editable text-sm leading-relaxed break-words min-h-[40px] font-serif text-ink" id="trait-multiclass" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'multiclass', this.innerText)">
+                                            <!-- Content -->
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            
+                            <div id="tab-content-features" class="tab-section">
+                                <div class="text-center py-12">
+                                    <i class="fa-solid fa-compass fa-spin text-4xl text-gold mb-6"></i>
+                                    <h3 class="font-heading text-2xl font-bold text-blood mb-2">Redirecting to Codex...</h3>
+                                    <p class="font-serif italic text-ink mb-6">Features and scripts are managed in the Records Codex.</p>
+                                    <button id="btn-redirect-features" class="fantasy-btn px-6 py-3 rounded uppercase tracking-widest font-bold shadow-lg">View Progression & Features</button>
+                                </div>
+                            </div>
+                            
                         </div>
 
                     </div>
@@ -431,6 +571,28 @@
         window.isPurgeMode = false;
         let isUserTyping = false;
         
+        // Tab switching logic
+        window.switchDetailTab = (tabName) => {
+            // Update buttons
+            document.querySelectorAll('.vocation-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-btn-${tabName}`).classList.add('active');
+            
+            // Update sections
+            document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(`tab-content-${tabName}`).classList.add('active');
+            
+            // Handle specific tab logic
+            if (tabName === 'features') {
+                const v = vocations.find(x => x.id === activeVocId);
+                if (v) {
+                    const btn = document.getElementById('btn-redirect-features');
+                    btn.onclick = () => {
+                        window.routeTo(`script_codex.html`);
+                    };
+                }
+            }
+        };
+
         document.addEventListener('focusin', (e) => {
             if(e.target && e.target.classList && e.target.classList.contains('dm-editable')) {
                 isUserTyping = true;
@@ -487,20 +649,6 @@
             activeVocId = id; 
             currentPage = 0;
             
-            [0, 1, 2, 3].forEach(i => {
-                const leaf = document.getElementById(`leaf-${i}`);
-                if(leaf) {
-                    leaf.classList.remove('flipped');
-                    leaf.style.zIndex = (400 - (i * 100)).toString();
-                    leaf.querySelector('.leaf-front').style.opacity = 1;
-                    leaf.querySelector('.leaf-front').style.pointerEvents = 'auto';
-                    leaf.querySelector('.leaf-back').style.opacity = 0;
-                    leaf.querySelector('.leaf-back').style.pointerEvents = 'none';
-                }
-            });
-            document.getElementById('page-num').innerText = `SEGMENT 01 / 04`;
-            document.getElementById('btn-flip').innerHTML = `<i class="fa-solid fa-scroll"></i> <span>Features</span>`;
-            
             if(v === 'grid') {
                 renderGrid();
                 setTimeout(() => {
@@ -508,6 +656,8 @@
                     gridView.classList.add('view-active');
                 }, 150);
             } else {
+                // Default to description tab when opening details
+                window.switchDetailTab('description');
                 renderDetails();
                 document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
                 setTimeout(() => {
@@ -517,33 +667,7 @@
             }
         };
 
-        window.flipPage = () => {
-            currentPage = (currentPage + 1) % 4;
-            for(let i=0; i<4; i++) {
-                const leaf = document.getElementById(`leaf-${i}`);
-                if(leaf) {
-                    leaf.classList.toggle('flipped', i < currentPage);
-                    
-                    if (i < currentPage) {
-                        leaf.style.zIndex = (100 + (i * 100)).toString();
-                        leaf.querySelector('.leaf-front').style.opacity = 0;
-                        leaf.querySelector('.leaf-front').style.pointerEvents = 'none';
-                        leaf.querySelector('.leaf-back').style.opacity = 1;
-                        leaf.querySelector('.leaf-back').style.pointerEvents = 'auto';
-                    } else {
-                        leaf.style.zIndex = (400 - (i * 100)).toString();
-                        leaf.querySelector('.leaf-front').style.opacity = 1;
-                        leaf.querySelector('.leaf-front').style.pointerEvents = 'auto';
-                        leaf.querySelector('.leaf-back').style.opacity = 0;
-                        leaf.querySelector('.leaf-back').style.pointerEvents = 'none';
-                    }
-                }
-            }
-            document.getElementById('page-num').innerText = `SEGMENT 0${currentPage + 1} / 04`;
-            const labels = ["Features", "Archetypes", "Scripts", "Profile"];
-            document.getElementById('btn-flip').innerHTML = `<i class="fa-solid fa-scroll"></i> <span>${labels[currentPage]}</span>`;
-            document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
-        };
+        // ... removing old flipPage function ...
 
         // Database Mutators
         const debounce = (func, wait) => {
@@ -646,134 +770,84 @@
             if(!v) return;
             const isDM = activeRole === 'dm';
 
-            // LEAF 0 - Intro Profile
-            const lore = JSON.parse(v.loreBlocks || '[]');
-            document.getElementById('content-intro').innerHTML = `
-                <h2 class="font-heading text-4xl md:text-5xl font-black text-ink leading-none mb-2 md:mb-4 dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'name', this.innerText)">${v.name}</h2>
-                <p class="border-b border-gold/50 pb-3 mb-6 uppercase text-[10px] font-black text-blood tracking-widest flex items-center gap-2">
-                    <span>Verified Signature • ID #</span>
-                    <span class="dm-editable min-w-[30px] inline-block" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'custodianId', this.innerText)">${v.custodianId || '994'}</span>
-                </p>
-                <div class="leather-tile"><span class="leather-tile-label">Dossier Summary</span><div class="leather-tile-value dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'tagline', this.innerText)">${v.tagline}</div></div>
-                
-                <div class="relative group cursor-zoom-in shadow-lg border-2 border-gold rounded overflow-hidden bg-[rgba(139,90,43,0.1)] mb-8" onclick="window.zoomMedia('${v.detailArtUrl || v.artUrl}')">
-                    <div class="absolute inset-0 bg-black/0 md:group-hover:bg-black/10 transition-colors z-10 pointer-events-none flex items-center justify-center">
-                        <span class="text-white opacity-0 md:group-hover:opacity-100 bg-black/60 px-4 py-2 rounded text-xs font-bold uppercase tracking-widest transition-opacity hidden md:block">Enlarge Visual</span>
+            // Make DM elements editable
+            document.querySelectorAll('.dm-editable').forEach(el => {
+                if(el.tagName !== 'TH' && el.tagName !== 'TD') {
+                    el.contentEditable = isDM;
+                }
+            });
+
+            // HEADER AREA (Top of page, above tabs)
+            document.getElementById('vocation-header-area').innerHTML = `
+                <div class="flex flex-col md:flex-row gap-8 items-start mb-4">
+                    <div class="flex-grow">
+                        <p class="font-heading text-[10px] text-gold font-black uppercase tracking-[0.2em] mb-1">
+                            <i class="fa-solid fa-star text-[8px] mr-1"></i> Dungeons & Dragons 2024 · Class Guide <i class="fa-solid fa-star text-[8px] ml-1"></i>
+                        </p>
+                        <h1 class="font-heading text-5xl md:text-7xl font-bold text-ink mb-4 pb-2 border-b border-gold dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'name', this.innerText)">The <span class="italic text-blood">${v.name}</span></h1>
+                        
+                        <div class="mb-6 flex gap-2">
+                            <span class="border border-gold px-3 py-1 text-[10px] font-heading font-black text-ink uppercase tracking-widest bg-[rgba(197,160,89,0.2)] rounded-sm">D&D 2024</span>
+                            ${isDM ? `<span class="dm-editable min-w-[30px] border border-gray-400 px-2 py-1 text-[8px] font-mono text-gray-500 rounded-sm" contenteditable="${isDM}" title="Custodian ID" oninput="window.dbUp('${v.id}', 'custodianId', this.innerText)">ID: ${v.custodianId || '994'}</span>` : ''}
+                        </div>
+                        
+                        <div class="font-serif text-sm leading-relaxed text-ink/80 max-w-2xl dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'tagline', this.innerText)">
+                            ${v.tagline || 'Add a compelling summary here...'}
+                        </div>
                     </div>
-                    ${(v.detailArtUrl || v.artUrl) ? ((v.detailArtUrl || v.artUrl).includes('.mp4') ? `<video src="${v.detailArtUrl || v.artUrl}" autoplay loop muted class="w-full h-auto max-h-[500px] object-cover"></video>` : `<img src="${v.detailArtUrl || v.artUrl}" class="w-full h-auto max-h-[500px] object-cover">`) : '<div class="h-[250px] md:h-[400px] flex items-center justify-center italic text-ink opacity-50 text-sm font-serif">Awaiting Detail Scan</div>'}
+                    
+                    <div class="flex-shrink-0 w-full md:w-64 lg:w-72 relative group cursor-zoom-in" onclick="window.zoomMedia('${v.artUrl}')">
+                        <div class="bg-[#e8cd87] p-2 rounded shadow-xl border-2 border-gold transform rotate-2 transition-transform group-hover:rotate-0 group-hover:scale-105 z-10 relative">
+                            ${v.artUrl ? (v.artUrl.includes('.mp4') ? `<video src="${v.artUrl}" autoplay loop muted class="w-full aspect-[4/5] object-cover rounded-sm shadow-inner"></video>` : `<img src="${v.artUrl}" class="w-full aspect-[4/5] object-cover rounded-sm shadow-inner" style="image-rendering: pixelated;">`) : '<div class="w-full aspect-[4/5] bg-[rgba(139,90,43,0.2)] flex items-center justify-center italic text-xs text-ink opacity-50 rounded-sm">Awaiting Visuals</div>'}
+                        </div>
+                    </div>
                 </div>
                 
                 ${isDM ? `
-                <div class="bg-[rgba(139,90,43,0.1)] p-4 rounded mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 border border-gold/50">
+                <div class="bg-[rgba(139,90,43,0.1)] p-4 rounded mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 border border-gold/50">
                     <div>
-                        <label class="text-[10px] font-black text-blood uppercase tracking-widest font-heading">Grid Profile URL</label>
+                        <label class="text-[10px] font-black text-blood uppercase tracking-widest font-heading">Portrait Image URL</label>
                         <input type="text" class="w-full p-2 text-xs bg-white/50 border border-gold mt-1 rounded focus:outline-none focus:border-blood text-ink" value="${v.artUrl||''}" oninput="window.dbUp('${v.id}', 'artUrl', this.value)">
                     </div>
                     <div>
-                        <label class="text-[10px] font-black text-blood uppercase tracking-widest font-heading">Detail View URL</label>
+                        <label class="text-[10px] font-black text-blood uppercase tracking-widest font-heading">Header Background URL (Optional)</label>
                         <input type="text" class="w-full p-2 text-xs bg-white/50 border border-gold mt-1 rounded focus:outline-none focus:border-blood text-ink" value="${v.detailArtUrl||''}" oninput="window.dbUp('${v.id}', 'detailArtUrl', this.value)">
                     </div>
                 </div>` : ''}
-                
-                <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner mb-8 dm-editable font-serif text-ink leading-relaxed break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'intro', this.innerText)">
-                    ${(v.intro && v.intro.length > 0) ? `<span class="float-left text-5xl font-heading text-blood leading-none pr-3 pt-2">${v.intro.charAt(0)}</span>${v.intro.slice(1)}` : 'Click to add intro...'}
-                </div>
-                
-                <div id="additional-lore">
-                    ${lore.map((block, idx) => `
-                        <div class="border-l-4 border-gold pl-6 py-2 relative bg-gradient-to-r from-[rgba(197,160,89,0.1)] to-transparent mb-8">
-                            <h3 class="font-heading font-black text-sm text-parchment bg-ink inline-block px-4 py-1 uppercase tracking-widest mb-4 dm-editable shadow break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'loreBlocks', 'title', this.innerText)">${block.title}</h3>
-                            <div class="dm-editable font-serif leading-relaxed text-sm text-ink min-h-[40px] break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'loreBlocks', 'text', this.innerText)">${block.text||''}</div>
-                            ${isDM ? `<button onclick="window.removeCollectionItem(${idx}, 'loreBlocks')" class="absolute top-0 right-0 text-blood hover:text-red-600 px-2 py-1 text-[10px] uppercase font-black transition-colors"><i class="fa-solid fa-trash"></i></button>` : ''}
-                        </div>
-                    `).join('')}
-                </div>
             `;
 
-            // LEAF 1 - Features
-            const feats = JSON.parse(v.featureBlocks || '[]');
-            const tbs = JSON.parse(v.tables || '[]');
-            document.getElementById('content-features').innerHTML = `
-                <h2 class="font-heading text-3xl font-black text-blood mb-6 border-b-2 border-gold inline-block pb-1 pr-10 dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'headerCore', this.innerText)">${v.headerCore || 'Core Systemic Readout'}</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2 mb-8">
-                    ${['hitDie', 'primaryAbility', 'saves', 'armor', 'weapons', 'skills'].map(f => `
-                        <div class="leather-tile">
-                            <span class="leather-tile-label">${f.replace(/([A-Z])/g, ' $1')}</span>
-                            <div class="leather-tile-value dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', '${f}', this.innerText)">${v[f] || '...'}</div>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner mb-8">
-                    <b class="text-[10px] uppercase font-black text-blood block mb-3 border-b border-gold/50 pb-2 tracking-widest font-heading">Quick Build Protocol</b>
-                    <div class="dm-editable text-sm leading-relaxed italic break-words min-h-[40px] font-serif text-ink" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'quickBuild', this.innerText)">
-                        ${v.quickBuild||''}
-                    </div>
-                </div>
-                <div class="bg-[rgba(139,90,43,0.1)] p-6 rounded border border-gold/50 mb-10 shadow-inner">
-                    <b class="text-[10px] uppercase font-black text-ink block mb-3 border-b border-gold/50 pb-2 tracking-widest font-heading">Vocation Features Overview</b>
-                    <div class="dm-editable text-sm leading-relaxed break-words min-h-[40px] font-serif text-ink" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'classFeaturesOverview', this.innerText)">
-                        ${v.classFeaturesOverview||''}
-                    </div>
-                </div>
-                <div class="space-y-8 md:space-y-12">
-                    ${tbs.map((t, idx) => window.renderTableHtml(t, idx, isDM)).join('')}
-                    ${feats.map((feat, idx) => `
-                        <div class="border-l-4 border-gold pl-6 py-2 relative bg-gradient-to-r from-[rgba(197,160,89,0.1)] to-transparent">
-                            <h3 class="font-heading font-black text-sm text-parchment bg-ink inline-block px-4 py-1 uppercase tracking-widest mb-4 dm-editable shadow break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'featureBlocks', 'title', this.innerText)">${feat.title}</h3>
-                            <div class="dm-editable font-serif leading-relaxed text-sm text-ink min-h-[40px] break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'featureBlocks', 'content', this.innerText)">${feat.content||''}</div>
-                            ${isDM ? `<button onclick="window.removeCollectionItem(${idx}, 'featureBlocks')" class="absolute top-0 right-0 text-blood hover:text-red-600 px-2 py-1 text-[10px] uppercase font-black transition-colors"><i class="fa-solid fa-trash"></i></button>` : ''}
-                        </div>
-                    `).join('')}
+            // TAB: DESCRIPTION
+            const lore = JSON.parse(v.loreBlocks || '[]');
+            document.getElementById('content-intro').innerHTML = `
+                <div class="font-serif text-ink leading-relaxed break-words dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'intro', this.innerHTML)">
+                    ${v.intro || '<p class="text-gray-500 italic">Click to add detailed description...</p>'}
                 </div>
             `;
+            
+            document.getElementById('additional-lore').innerHTML = lore.map((block, idx) => `
+                <div class="mb-8 relative group">
+                    <h3 class="font-heading font-black text-xl text-ink uppercase tracking-widest mb-3 dm-editable break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'loreBlocks', 'title', this.innerText)">${block.title}</h3>
+                    <div class="dm-editable font-serif leading-relaxed text-sm text-ink min-h-[40px] break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'loreBlocks', 'text', this.innerHTML)">${block.text||''}</div>
+                    ${isDM ? `<button onclick="window.removeCollectionItem(${idx}, 'loreBlocks')" class="absolute top-0 right-0 text-blood hover:text-red-600 px-2 py-1 text-[10px] uppercase font-black transition-colors opacity-0 group-hover:opacity-100"><i class="fa-solid fa-trash"></i></button>` : ''}
+                </div>
+            `).join('');
 
-            // LEAF 2 - Archetypes
-            const archs = JSON.parse(v.archetypes || '[]');
-            document.getElementById('content-archetypes').innerHTML = `
-                <h2 class="font-heading text-3xl font-black text-blood mb-6 border-b-2 border-gold inline-block pb-1 pr-10 dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'headerEvolution', this.innerText)">${v.headerEvolution || 'Evolutionary Paths'}</h2>
-                <div class="space-y-12 mt-6 md:mt-8">
-                    ${archs.map((arch, aIdx) => `
-                        <div class="bg-[rgba(255,255,255,0.4)] p-6 rounded border border-gold shadow-lg relative">
-                            <span class="font-heading text-[10px] text-blood block mb-2 tracking-widest uppercase border-b border-gold/30 pb-1">Archetype Identity</span>
-                            <h3 class="font-heading text-3xl md:text-4xl font-black text-ink mb-3 dm-editable break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${aIdx}, 'archetypes', 'name', this.innerText)">${arch.name}</h3>
-                            <div class="dm-editable text-sm font-serif opacity-80 mb-6 leading-relaxed break-words min-h-[40px] text-ink" contenteditable="${isDM}" oninput="window.updateCollectionField(${aIdx}, 'archetypes', 'desc', this.innerText)">${arch.desc||''}</div>
-                            
-                            <div class="space-y-6">
-                                ${(arch.tables || []).map((t, tIdx) => window.renderTableHtml(t, tIdx, isDM, aIdx)).join('')}
-                            </div>
-                            
-                            ${isDM ? `
-                            <div class="mt-6 flex flex-wrap gap-2 pt-4 border-t border-gold/30">
-                                <button onclick="window.addArchetypeTable(${aIdx})" class="fantasy-btn px-4 py-2 text-[9px] font-black uppercase rounded shadow">+ Add Path Ledger</button>
-                                <button onclick="window.removeCollectionItem(${aIdx}, 'archetypes')" class="bg-transparent border border-blood text-blood hover:bg-blood hover:text-parchment px-4 py-2 text-[9px] font-black uppercase rounded transition-colors">Purge Path</button>
-                            </div>` : ''}
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            // TAB: TRAITS
+            document.getElementById('header-core').innerText = v.headerCore || 'Class Traits';
+            document.getElementById('trait-primaryAbility').innerText = v.primaryAbility || '...';
+            document.getElementById('trait-hitDie').innerText = v.hitDie || '...';
+            document.getElementById('trait-saves').innerText = v.saves || '...';
+            document.getElementById('trait-skills').innerText = v.skills || '...';
+            document.getElementById('trait-weapons').innerText = v.weapons || '...';
+            document.getElementById('trait-armor').innerText = v.armor || '...';
+            document.getElementById('trait-tools').innerText = v.tools || 'None';
+            document.getElementById('trait-equipment').innerText = v.equipment || '...';
+            
+            document.getElementById('becoming-name').innerText = v.name || 'Vocation';
+            
+            document.getElementById('trait-quickBuild').innerHTML = v.quickBuild || '<p class="text-gray-500 italic">Add level 1 quick build guide...</p>';
+            document.getElementById('trait-multiclass').innerHTML = v.multiclass || '<p class="text-gray-500 italic">Add multiclassing requirements...</p>';
 
-            // LEAF 3 - Scripts 
-            const scriptTiers = JSON.parse(v.scriptTiers || '[]');
-            document.getElementById('content-scripts').innerHTML = `
-                <h2 class="font-heading text-3xl font-black text-blood mb-6 border-b-2 border-gold inline-block pb-1 pr-10 dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'headerScripts', this.innerText)">${v.headerScripts || 'Terminal Scripts'}</h2>
-                <div class="mt-6 md:mt-8 space-y-6 w-full flex flex-col items-start">
-                    ${scriptTiers.map((tier, idx) => `
-                        <div class="script-protocol-container group relative">
-                            <div class="script-module-header dm-editable break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'scriptTiers', 'title', this.innerText)">
-                                ${tier.title || 'NEW PROTOCOL TIER'}
-                            </div>
-                            <div class="script-list-area dm-editable min-h-[60px] break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'scriptTiers', 'list', this.innerText)">
-                                ${tier.list || ''}
-                            </div>
-                            ${isDM ? `
-                                <div class="absolute top-4 right-4">
-                                    <button onclick="window.removeCollectionItem(${idx}, 'scriptTiers')" class="text-blood hover:text-red-600 text-xs transition-all"><i class="fa-solid fa-trash"></i></button>
-                                </div>` : ''}
-                        </div>
-                    `).join('')}
-                    ${scriptTiers.length === 0 ? '<div class="italic text-ink opacity-50 font-serif py-12 text-center w-full">Terminal awaiting script input...</div>' : ''}
-                </div>
-            `;
         };
 
         window.updateTableField = (tIdx, field, val, aIdx = null, idx1 = null, idx2 = null) => {
@@ -969,10 +1043,12 @@
             
             window.showToast("Inking new archive...");
             await addDoc(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION), { 
-                name: "NEW SUBJECT", custodianId: randomId, artUrl: "", detailArtUrl: "", tagline: "Entry Summary", desc: "", intro: "",
-                hitDie: "d8", primaryAbility: "Str", saves: "Str", armor: "None", weapons: "None", skills: "None",
-                quickBuild: "", classFeaturesOverview: "",
-                headerCore: "Core Systemic Readout", headerEvolution: "Evolutionary Paths", headerScripts: "Terminal Scripts",
+                name: "NEW SUBJECT", custodianId: randomId, artUrl: "", detailArtUrl: "", tagline: "Entry Summary", desc: "", intro: "<p>Initial description...</p>",
+                hitDie: "d8", primaryAbility: "Str", saves: "Str", armor: "None", weapons: "None", skills: "None", tools: "None", equipment: "None",
+                quickBuild: "<ul class=\"list-disc pl-5 space-y-2\"><li>Put your highest stat in...</li></ul>", 
+                multiclass: "<ul class=\"list-disc pl-5 space-y-2\"><li>You need <b>Stat 13</b> to multi in</li></ul>",
+                classFeaturesOverview: "",
+                headerCore: "Class Traits", headerEvolution: "Evolutionary Paths", headerScripts: "Terminal Scripts",
                 loreBlocks: "[]", featureBlocks: "[]", archetypes: "[]", scriptTiers: "[]", tables: "[]",
                 createdAt: Date.now(), order: maxOrder + 1000 
             });

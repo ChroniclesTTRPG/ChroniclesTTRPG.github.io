@@ -101,34 +101,6 @@
         .view-hidden { opacity: 0; pointer-events: none; position: absolute; transform: translateY(15px); width: calc(100% - 120px); }
         .view-active { opacity: 1; pointer-events: auto; position: relative; transform: translateY(0); }
 
-        /* 4-PAGE 3D BOOK SYSTEM */
-        .dossier-stack { display: grid; width: 100%; perspective: 3000px; transform-style: preserve-3d; }
-        .dossier-leaf { 
-            grid-area: 1 / 1; 
-            display: grid;
-            width: 100%; height: 100%; 
-            transform-style: preserve-3d; 
-            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1); 
-            transform-origin: left center; 
-        }
-        .leaf-side { 
-            grid-area: 1 / 1;
-            width: 100%; height: 100%; 
-            backface-visibility: hidden; 
-            -webkit-backface-visibility: hidden; 
-            background: #fdfaf3; 
-            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png'); 
-            border-radius: 4px; 
-            padding: 40px 60px; 
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.05); 
-        }
-        .leaf-front { z-index: 2; border-right: 1px solid rgba(0,0,0,0.1); opacity: 1; transition: opacity 0.3s; background-color: #fdfaf3; }
-        .leaf-back { z-index: 1; transform: rotateY(180deg); background: #faf5eb; border-left: 1px solid rgba(0,0,0,0.1); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-        
-        .dossier-leaf.flipped { transform: rotateY(-180deg); }
-        .dossier-leaf.flipped .leaf-front { opacity: 0; pointer-events: none; }
-        .dossier-leaf.flipped .leaf-back { opacity: 1; pointer-events: auto; }
-
         /* DM EDITABLE STATES */
         .dm-active-edit .dm-editable { 
             background: rgba(255, 255, 255, 0.3); 
@@ -153,10 +125,6 @@
         .prog-table tr:nth-child(even) td { background-color: rgba(255,255,255,0.3); }
         .prog-table th:last-child, .prog-table td:last-child { border-right: none; }
         .prog-table tr:last-child td { border-bottom: none; }
-
-        .leather-tile { background: rgba(255,255,255,0.4); padding: 16px; border-radius: 4px; border: 1px solid rgba(139, 90, 43, 0.4); box-shadow: inset 0 0 10px rgba(255,255,255,0.5); margin-bottom: 15px; }
-        .leather-tile-label { font-family: 'Cinzel', serif; font-size: 10px; color: #7a1b1b; display: block; margin-bottom: 6px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid rgba(139, 90, 43, 0.3); padding-bottom: 4px; font-weight: 900; }
-        .leather-tile-value { font-family: 'Lora', serif; font-size: 14px; color: #2c1e16; }
 
         /* TAB NAVIGATION STYLING */
         .vocation-tab-nav {
@@ -220,44 +188,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* SCRIPT MODULE STYLING */
-        .script-protocol-container { 
-            padding: 20px; 
-            background: rgba(255,255,255,0.3);
-            border-left: 4px solid #7a1b1b;
-            border-radius: 0 4px 4px 0;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            width: 100%;
-            position: relative;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
-            border-top: 1px solid rgba(139, 90, 43, 0.3);
-            border-right: 1px solid rgba(139, 90, 43, 0.3);
-            border-bottom: 1px solid rgba(139, 90, 43, 0.3);
-        }
-        .script-module-header {
-            font-family: 'Cinzel', serif;
-            font-weight: 900;
-            font-size: 20px;
-            color: #7a1b1b; 
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            border-bottom: 1px solid rgba(139, 90, 43, 0.3);
-            width: 100%;
-            padding-bottom: 4px;
-        }
-        .script-list-area { 
-            font-family: 'Lora', serif; 
-            font-weight: 400; 
-            font-size: 14px; 
-            color: #2c1e16;
-            line-height: 1.5; 
-            white-space: pre-wrap; 
-            width: 100%;
-        }
-
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
@@ -299,6 +229,7 @@
                         <a href="#" onclick="window.routeTo('beasts.html'); return false;" class="nav-link">Bestiary</a>
                         <a href="#" onclick="window.routeTo('backpack.html'); return false;" class="nav-link">Backpack</a>
                         <a href="#" onclick="window.routeTo('handbook.html'); return false;" class="nav-link active">Handbook</a>
+                        <a href="#" onclick="window.routeTo('script_codex.html'); return false;" class="nav-link">Records Codex</a>
                         <a href="#" onclick="window.routeTo('graveyard.html'); return false;" class="nav-link">Graveyard</a>
                     </nav>
                 </div>
@@ -338,7 +269,7 @@
                             <div id="vocation-grid" class="grid-container"></div>
                         </div>
 
-                        <!-- VIEW: DETAILS (4-Page Flip) -->
+                        <!-- VIEW: DETAILS (Tabbed System) -->
                         <div id="view-details" class="view-section view-hidden">
                             <div class="flex flex-col sm:flex-row justify-between items-center sm:items-start mb-6 gap-4 relative z-[2000]">
                                 <button onclick="window.setView('grid')" class="text-[11px] font-heading font-black uppercase tracking-[0.2em] text-ink hover:text-blood transition-colors flex items-center gap-2">
@@ -351,8 +282,8 @@
                             </div>
                             
                             <!-- HEADER AREA (Always visible in details) -->
-                            <div id="vocation-header-area" class="mb-8">
-                                <!-- Populated by JS -->
+                            <div id="vocation-header-area" class="mb-8 border-b-2 border-gold/40 pb-8">
+                                <!-- Populated dynamically by JS based on user request -->
                             </div>
                             
                             <!-- TAB NAVIGATION -->
@@ -375,7 +306,7 @@
                             </div>
                             
                             <div id="tab-content-traits" class="tab-section">
-                                <h2 class="font-heading text-2xl font-black text-blood mb-6 border-b border-gold inline-block pb-1 pr-10 dm-editable break-words" id="header-core" contenteditable="false" oninput="window.updateHeaderCore(this.innerText)">Class Traits</h2>
+                                <h2 class="font-heading text-2xl font-black text-blood mb-6 border-b border-gold inline-block pb-1 pr-10 dm-editable break-words" id="header-core" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'headerCore', this.innerText)">Class Traits</h2>
                                 
                                 <table class="prog-table w-full mb-10">
                                     <tbody>
@@ -433,14 +364,14 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                                     <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner">
                                         <b class="text-[12px] uppercase font-black text-blood block mb-3 border-b border-gold/50 pb-2 tracking-widest font-heading">Level 1 · Starting Out</b>
-                                        <div class="dm-editable text-sm leading-relaxed break-words min-h-[40px] font-serif text-ink" id="trait-quickBuild" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'quickBuild', this.innerText)">
+                                        <div class="dm-editable text-sm leading-relaxed break-words min-h-[40px] font-serif text-ink" id="trait-quickBuild" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'quickBuild', this.innerHTML)">
                                             <!-- Content -->
                                         </div>
                                     </div>
                                     
                                     <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner">
-                                        <b class="text-[12px] uppercase font-black text-blood block mb-3 border-b border-gold/50 pb-2 tracking-widest font-heading">Multiclass · Add Vocation</b>
-                                        <div class="dm-editable text-sm leading-relaxed break-words min-h-[40px] font-serif text-ink" id="trait-multiclass" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'multiclass', this.innerText)">
+                                        <b class="text-[12px] uppercase font-black text-blood block mb-3 border-b border-gold/50 pb-2 tracking-widest font-heading">Multiclass · Add <span id="multi-name">Vocation</span></b>
+                                        <div class="dm-editable text-sm leading-relaxed break-words min-h-[40px] font-serif text-ink" id="trait-multiclass" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'multiclass', this.innerHTML)">
                                             <!-- Content -->
                                         </div>
                                     </div>
@@ -448,11 +379,11 @@
                             </div>
                             
                             <div id="tab-content-features" class="tab-section">
-                                <div class="text-center py-12">
+                                <div class="text-center py-16 bg-[rgba(255,255,255,0.3)] border border-gold rounded shadow-inner mt-8">
                                     <i class="fa-solid fa-compass fa-spin text-4xl text-gold mb-6"></i>
-                                    <h3 class="font-heading text-2xl font-bold text-blood mb-2">Redirecting to Codex...</h3>
-                                    <p class="font-serif italic text-ink mb-6">Features and scripts are managed in the Records Codex.</p>
-                                    <button id="btn-redirect-features" class="fantasy-btn px-6 py-3 rounded uppercase tracking-widest font-bold shadow-lg">View Progression & Features</button>
+                                    <h3 class="font-heading text-2xl font-bold text-blood mb-2 uppercase tracking-widest">Accessing Records Codex</h3>
+                                    <p class="font-serif italic text-ink mb-6 text-sm max-w-md mx-auto">Vocation features, evolutionary paths, and scriptcasting capabilities are managed dynamically in the central Records Codex.</p>
+                                    <button id="btn-redirect-features" class="fantasy-btn px-6 py-3 rounded uppercase tracking-widest font-bold shadow-lg">View Vocation Progression</button>
                                 </div>
                             </div>
                             
@@ -564,34 +495,12 @@
         let currentUser = null;
         let activeRole = 'player';
         let currentView = 'grid';
-        let currentPage = 0;
         let activeVocId = null;
-        let saveTimer = null;
         let targetDelId = null;
         window.isPurgeMode = false;
         let isUserTyping = false;
-        
-        // Tab switching logic
-        window.switchDetailTab = (tabName) => {
-            // Update buttons
-            document.querySelectorAll('.vocation-tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`tab-btn-${tabName}`).classList.add('active');
-            
-            // Update sections
-            document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(`tab-content-${tabName}`).classList.add('active');
-            
-            // Handle specific tab logic
-            if (tabName === 'features') {
-                const v = vocations.find(x => x.id === activeVocId);
-                if (v) {
-                    const btn = document.getElementById('btn-redirect-features');
-                    btn.onclick = () => {
-                        window.routeTo(`script_codex.html`);
-                    };
-                }
-            }
-        };
+        let campaignName = "Chronicles";
+        let campaignSettings = { terms: {} };
 
         document.addEventListener('focusin', (e) => {
             if(e.target && e.target.classList && e.target.classList.contains('dm-editable')) {
@@ -604,11 +513,6 @@
                 if(currentView === 'details') renderDetails();
             }
         });
-
-        const safeJSONParse = (data, fallback = []) => {
-            try { if (!data) return fallback; if (typeof data === 'object') return data; return JSON.parse(data);
-            } catch (e) { return fallback; }
-        };
 
         window.updateRoleUI = () => {
             const isDM = activeRole === 'dm';
@@ -631,6 +535,22 @@
             renderGrid();
         };
 
+        window.switchDetailTab = (tabName) => {
+            document.querySelectorAll('.vocation-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-btn-${tabName}`).classList.add('active');
+            
+            document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(`tab-content-${tabName}`).classList.add('active');
+            
+            if (tabName === 'features') {
+                const v = vocations.find(x => x.id === activeVocId);
+                if (v) {
+                    const btn = document.getElementById('btn-redirect-features');
+                    btn.onclick = () => { window.routeTo(`script_codex.html`); };
+                }
+            }
+        };
+
         window.setView = (v, id = null) => {
             if (currentView === v && id === activeVocId) return;
             
@@ -647,7 +567,6 @@
 
             currentView = v; 
             activeVocId = id; 
-            currentPage = 0;
             
             if(v === 'grid') {
                 renderGrid();
@@ -656,7 +575,6 @@
                     gridView.classList.add('view-active');
                 }, 150);
             } else {
-                // Default to description tab when opening details
                 window.switchDetailTab('description');
                 renderDetails();
                 document.getElementById('content-pane').scrollTo({ top: 0, behavior: 'smooth' });
@@ -667,9 +585,6 @@
             }
         };
 
-        // ... removing old flipPage function ...
-
-        // Database Mutators
         const debounce = (func, wait) => {
             let timeout;
             return (...args) => {
@@ -701,34 +616,6 @@
                 items[idx][field] = val;
                 debouncedUpdate(activeVocId, { [collField]: JSON.stringify(items) });
             }
-        };
-
-        // Render Functions
-        window.renderTableHtml = (table, tIdx, isDM, aIdx = null) => {
-            return `
-                <div class="mt-8 mb-4 relative group bg-[rgba(255,255,255,0.4)] p-4 rounded border border-gold shadow-inner overflow-hidden">
-                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 gap-3">
-                        <b class="text-[12px] uppercase text-blood dm-editable font-black tracking-widest w-full lg:w-auto break-words font-heading" contenteditable="${isDM}" oninput="window.updateTableField(${tIdx}, 'title', this.innerText, ${aIdx})">${table.title}</b>
-                        ${isDM ? `
-                            <div class="flex flex-wrap gap-2 bg-ink p-1.5 rounded shadow w-full lg:w-auto justify-center">
-                                <button onclick="window.addTableRow(${tIdx}, ${aIdx})" class="text-gold hover:text-white px-2 py-1 text-[9px] font-black uppercase" title="Add Row">+R</button>
-                                <button onclick="window.remTableRow(${tIdx}, ${aIdx})" class="text-gold hover:text-white px-2 py-1 text-[9px] font-black uppercase" title="Remove Row">-R</button>
-                                <div class="w-px bg-gray-600 mx-1"></div>
-                                <button onclick="window.addTableCol(${tIdx}, ${aIdx})" class="text-gold hover:text-white px-2 py-1 text-[9px] font-black uppercase" title="Add Column">+C</button>
-                                <button onclick="window.remTableCol(${tIdx}, ${aIdx})" class="text-gold hover:text-white px-2 py-1 text-[9px] font-black uppercase" title="Remove Column">-C</button>
-                                <div class="w-px bg-gray-600 mx-1"></div>
-                                <button onclick="window.delTable(${tIdx}, ${aIdx})" class="text-blood hover:text-red-500 px-2 py-1 text-[9px] font-black uppercase"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        ` : ''}
-                    </div>
-                    <div class="overflow-x-auto w-full pb-2">
-                        <table class="prog-table w-full min-w-[400px]">
-                            <thead><tr>${table.headers.map((h, hIdx) => `<th class="dm-editable" contenteditable="${isDM}" oninput="window.updateTableField(${tIdx}, 'headers', this.innerText, ${aIdx}, ${hIdx})">${h}</th>`).join('')}</tr></thead>
-                            <tbody>${table.rows.map((row, rIdx) => `<tr>${row.map((cell, cIdx) => `<td class="dm-editable" contenteditable="${isDM}" oninput="window.updateTableField(${tIdx}, 'rows', this.innerText, ${aIdx}, ${rIdx}, ${cIdx})">${cell}</td>`).join('')}</tr>`).join('')}</tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
         };
 
         window.renderGrid = () => {
@@ -777,17 +664,21 @@
                 }
             });
 
-            // HEADER AREA (Top of page, above tabs)
+            // HEADER AREA: Dynamic updating of title based on campaignName and terms
+            const terminologyVocations = campaignSettings?.terms?.nav_vocations || 'CLASS';
+            const headerTitle = `${campaignName.toUpperCase()} · ${terminologyVocations.toUpperCase()} GUIDE`;
+            const sourceLabel = v.source || campaignName || 'Core Rules';
+
             document.getElementById('vocation-header-area').innerHTML = `
                 <div class="flex flex-col md:flex-row gap-8 items-start mb-4">
                     <div class="flex-grow">
-                        <p class="font-heading text-[10px] text-gold font-black uppercase tracking-[0.2em] mb-1">
-                            <i class="fa-solid fa-star text-[8px] mr-1"></i> Dungeons & Dragons 2024 · Class Guide <i class="fa-solid fa-star text-[8px] ml-1"></i>
+                        <p class="font-heading text-[10px] text-gold font-black uppercase tracking-[0.2em] mb-1 flex items-center justify-start">
+                            <i class="fa-solid fa-star text-[8px] mr-2"></i> ${headerTitle} <i class="fa-solid fa-star text-[8px] ml-2"></i>
                         </p>
                         <h1 class="font-heading text-5xl md:text-7xl font-bold text-ink mb-4 pb-2 border-b border-gold dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'name', this.innerText)">The <span class="italic text-blood">${v.name}</span></h1>
                         
-                        <div class="mb-6 flex gap-2">
-                            <span class="border border-gold px-3 py-1 text-[10px] font-heading font-black text-ink uppercase tracking-widest bg-[rgba(197,160,89,0.2)] rounded-sm">D&D 2024</span>
+                        <div class="mb-6 flex flex-wrap gap-2 items-center justify-start">
+                            <span class="border border-gold px-3 py-1 text-[10px] font-heading font-black text-ink uppercase tracking-widest bg-[rgba(197,160,89,0.2)] rounded-sm dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'source', this.innerText)">${sourceLabel}</span>
                             ${isDM ? `<span class="dm-editable min-w-[30px] border border-gray-400 px-2 py-1 text-[8px] font-mono text-gray-500 rounded-sm" contenteditable="${isDM}" title="Custodian ID" oninput="window.dbUp('${v.id}', 'custodianId', this.innerText)">ID: ${v.custodianId || '994'}</span>` : ''}
                         </div>
                         
@@ -796,9 +687,9 @@
                         </div>
                     </div>
                     
-                    <div class="flex-shrink-0 w-full md:w-64 lg:w-72 relative group cursor-zoom-in" onclick="window.zoomMedia('${v.artUrl}')">
+                    <div class="flex-shrink-0 w-full md:w-64 lg:w-72 relative group cursor-zoom-in" onclick="window.zoomMedia('${v.detailArtUrl || v.artUrl}')">
                         <div class="bg-[#e8cd87] p-2 rounded shadow-xl border-2 border-gold transform rotate-2 transition-transform group-hover:rotate-0 group-hover:scale-105 z-10 relative">
-                            ${v.artUrl ? (v.artUrl.includes('.mp4') ? `<video src="${v.artUrl}" autoplay loop muted class="w-full aspect-[4/5] object-cover rounded-sm shadow-inner"></video>` : `<img src="${v.artUrl}" class="w-full aspect-[4/5] object-cover rounded-sm shadow-inner" style="image-rendering: pixelated;">`) : '<div class="w-full aspect-[4/5] bg-[rgba(139,90,43,0.2)] flex items-center justify-center italic text-xs text-ink opacity-50 rounded-sm">Awaiting Visuals</div>'}
+                            ${(v.detailArtUrl || v.artUrl) ? ((v.detailArtUrl || v.artUrl).includes('.mp4') ? `<video src="${v.detailArtUrl || v.artUrl}" autoplay loop muted class="w-full aspect-[4/5] object-cover rounded-sm shadow-inner"></video>` : `<img src="${v.detailArtUrl || v.artUrl}" class="w-full aspect-[4/5] object-cover rounded-sm shadow-inner" style="image-rendering: pixelated;">`) : '<div class="w-full aspect-[4/5] bg-[rgba(139,90,43,0.2)] flex items-center justify-center italic text-xs text-ink opacity-50 rounded-sm">Awaiting Visuals</div>'}
                         </div>
                     </div>
                 </div>
@@ -844,132 +735,10 @@
             document.getElementById('trait-equipment').innerText = v.equipment || '...';
             
             document.getElementById('becoming-name').innerText = v.name || 'Vocation';
+            document.getElementById('multi-name').innerText = v.name || 'Vocation';
             
             document.getElementById('trait-quickBuild').innerHTML = v.quickBuild || '<p class="text-gray-500 italic">Add level 1 quick build guide...</p>';
             document.getElementById('trait-multiclass').innerHTML = v.multiclass || '<p class="text-gray-500 italic">Add multiclassing requirements...</p>';
-
-        };
-
-        window.updateTableField = (tIdx, field, val, aIdx = null, idx1 = null, idx2 = null) => {
-            const v = vocations.find(x => x.id === activeVocId);
-            if(aIdx !== null) {
-                const archs = JSON.parse(v.archetypes || '[]');
-                if(archs[aIdx] && archs[aIdx].tables[tIdx]) {
-                    if(field === 'title') archs[aIdx].tables[tIdx].title = val;
-                    else if(field === 'headers') archs[aIdx].tables[tIdx].headers[idx1] = val;
-                    else if(field === 'rows') archs[aIdx].tables[tIdx].rows[idx1][idx2] = val;
-                    debouncedUpdate(activeVocId, { archetypes: JSON.stringify(archs) });
-                }
-            } else {
-                const tbs = JSON.parse(v.tables || '[]');
-                if(tbs[tIdx]) {
-                    if(field === 'title') tbs[tIdx].title = val;
-                    else if(field === 'headers') tbs[tIdx].headers[idx1] = val;
-                    else if(field === 'rows') tbs[tIdx].rows[idx1][idx2] = val;
-                    debouncedUpdate(activeVocId, { tables: JSON.stringify(tbs) });
-                }
-            }
-        };
-
-        window.addTable = () => {
-            const v = vocations.find(x => x.id === activeVocId);
-            const tbs = JSON.parse(v.tables || '[]');
-            tbs.push({ title: "FIELD LEDGER", headers: ["Level", "Features"], rows: [["", ""]] });
-            performUpdate(activeVocId, { tables: JSON.stringify(tbs) });
-            setTimeout(renderDetails, 100);
-        };
-
-        window.addArchetypeTable = (aIdx) => {
-            const v = vocations.find(x => x.id === activeVocId);
-            const archs = JSON.parse(v.archetypes || '[]');
-            if(!archs[aIdx].tables) archs[aIdx].tables = [];
-            archs[aIdx].tables.push({ title: "PATH LEDGER", headers: ["Level", "Feature"], rows: [["", ""]] });
-            performUpdate(activeVocId, { archetypes: JSON.stringify(archs) });
-            setTimeout(renderDetails, 100);
-        };
-
-        window.addTableRow = (tIdx, aIdx = null) => {
-            const v = vocations.find(x => x.id === activeVocId);
-            if(aIdx !== null) {
-                const archs = JSON.parse(v.archetypes || '[]');
-                archs[aIdx].tables[tIdx].rows.push(new Array(archs[aIdx].tables[tIdx].headers.length).fill(""));
-                performUpdate(activeVocId, { archetypes: JSON.stringify(archs) });
-            } else {
-                const tbs = JSON.parse(v.tables || '[]');
-                tbs[tIdx].rows.push(new Array(tbs[tIdx].headers.length).fill(""));
-                performUpdate(activeVocId, { tables: JSON.stringify(tbs) });
-            }
-            setTimeout(renderDetails, 100);
-        };
-
-        window.remTableRow = (tIdx, aIdx = null) => {
-            const v = vocations.find(x => x.id === activeVocId);
-            if(aIdx !== null) {
-                const archs = JSON.parse(v.archetypes || '[]');
-                if(archs[aIdx].tables[tIdx].rows.length > 1) {
-                    archs[aIdx].tables[tIdx].rows.pop();
-                    performUpdate(activeVocId, { archetypes: JSON.stringify(archs) });
-                }
-            } else {
-                const tbs = JSON.parse(v.tables || '[]');
-                if(tbs[tIdx].rows.length > 1) {
-                    tbs[tIdx].rows.pop();
-                    performUpdate(activeVocId, { tables: JSON.stringify(tbs) });
-                }
-            }
-            setTimeout(renderDetails, 100);
-        };
-
-        window.addTableCol = (tIdx, aIdx = null) => {
-            const v = vocations.find(x => x.id === activeVocId);
-            if(aIdx !== null) {
-                const archs = JSON.parse(v.archetypes || '[]');
-                archs[aIdx].tables[tIdx].headers.push("NEW");
-                archs[aIdx].tables[tIdx].rows = archs[aIdx].tables[tIdx].rows.map(r => [...r, ""]);
-                performUpdate(activeVocId, { archetypes: JSON.stringify(archs) });
-            } else {
-                const tbs = JSON.parse(v.tables || '[]');
-                tbs[tIdx].headers.push("NEW");
-                tbs[tIdx].rows = tbs[tIdx].rows.map(r => [...r, ""]);
-                performUpdate(activeVocId, { tables: JSON.stringify(tbs) });
-            }
-            setTimeout(renderDetails, 100);
-        };
-
-        window.remTableCol = (tIdx, aIdx = null) => {
-            const v = vocations.find(x => x.id === activeVocId);
-            if(aIdx !== null) {
-                const archs = JSON.parse(v.archetypes || '[]');
-                if(archs[aIdx].tables[tIdx].headers.length > 1) {
-                    archs[aIdx].tables[tIdx].headers.pop();
-                    archs[aIdx].tables[tIdx].rows = archs[aIdx].tables[tIdx].rows.map(r => r.slice(0, -1));
-                    performUpdate(activeVocId, { archetypes: JSON.stringify(archs) });
-                }
-            } else {
-                const tbs = JSON.parse(v.tables || '[]');
-                if(tbs[tIdx].headers.length > 1) {
-                    tbs[tIdx].headers.pop();
-                    tbs[tIdx].rows = tbs[tIdx].rows.map(r => r.slice(0, -1));
-                    performUpdate(activeVocId, { tables: JSON.stringify(tbs) });
-                }
-            }
-            setTimeout(renderDetails, 100);
-        };
-
-        window.delTable = (tIdx, aIdx = null) => {
-            if(confirm("Expunge this data ledger completely?")) {
-                const v = vocations.find(x => x.id === activeVocId);
-                if(aIdx !== null) {
-                    const archs = JSON.parse(v.archetypes || '[]');
-                    archs[aIdx].tables.splice(tIdx, 1);
-                    performUpdate(activeVocId, { archetypes: JSON.stringify(archs) });
-                } else {
-                    const tbs = JSON.parse(v.tables || '[]');
-                    tbs.splice(tIdx, 1);
-                    performUpdate(activeVocId, { tables: JSON.stringify(tbs) });
-                }
-                setTimeout(renderDetails, 100);
-            }
         };
 
         window.addLoreBlock = () => {
@@ -977,30 +746,6 @@
             const items = JSON.parse(v.loreBlocks || '[]');
             items.push({ title: "NEW LOG ENTRY", text: "" });
             performUpdate(activeVocId, { loreBlocks: JSON.stringify(items) });
-            setTimeout(renderDetails, 100);
-        };
-
-        window.addFeatureBlock = () => {
-            const v = vocations.find(x => x.id === activeVocId);
-            const items = JSON.parse(v.featureBlocks || '[]');
-            items.push({ title: "CORE CAPABILITY", content: "" });
-            performUpdate(activeVocId, { featureBlocks: JSON.stringify(items) });
-            setTimeout(renderDetails, 100);
-        };
-
-        window.addArchetype = () => {
-            const v = vocations.find(x => x.id === activeVocId);
-            const items = JSON.parse(v.archetypes || '[]');
-            items.push({ name: "NEW PATH", desc: "", tables: [] });
-            performUpdate(activeVocId, { archetypes: JSON.stringify(items) });
-            setTimeout(renderDetails, 100);
-        };
-
-        window.addScriptTier = () => {
-            const v = vocations.find(x => x.id === activeVocId);
-            const items = JSON.parse(v.scriptTiers || '[]');
-            items.push({ title: "1ST TIER SCRIPTS", list: "- Example Script\n- Another Script" });
-            performUpdate(activeVocId, { scriptTiers: JSON.stringify(items) });
             setTimeout(renderDetails, 100);
         };
 
@@ -1043,13 +788,11 @@
             
             window.showToast("Inking new archive...");
             await addDoc(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION), { 
-                name: "NEW SUBJECT", custodianId: randomId, artUrl: "", detailArtUrl: "", tagline: "Entry Summary", desc: "", intro: "<p>Initial description...</p>",
+                name: "NEW SUBJECT", custodianId: randomId, artUrl: "", detailArtUrl: "", tagline: "Entry Summary", desc: "", intro: "", source: campaignName || "Core Rules",
                 hitDie: "d8", primaryAbility: "Str", saves: "Str", armor: "None", weapons: "None", skills: "None", tools: "None", equipment: "None",
-                quickBuild: "<ul class=\"list-disc pl-5 space-y-2\"><li>Put your highest stat in...</li></ul>", 
-                multiclass: "<ul class=\"list-disc pl-5 space-y-2\"><li>You need <b>Stat 13</b> to multi in</li></ul>",
-                classFeaturesOverview: "",
-                headerCore: "Class Traits", headerEvolution: "Evolutionary Paths", headerScripts: "Terminal Scripts",
-                loreBlocks: "[]", featureBlocks: "[]", archetypes: "[]", scriptTiers: "[]", tables: "[]",
+                quickBuild: "", multiclass: "",
+                headerCore: "Class Traits",
+                loreBlocks: "[]",
                 createdAt: Date.now(), order: maxOrder + 1000 
             });
         };
@@ -1118,9 +861,10 @@
                 if (appId !== "demo_campaign") {
                     const campDoc = await getDoc(doc(db, 'campaigns', appId));
                     if (campDoc.exists() && campDoc.data().name) {
+                        campaignName = campDoc.data().name;
                         const titleEl = document.getElementById('main-campaign-title');
-                        if (titleEl) titleEl.innerText = campDoc.data().name;
-                        document.title = `${campDoc.data().name} - Vocations`;
+                        if (titleEl) titleEl.innerText = campaignName;
+                        document.title = `${campaignName} - Vocations`;
                     }
                 }
 
@@ -1131,6 +875,13 @@
 
                 document.getElementById('initial-loading').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
+                
+                onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'campaignConfig', 'settings'), (docSnap) => {
+                    if (docSnap.exists()) {
+                        campaignSettings = docSnap.data();
+                        if(currentView === 'details') renderDetails();
+                    }
+                });
                 
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', DB_COLLECTION), (snap) => {
                     vocations = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.order ?? a.createdAt) - (b.order ?? b.createdAt));

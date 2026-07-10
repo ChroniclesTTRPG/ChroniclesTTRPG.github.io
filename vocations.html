@@ -69,35 +69,7 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; padding: 10px 0; }
-
-        .background-card {
-            background: rgba(255, 255, 255, 0.4);
-            border: 2px solid rgba(139, 90, 43, 0.4);
-            box-shadow: inset 0 0 15px rgba(255,255,255,0.5), 0 4px 6px rgba(0,0,0,0.1);
-            position: relative; display: flex; height: 380px; overflow: hidden;
-            transition: all 0.3s ease;
-            cursor: pointer; border-radius: 4px;
-        }
-        .background-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-color: #c5a059; }
-        
-        .card-art { position: absolute; top: 0; right: 0; width: 50%; height: 100%; z-index: 1; filter: sepia(0.3) contrast(1.1) brightness(0.9); transition: all 0.5s ease; border-left: 2px solid rgba(139,90,43,0.3); }
-        .background-card:hover .card-art { filter: sepia(0) contrast(1.1) brightness(1); width: 55%; }
-        .card-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, #f1e5c5 10%, transparent 90%); z-index: 2; pointer-events: none; }
-
-        .card-info-panel { position: relative; z-index: 3; width: 80%; height: 100%; padding: 20px; display: flex; flex-direction: column; background: linear-gradient(to right, #f1e5c5 60%, rgba(241, 229, 197, 0.95) 75%, transparent); pointer-events: none; }
-        .card-info-panel > * { pointer-events: auto; }
-
-        .view-btn {
-            background: #2c1e16; color: #c5a059; font-family: 'Cinzel', serif; font-weight: 900; font-size: 10px; text-transform: uppercase;
-            padding: 10px; border-radius: 4px; text-align: center; width: 100%; margin-top: auto; letter-spacing: 2px; border: 1px solid #c5a059;
-            transition: background 0.3s ease;
-        }
-        .background-card:hover .view-btn { background: #7a1b1b; color: #f1e5c5; border-color: #f1e5c5; }
-
-        .reorder-controls { position: absolute; left: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 4px; z-index: 20; background: #2c1e16; padding: 8px 4px; border-radius: 0 4px 4px 0; border: 1px solid #c5a059; border-left: none; }
-        .reorder-btn { width: 24px; height: 24px; color: #c5a059; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .reorder-btn:hover:not(:disabled) { color: #f1e5c5; transform: scale(1.1); }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; padding: 10px 0; }
 
         .view-section { transition: opacity 0.4s ease-in-out, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .view-hidden { opacity: 0; pointer-events: none; position: absolute; transform: translateY(15px); width: calc(100% - 120px); }
@@ -118,6 +90,33 @@
         .dm-active-edit [contenteditable="true"]:empty::before {
             content: "Click to add entry..."; color: #888; font-style: italic; pointer-events: none; display: block;
         }
+
+        /* TRAITS TABLE STYLES */
+        .traits-table { 
+            width: 100%; border-collapse: collapse; 
+            border: 1px solid rgba(139,90,43,0.3); 
+            border-radius: 4px; overflow: hidden; 
+            background: rgba(255, 255, 255, 0.4); 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+        }
+        .traits-table tr:nth-child(even) td { background-color: rgba(255,255,255,0.3); }
+        .traits-table tr:nth-child(odd) td { background-color: rgba(139,90,43,0.05); }
+        .traits-table td { border-bottom: 1px dashed rgba(139,90,43,0.3); padding: 14px 16px; }
+        .traits-table tr:last-child td { border-bottom: none; }
+        .traits-table .trait-label { 
+            width: 25%; font-family: 'Cinzel', serif; font-size: 11px; 
+            font-weight: 900; color: #7a1b1b; text-transform: uppercase; 
+            letter-spacing: 0.2em; vertical-align: top; line-height: 1.4; 
+            border-right: 1px solid rgba(139,90,43,0.2);
+        }
+        .traits-table .trait-value { 
+            font-family: 'Lora', serif; font-size: 14px; 
+            color: #2c1e16; vertical-align: top; line-height: 1.5; 
+        }
+
+        .custom-bullet-list ul { list-style-type: none; padding-left: 0; }
+        .custom-bullet-list li { position: relative; padding-left: 1.2em; margin-bottom: 0.5em; }
+        .custom-bullet-list li::before { content: '↳'; position: absolute; left: 0; color: #c5a059; font-weight: bold; }
 
         .prog-table { width: 100%; border-collapse: separate; border-spacing: 0; font-family: 'Lora', serif; font-size: 13px; margin: 25px 0; background: rgba(255,255,255,0.5); border: 2px solid #c5a059; border-radius: 4px; overflow: hidden; }
         .prog-table th { font-family: 'Cinzel', serif; text-transform: uppercase; font-size: 11px; color: #f1e5c5; background: #2c1e16; padding: 14px 12px; text-align: left; font-weight: 900; letter-spacing: 1px; border-bottom: 2px solid #7a1b1b; }
@@ -186,6 +185,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Draggable Custom Scrollbar */
+        .custom-scrollbar { padding-bottom: 8px; }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c5a059; border-radius: 4px; border: 1px solid #1a110b; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #e8cd87; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
@@ -233,7 +238,6 @@
 
             <div class="flex flex-col lg:flex-row gap-8 items-start">
                 
-                <!-- LEFT SIDEBAR: Navigational Columns -->
                 <div class="w-full lg:w-64 flex-shrink-0 flex flex-col gap-4">
                     
                     <!-- Main Library Navigation (Visible on Grid View) -->
@@ -308,79 +312,11 @@
                                 <div id="content-intro" class="mb-8 scroll-mt-6"></div>
                                 <div id="additional-lore"></div>
                                 <div id="subclasses-container"></div>
+                                <div id="lineages-container"></div>
                             </div>
                             
                             <div id="tab-content-traits" class="tab-section">
-                                <h2 class="font-heading text-2xl font-black text-blood mb-6 border-b border-gold inline-block pb-1 pr-10 dm-editable break-words scroll-mt-6" id="header-core" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'headerCore', this.innerText)">Class Traits</h2>
-                                
-                                <table class="prog-table w-full mb-10">
-                                    <tbody>
-                                        <tr>
-                                            <th class="w-1/4">Primary Ability</th>
-                                            <td id="trait-primaryAbility" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'primaryAbility', this.innerText)"></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Hit Point Die</th>
-                                            <td id="trait-hitDie" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'hitDie', this.innerText)"></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Saving Throws</th>
-                                            <td id="trait-saves" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'saves', this.innerText)"></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Skill Proficiencies</th>
-                                            <td id="trait-skills" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'skills', this.innerText)"></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Weapon Proficiencies</th>
-                                            <td id="trait-weapons" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'weapons', this.innerText)"></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Armor Training</th>
-                                            <td id="trait-armor" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'armor', this.innerText)"></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Tool Proficiencies</th>
-                                            <td id="trait-tools" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'tools', this.innerText)">None</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Starting Equipment</th>
-                                            <td id="trait-equipment" class="dm-editable" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'equipment', this.innerText)"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                
-                                <div class="text-center my-8">
-                                    <svg class="mx-auto" width="40" height="20" viewBox="0 0 40 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 20L0 0H40L20 20Z" fill="url(#paint0_linear)"/>
-                                        <path d="M20 18L3 1H37L20 18Z" fill="#f1e5c5"/>
-                                        <path d="M20 16L6 2H34L20 16Z" fill="#8a2b2b"/>
-                                        <defs>
-                                            <linearGradient id="paint0_linear" x1="20" y1="0" x2="20" y2="20" gradientUnits="userSpaceOnUse">
-                                                <stop stop-color="#c5a059"/>
-                                                <stop offset="1" stop-color="#8a2b2b"/>
-                                            </linearGradient>
-                                        </defs>
-                                    </svg>
-                                </div>
-                                
-                                <h2 id="becoming-section" class="font-heading text-3xl font-black text-ink mb-6 text-center italic scroll-mt-6">Becoming a <span id="becoming-name" class="text-blood not-italic">Vocation</span></h2>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                                    <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner">
-                                        <b class="text-[12px] uppercase font-black text-blood block mb-3 border-b border-gold/50 pb-2 tracking-widest font-heading">Level 1 · Starting Out</b>
-                                        <div class="dm-editable text-sm leading-relaxed break-words min-h-[40px] font-serif text-ink" id="trait-quickBuild" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'quickBuild', this.innerHTML)">
-                                            <!-- Content -->
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner">
-                                        <b class="text-[12px] uppercase font-black text-blood block mb-3 border-b border-gold/50 pb-2 tracking-widest font-heading">Multiclass · Add <span id="multi-name">Vocation</span></b>
-                                        <div class="dm-editable text-sm leading-relaxed break-words min-h-[40px] font-serif text-ink" id="trait-multiclass" contenteditable="false" oninput="window.dbUp(window.activeVocId, 'multiclass', this.innerHTML)">
-                                            <!-- Content -->
-                                        </div>
-                                    </div>
-                                </div>
+                                <!-- Populated dynamically by JS -->
                             </div>
                             
                             <div id="tab-content-features" class="tab-section">
@@ -656,25 +592,32 @@
             }
 
             grid.innerHTML = vocations.map((v, idx) => `
-                <div class="background-card ${window.isPurgeMode ? 'border-blood shadow-[0_0_15px_rgba(122,27,27,0.3)]' : ''}" onclick="!window.isPurgeMode && window.setView('details', '${v.id}')">
-                    <div class="card-art cursor-zoom-in" onclick="event.stopPropagation(); window.zoomMedia('${v.artUrl}')">
-                        ${v.artUrl ? (v.artUrl.includes('.mp4') ? `<video src="${v.artUrl}" autoplay loop muted class="w-full h-full object-cover"></video>` : `<img src="${v.artUrl}" class="w-full h-full object-cover">`) : '<div class="w-full h-full bg-[rgba(139,90,43,0.2)] flex items-center justify-center italic text-xs text-ink opacity-50">Awaiting Visuals</div>'}
+                <div class="bg-[rgba(255,255,255,0.6)] border-2 border-[#c5a059] rounded overflow-hidden flex flex-col group relative transition-transform hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(0,0,0,0.2)] cursor-pointer min-h-[320px] ${window.isPurgeMode ? 'border-blood shadow-[0_0_15px_rgba(122,27,27,0.3)]' : ''}" onclick="!window.isPurgeMode && window.setView('details', '${v.id}')">
+                    
+                    <div class="h-48 bg-[#e8cd87] border-b-2 border-[#c5a059] relative overflow-hidden" onclick="event.stopPropagation(); window.zoomMedia('${v.artUrl}')">
+                        ${v.artUrl ? (v.artUrl.includes('.mp4') ? `<video src="${v.artUrl}" autoplay loop muted class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"></video>` : `<img src="${v.artUrl}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" style="image-rendering: pixelated;">`) : '<div class="w-full h-full bg-[rgba(139,90,43,0.1)] flex items-center justify-center italic text-xs text-ink opacity-50 font-serif">Awaiting Visuals</div>'}
                     </div>
-                    <div class="card-info-panel pr-10">
-                        <h3 class="font-heading font-black text-xl text-ink leading-tight mb-1 line-clamp-2">${v.name}</h3>
-                        <p class="font-serif italic text-[10px] text-blood mb-3 line-clamp-1">${v.tagline}</p>
-                        <p class="font-serif text-[11px] text-ink line-clamp-3 mb-3 leading-snug">${v.desc || ''}</p>
+                    
+                    <div class="p-5 flex flex-col flex-grow bg-gradient-to-b from-[rgba(255,255,255,0.4)] to-[rgba(241,229,197,0.6)] shadow-inner">
+                        <h3 class="font-heading font-black text-2xl text-ink leading-tight mb-1 line-clamp-1">${v.name}</h3>
+                        <p class="font-serif italic text-[11px] text-blood mb-3 line-clamp-1">${v.tagline || 'Entry Summary'}</p>
+                        <p class="font-serif text-[12px] text-ink line-clamp-3 mb-4 leading-snug flex-grow">${v.desc || ''}</p>
                         
-                        <div class="space-y-1.5 mb-4 border-t border-gold/30 pt-3">
-                            <div class="text-[10px] leading-tight"><b class="font-heading text-blood tracking-wide uppercase mr-1">Ability:</b><span class="text-ink line-clamp-1 inline">${v.primaryAbility || 'None'}</span></div>
-                            <div class="text-[10px] leading-tight"><b class="font-heading text-blood tracking-wide uppercase mr-1">Hit Die:</b><span class="text-ink line-clamp-1 inline">${v.hitDie || 'd8'}</span></div>
+                        <div class="flex justify-between items-center border-t border-gold/30 pt-3 mb-4">
+                            <div class="text-[10px] leading-tight"><b class="font-heading text-blood tracking-wide uppercase mr-1">Ability:</b><span class="text-ink">${v.primaryAbility || 'None'}</span></div>
+                            <div class="text-[10px] leading-tight"><b class="font-heading text-blood tracking-wide uppercase mr-1">Hit Die:</b><span class="text-ink">${v.hitDie || 'd8'}</span></div>
                         </div>
                         
                         ${window.isPurgeMode 
                                 ? `<button onclick="event.stopPropagation(); window.triggerDel('${v.id}')" class="bg-blood hover:bg-red-800 text-parchment w-full py-2.5 text-[10px] font-black tracking-widest uppercase rounded transition-colors shadow-md mt-auto">Purge Entry</button>` 
-                                : `<button class="view-btn flex items-center justify-center gap-2 mt-auto">Inspect Log <i class="fa-solid fa-arrow-right"></i></button>`}
+                                : `<button class="w-full bg-[#2c1e16] hover:bg-[#7a1b1b] text-[#c5a059] hover:text-[#f1e5c5] font-heading font-black text-[10px] uppercase py-2.5 rounded transition-colors border border-[#c5a059] tracking-widest mt-auto">Inspect Log <i class="fa-solid fa-arrow-right ml-1"></i></button>`}
                     </div>
-                    ${isDM && !window.isPurgeMode ? `<div class="reorder-controls"><button onclick="event.stopPropagation(); window.moveRecord('${v.id}', -1)" class="reorder-btn" title="Move Up"><i class="fa-solid fa-caret-up"></i></button><button onclick="event.stopPropagation(); window.moveRecord('${v.id}', 1)" class="reorder-btn" title="Move Down"><i class="fa-solid fa-caret-down"></i></button></div>` : ''}
+                    
+                    ${isDM && !window.isPurgeMode ? `
+                        <div class="absolute top-2 left-2 flex flex-col gap-1 z-20 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 p-1 rounded border border-gold/50">
+                            <button onclick="event.stopPropagation(); window.moveRecord('${v.id}', -1)" class="w-6 h-6 text-gold hover:text-white flex items-center justify-center text-xs"><i class="fa-solid fa-caret-up"></i></button>
+                            <button onclick="event.stopPropagation(); window.moveRecord('${v.id}', 1)" class="w-6 h-6 text-gold hover:text-white flex items-center justify-center text-xs"><i class="fa-solid fa-caret-down"></i></button>
+                        </div>` : ''}
                 </div>
             `).join('');
         };
@@ -690,12 +633,12 @@
                 }
             });
 
+            // HEADER AREA
             const terminologyVocations = campaignSettings?.terms?.nav_vocations || 'CLASS';
             const headerTitle = `${campaignName.toUpperCase()} · ${terminologyVocations.toUpperCase()} GUIDE`;
             const sourceLabel = v.source || campaignName || 'Core Rules';
             const subVocLabel = 'SUB' + terminologyVocations.toUpperCase();
 
-            // HEADER
             document.getElementById('vocation-header-area').innerHTML = `
                 <div class="flex flex-col md:flex-row gap-8 items-start mb-4">
                     <div class="flex-grow w-full">
@@ -758,6 +701,9 @@
             const subSubtitle = v.subclassHeaderSubtitle || 'The Paths';
             tocHtml += `<a href="javascript:void(0)" onclick="window.scrollToSection('description', 'subclasses-section')" class="toc-link">${subSubtitle}</a>`;
 
+            const linTitle = v.lineageHeaderTitle || 'Best Species';
+            tocHtml += `<a href="javascript:void(0)" onclick="window.scrollToSection('description', 'lineages-section')" class="toc-link">${linTitle}</a>`;
+
             tocHtml += `<div class="mt-4 pt-4 border-t border-gold/10"></div>`;
             const coreHeader = v.headerCore || 'Class Traits';
             tocHtml += `<a href="javascript:void(0)" onclick="window.scrollToSection('traits', 'header-core')" class="toc-link">${coreHeader}</a>`;
@@ -788,14 +734,14 @@
             
             document.getElementById('subclasses-container').innerHTML = `
                 <div id="subclasses-section" class="mt-16 mb-8 scroll-mt-6 pt-12 border-t border-gold/30">
-                    <div class="text-center mb-8">
-                        <h2 class="font-heading text-3xl md:text-4xl font-black text-[#c5a059] mb-4 flex justify-center items-center gap-3 flex-wrap">
+                    <div class="text-center mb-10">
+                        <h2 class="font-heading text-3xl md:text-4xl font-black text-ink mb-4 flex justify-center items-center gap-3 flex-wrap">
                             <span class="dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'subclassHeaderTitle', this.innerText)">${v.subclassHeaderTitle || `${v.name || 'Vocation'} ${subVocLabel}ES`}</span> 
-                            <span class="text-ink/50 font-normal text-2xl">·</span> 
-                            <span class="text-[#e8e0cd] italic dm-editable font-serif text-3xl drop-shadow-md" style="text-shadow: 1px 1px 0px #000;" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'subclassHeaderSubtitle', this.innerText)">${v.subclassHeaderSubtitle || 'The Paths'}</span>
+                            <span class="text-ink/50 font-normal text-2xl md:text-3xl">·</span> 
+                            <span class="text-blood italic dm-editable font-serif text-3xl md:text-4xl drop-shadow-sm" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'subclassHeaderSubtitle', this.innerText)">${v.subclassHeaderSubtitle || 'The Paths'}</span>
                         </h2>
-                        <div class="font-serif text-sm text-[#2c1e16] font-bold max-w-3xl mx-auto dm-editable leading-relaxed" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'subclassIntro', this.innerText)">
-                            ${v.subclassIntro || `At level 3 you pick a Path. Each one rewires your abilities. Short verdict on each, below.`}
+                        <div class="font-serif text-sm text-ink opacity-90 max-w-3xl mx-auto dm-editable leading-relaxed" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'subclassIntro', this.innerText)">
+                            ${v.subclassIntro || "At level 3 you pick a Path. Each one rewires your abilities. Short verdict on each, below."}
                         </div>
                     </div>
                     
@@ -847,22 +793,141 @@
                 </div>
             `;
 
+            // LINEAGES SECTION (Inside Description Tab)
+            const lineages = JSON.parse(v.lineageBlocks || '[]');
+            
+            document.getElementById('lineages-container').innerHTML = `
+                <div id="lineages-section" class="mt-16 mb-8 scroll-mt-6 pt-12 border-t border-gold/30">
+                    <div class="text-center mb-10">
+                        <h2 class="font-heading text-3xl md:text-4xl font-black text-ink mb-4 flex justify-center items-center gap-3 flex-wrap">
+                            <span class="dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'lineageHeaderTitle', this.innerText)">${v.lineageHeaderTitle || 'Best Species for a'}</span> 
+                            <span class="text-blood italic dm-editable font-serif text-3xl md:text-4xl drop-shadow-sm" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'lineageHeaderSubtitle', this.innerText)">${v.lineageHeaderSubtitle || v.name || 'Vocation'}</span>
+                        </h2>
+                        <div class="font-serif text-sm text-ink opacity-90 max-w-3xl mx-auto dm-editable leading-relaxed" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'lineageIntro', this.innerText)">
+                            ${v.lineageIntro || "The rules unhitched ability scores from species, so your pick is now pure flavor and traits. These pair best with this path's mechanics."}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        ${lineages.map((lin, idx) => `
+                            <div class="bg-[rgba(255,255,255,0.4)] border border-gold p-6 rounded shadow-inner relative group">
+                                <div class="mb-3 border-b border-gold/30 pb-2 flex flex-wrap items-baseline gap-x-2">
+                                    <span class="font-heading font-black text-ink text-lg dm-editable leading-none" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'lineageBlocks', 'name', this.innerText)">${lin.name || 'Species'}</span>
+                                    <span class="text-ink/60 font-black">·</span>
+                                    <span class="font-serif italic text-blood text-[13px] dm-editable leading-none" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'lineageBlocks', 'subtitle', this.innerText)">${lin.subtitle || 'The Iconic Pick'}</span>
+                                </div>
+                                <div class="dm-editable font-serif text-sm leading-relaxed text-ink min-h-[60px]" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'lineageBlocks', 'desc', this.innerHTML)">
+                                    ${lin.desc || 'Describe why this lineage works perfectly with this vocation...'}
+                                </div>
+                                
+                                ${isDM ? `
+                                    <div class="absolute -top-3 -right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow-md rounded">
+                                        <button onclick="window.moveCollectionItem(${idx}, -1, 'lineageBlocks')" class="bg-ink text-white hover:text-gold px-2 py-1 rounded-l text-[10px] border-r border-gray-700"><i class="fa-solid fa-arrow-left"></i></button>
+                                        <button onclick="window.moveCollectionItem(${idx}, 1, 'lineageBlocks')" class="bg-ink text-white hover:text-gold px-2 py-1 text-[10px] border-r border-gray-700"><i class="fa-solid fa-arrow-right"></i></button>
+                                        <button onclick="window.removeCollectionItem(${idx}, 'lineageBlocks')" class="bg-blood/90 text-white hover:bg-red-600 px-2 py-1 rounded-r text-[10px]"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    ${isDM ? `
+                        <div class="mt-8 text-center">
+                            <button onclick="window.addLineageBlock()" class="fantasy-btn px-4 py-2 rounded text-[10px]"><i class="fa-solid fa-plus mr-1"></i> Add Lineage Recommendation</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
             // TAB: TRAITS
-            document.getElementById('header-core').innerText = coreHeader;
-            document.getElementById('trait-primaryAbility').innerText = v.primaryAbility || '...';
-            document.getElementById('trait-hitDie').innerText = v.hitDie || '...';
-            document.getElementById('trait-saves').innerText = v.saves || '...';
-            document.getElementById('trait-skills').innerText = v.skills || '...';
-            document.getElementById('trait-weapons').innerText = v.weapons || '...';
-            document.getElementById('trait-armor').innerText = v.armor || '...';
-            document.getElementById('trait-tools').innerText = v.tools || 'None';
-            document.getElementById('trait-equipment').innerText = v.equipment || '...';
+            const standardTraits = [
+                { id: 'primaryAbility', label: 'Primary Ability' },
+                { id: 'hitDie', label: 'Hit Point Die' },
+                { id: 'saves', label: 'Saving Throws' },
+                { id: 'skills', label: 'Skill Proficiencies' },
+                { id: 'weapons', label: 'Weapon Proficiencies' },
+                { id: 'armor', label: 'Armor Training' },
+                { id: 'tools', label: 'Tool Proficiencies' },
+                { id: 'equipment', label: 'Starting Equipment' }
+            ];
+
+            const customTraits = JSON.parse(v.customTraits || '[]');
             
-            document.getElementById('becoming-name').innerText = v.name || 'Vocation';
-            document.getElementById('multi-name').innerText = v.name || 'Vocation';
-            
-            document.getElementById('trait-quickBuild').innerHTML = v.quickBuild || '<p class="text-gray-500 italic">Add level 1 quick build guide...</p>';
-            document.getElementById('trait-multiclass').innerHTML = v.multiclass || '<p class="text-gray-500 italic">Add multiclassing requirements...</p>';
+            let traitsHtml = standardTraits.map(t => `
+                <tr>
+                    <td class="trait-label">${t.label}</td>
+                    <td class="trait-value"><div class="dm-editable break-words" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', '${t.id}', this.innerText)">${v[t.id] || 'None'}</div></td>
+                </tr>
+            `).join('');
+
+            traitsHtml += customTraits.map((ct, idx) => `
+                <tr class="group relative">
+                    <td class="trait-label"><div class="dm-editable" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'customTraits', 'label', this.innerText)">${ct.label}</div></td>
+                    <td class="trait-value relative">
+                        <div class="dm-editable break-words" contenteditable="${isDM}" oninput="window.updateCollectionField(${idx}, 'customTraits', 'value', this.innerText)">${ct.value}</div>
+                        ${isDM ? `<button onclick="window.removeCollectionItem(${idx}, 'customTraits')" class="absolute top-2 right-2 text-blood hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 rounded p-1 shadow-sm"><i class="fa-solid fa-trash text-xs"></i></button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('tab-content-traits').innerHTML = `
+                <h2 class="font-heading text-3xl font-black text-ink mb-6 flex items-center gap-2 scroll-mt-6" id="header-core">
+                    <span class="dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'headerTraitsTitle', this.innerText)">${v.headerTraitsTitle || 'Class'}</span>
+                    <span class="text-blood italic dm-editable font-serif drop-shadow-sm" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'headerTraitsSubtitle', this.innerText)">${v.headerTraitsSubtitle || 'Traits'}</span>
+                </h2>
+                
+                <table class="traits-table mb-4">
+                    <tbody>
+                        ${traitsHtml}
+                    </tbody>
+                </table>
+                
+                ${isDM ? `
+                    <div class="mb-12">
+                        <button onclick="window.addCustomTrait()" class="fantasy-btn-alt px-3 py-1.5 rounded text-[10px] uppercase font-bold tracking-widest"><i class="fa-solid fa-plus mr-1"></i> Add Custom Trait</button>
+                    </div>
+                ` : '<div class="mb-12"></div>'}
+                
+                <div class="text-center mb-8">
+                    <svg class="mx-auto opacity-50" width="30" height="15" viewBox="0 0 40 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 20L0 0H40L20 20Z" fill="url(#paint0_linear)"/>
+                        <path d="M20 18L3 1H37L20 18Z" fill="#c5a059"/>
+                        <path d="M20 16L6 2H34L20 16Z" fill="#8a2b2b"/>
+                        <defs>
+                            <linearGradient id="paint0_linear" x1="20" y1="0" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#c5a059"/>
+                                <stop offset="1" stop-color="#8a2b2b"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <h2 id="becoming-section" class="font-heading text-3xl md:text-4xl font-black text-ink mb-8 text-center scroll-mt-6 flex justify-center items-center gap-2 flex-wrap">
+                    Becoming a <span class="text-blood italic font-serif ml-1">${v.name || 'Vocation'}</span>
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-[rgba(241,229,197,0.5)] border border-[rgba(139,90,43,0.3)] p-6 rounded shadow-sm">
+                        <h3 class="font-heading text-sm font-black text-ink border-b border-gold/40 pb-2 mb-4 flex items-baseline gap-2">
+                            <span class="dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'quickBuildTitle', this.innerText)">${v.quickBuildTitle || 'Level 1'}</span>
+                            <span class="text-blood italic font-serif text-[13px] dm-editable font-normal" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'quickBuildSubtitle', this.innerText)">${v.quickBuildSubtitle || '· Starting Out'}</span>
+                        </h3>
+                        <div class="dm-editable text-sm leading-relaxed break-words min-h-[60px] font-serif text-ink space-y-3 custom-bullet-list" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'quickBuild', this.innerHTML)">
+                            ${v.quickBuild || '<p>Add level 1 quick build guide here...</p>'}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-[rgba(241,229,197,0.5)] border border-[rgba(139,90,43,0.3)] p-6 rounded shadow-sm">
+                        <h3 class="font-heading text-sm font-black text-ink border-b border-gold/40 pb-2 mb-4 flex items-baseline gap-2">
+                            <span class="dm-editable" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'multiclassTitle', this.innerText)">${v.multiclassTitle || 'Multiclass'}</span>
+                            <span class="text-blood italic font-serif text-[13px] dm-editable font-normal" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'multiclassSubtitle', this.innerText)">${v.multiclassSubtitle || '· Add Vocation'}</span>
+                        </h3>
+                        <div class="dm-editable text-sm leading-relaxed break-words min-h-[60px] font-serif text-ink space-y-3 custom-bullet-list" contenteditable="${isDM}" oninput="window.dbUp('${v.id}', 'multiclass', this.innerHTML)">
+                            ${v.multiclass || '<p>Add multiclassing requirements here...</p>'}
+                        </div>
+                    </div>
+                </div>
+            `;
         };
 
         window.addLoreBlock = () => {
@@ -882,6 +947,22 @@
             const items = JSON.parse(v.subclasses || '[]');
             items.push({ name: "New Path", tag: "BALANCED", tagColor: "#c5a059", desc: "Short description of the mechanics.", imgUrl: "" });
             performUpdate(activeVocId, { subclasses: JSON.stringify(items) });
+            setTimeout(renderDetails, 100);
+        };
+
+        window.addLineageBlock = () => {
+            const v = vocations.find(x => x.id === activeVocId);
+            const items = JSON.parse(v.lineageBlocks || '[]');
+            items.push({ name: "New Lineage", subtitle: "The Wild Card", desc: "Short description of the synergy." });
+            performUpdate(activeVocId, { lineageBlocks: JSON.stringify(items) });
+            setTimeout(renderDetails, 100);
+        };
+
+        window.addCustomTrait = () => {
+            const v = vocations.find(x => x.id === activeVocId);
+            const items = JSON.parse(v.customTraits || '[]');
+            items.push({ label: "NEW TRAIT", value: "Description of the trait..." });
+            performUpdate(activeVocId, { customTraits: JSON.stringify(items) });
             setTimeout(renderDetails, 100);
         };
 
@@ -941,6 +1022,7 @@
                 headerCore: "Class Traits",
                 loreBlocks: "[]",
                 subclassHeaderTitle: "SUBCLASSES", subclassHeaderSubtitle: "The Paths", subclassIntro: "At level 3 you pick a Path. Each one rewires what your abilities mean. Short verdict on each, below.", subclasses: "[]",
+                lineageHeaderTitle: "Best Species for a", lineageHeaderSubtitle: "NEW SUBJECT", lineageIntro: "The rules unhitched ability scores from species, so your pick is now pure flavor and traits. These pair best with this path's mechanics.", lineageBlocks: "[]",
                 createdAt: Date.now(), order: maxOrder + 1000 
             });
         };

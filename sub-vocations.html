@@ -39,10 +39,42 @@
             background-image: 
                 radial-gradient(circle at center, transparent 0%, rgba(200, 170, 120, 0.3) 100%),
                 url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
-            box-shadow: inset 0 0 40px rgba(139, 90, 43, 0.4), 0 10px 30px rgba(0,0,0,0.7);
+            box-shadow: inset 0 0 40px rgba(139, 90, 43, 0.4), 0 10px 40px rgba(0,0,0,0.8);
             border: 2px solid #c5a059;
             color: #2c1e16;
-            border-radius: 4px;
+            border-radius: 6px;
+        }
+
+        /* Drop cap for storybook feel */
+        .drop-cap::first-letter {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #7a1b1b;
+            float: left;
+            line-height: 0.8;
+            margin-right: 0.5rem;
+            margin-top: 0.2rem;
+            text-shadow: 1px 1px 0px rgba(197, 160, 89, 0.5);
+        }
+
+        .book-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 3rem 0;
+            opacity: 0.8;
+        }
+        .book-divider::before, .book-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #c5a059, transparent);
+        }
+        .book-divider-icon {
+            color: #7a1b1b;
+            margin: 0 1rem;
+            font-size: 0.8rem;
         }
         
         .fantasy-btn { background: linear-gradient(to bottom, #8a2b2b, #5a1111); color: #f1e5c5 !important; border: 1px solid #c5a059 !important; font-family: 'Cinzel', serif; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.2) !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
@@ -93,34 +125,20 @@
             content: "Click to add entry..."; color: #888; font-style: italic; pointer-events: none; display: block; opacity: 0.7;
         }
 
-        /* Feature Card Styles */
-        .feat-lvl-box {
-            background: #c5a059;
-            color: #1a110b;
-            font-family: 'Cinzel', serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            flex-shrink: 0;
-            border-right: 1px solid rgba(0,0,0,0.2);
-            box-shadow: inset -2px 0 5px rgba(0,0,0,0.1);
-        }
-
-        /* Pairing Table Styles */
-        .pairing-table { width: 100%; border-collapse: collapse; font-family: 'Lora', serif; font-size: 13px; }
-        .pairing-table tr { border-bottom: 1px dashed rgba(197, 160, 89, 0.3); }
+        /* Pairing Table Styles (Redesigned for book) */
+        .pairing-table { width: 100%; border-collapse: collapse; font-family: 'Lora', serif; font-size: 12px; }
+        .pairing-table tr { border-bottom: 1px dashed rgba(197, 160, 89, 0.4); }
         .pairing-table tr:last-child { border-bottom: none; }
-        .pairing-table td { padding: 10px; vertical-align: top; }
-        .pairing-table .pt-label { width: 25%; font-family: 'Cinzel', serif; color: #c5a059; text-transform: uppercase; font-size: 10px; font-weight: 900; letter-spacing: 1px; padding-right: 16px; }
+        .pairing-table td { padding: 8px 4px; vertical-align: top; }
+        .pairing-table .pt-label { width: 30%; font-family: 'Cinzel', serif; color: #7a1b1b; text-transform: uppercase; font-size: 9px; font-weight: 900; letter-spacing: 1px; padding-right: 12px; }
         .pairing-table .pt-val { color: #2c1e16; }
         
-        /* Compare Table */
-        .compare-table { width: 100%; border-collapse: collapse; font-family: 'Lora', serif; font-size: 12px; }
-        .compare-table th { background: rgba(139,90,43,0.1); color: #7a1b1b; font-family: 'Cinzel', serif; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; padding: 12px; text-align: left; border-bottom: 2px solid #c5a059; }
-        .compare-table td { padding: 12px; border-bottom: 1px solid rgba(139, 90, 43, 0.2); color: #2c1e16; }
-        .compare-table tr:nth-child(even) td { background: rgba(255,255,255,0.4); }
+        /* Compare Table (Redesigned for book) */
+        .compare-table { width: 100%; border-collapse: collapse; font-family: 'Lora', serif; font-size: 12px; border-top: 2px solid #c5a059; border-bottom: 2px solid #c5a059; }
+        .compare-table th { color: #7a1b1b; font-family: 'Cinzel', serif; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; padding: 12px; text-align: left; border-bottom: 1px solid #c5a059; background: rgba(197,160,89,0.1); }
+        .compare-table td { padding: 12px; border-bottom: 1px dashed rgba(139, 90, 43, 0.3); color: #2c1e16; }
+        .compare-table tr:nth-child(even) td { background: rgba(139,90,43,0.03); }
+        .compare-table tr:last-child td { border-bottom: none; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
@@ -135,6 +153,7 @@
     <!-- MAIN DASHBOARD -->
     <div id="dashboard-screen" class="min-h-screen p-4 md:p-8 hidden w-full">
         <div class="max-w-[1400px] mx-auto">
+            
             <header class="flex flex-col items-center md:items-start md:flex-row justify-between mb-8 border-b border-gray-700 pb-6 gap-6 relative">
                 <div class="absolute -bottom-1.5 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-50"></div>
                 
@@ -191,7 +210,7 @@
                     </div>
                 </div>
 
-                <!-- RIGHT AREA: The Content -->
+                <!-- RIGHT AREA: The Unified Master Parchment Document -->
                 <div class="flex-grow w-full relative max-w-full">
                     <div class="mb-4">
                         <button onclick="window.goBackToVocations()" class="text-[11px] font-heading font-black uppercase tracking-[0.2em] text-gray-500 hover:text-gold transition-colors flex items-center gap-2">
@@ -199,62 +218,82 @@
                         </button>
                     </div>
 
-                    <!-- TOP HERO SECTION -->
-                    <div class="parchment-paper p-8 md:p-12 mb-12 shadow-[0_15px_40px_rgba(0,0,0,0.6)] relative group/hero" id="hero-section">
-                        <!-- Dynamic Hero Content filled by JS -->
-                    </div>
+                    <!-- THE MASTER PARCHMENT -->
+                    <div class="parchment-paper shadow-[0_15px_50px_rgba(0,0,0,0.8)] rounded-md overflow-hidden relative" id="master-parchment">
+                        
+                        <!-- TOP HERO BANNER (Bleeds to edges) -->
+                        <div id="hero-banner-container" class="w-full relative bg-ink">
+                            <!-- Filled dynamically if heroArtUrl exists -->
+                        </div>
 
-                    <!-- WHICH SUBCLASS IS RIGHT FOR YOU -->
-                    <div class="parchment-paper p-8 md:p-12 mb-12 shadow-[0_15px_40px_rgba(0,0,0,0.6)]">
-                        <div class="text-center mb-8">
-                            <h2 class="font-heading text-3xl font-black text-ink mb-2">Which <span class="text-blood italic" id="guide-sub-label">Subclass</span> is Right for You?</h2>
-                            <div class="font-serif text-sm text-ink opacity-80 dm-editable" contenteditable="false" id="guide-intro" oninput="window.dbUp('subclassGuideDecisionIntro', this.innerText)">
-                                Four different fantasies share one class chassis. Skim the table and the cards, then jump straight into the deep-dive that fits your style of play.
+                        <!-- Inner Paddings for Book Content -->
+                        <div class="p-8 md:p-12 lg:p-16">
+                            
+                            <!-- HERO TEXT -->
+                            <div class="mb-12 relative group/hero" id="hero-text-section">
+                                <!-- Dynamic Hero Text filled by JS -->
                             </div>
-                        </div>
 
-                        <!-- Dynamic Decision Table -->
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse font-serif text-[13px]">
-                                <thead>
-                                    <tr>
-                                        <th class="py-3 px-4 text-blood font-heading text-[10px] tracking-widest border-b border-gold/30">If you want...</th>
-                                        <th class="py-3 px-4 text-blood font-heading text-[10px] tracking-widest border-b border-gold/30">Pick</th>
-                                        <th class="py-3 px-4 border-b border-gold/30 w-16 text-center">
-                                            <button id="btn-add-decision" onclick="window.addDecisionRow()" class="hidden text-blood hover:text-red-700 transition-colors"><i class="fa-solid fa-plus"></i></button>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody id="decision-table-body">
+                            <div class="book-divider"><i class="fa-solid fa-gem book-divider-icon"></i></div>
+
+                            <!-- WHICH SUBCLASS IS RIGHT FOR YOU -->
+                            <div class="mb-16" id="decision-section">
+                                <div class="text-center mb-8">
+                                    <h2 class="font-heading text-3xl font-black text-ink mb-2">Which <span class="text-blood italic" id="guide-sub-label">Subclass</span> is Right for You?</h2>
+                                    <div class="font-serif text-sm text-ink opacity-80 dm-editable max-w-2xl mx-auto" contenteditable="false" id="guide-intro" oninput="window.dbUp('subclassGuideDecisionIntro', this.innerText)">
+                                        Four different fantasies share one class chassis. Skim the table and the cards, then jump straight into the deep-dive that fits your style of play.
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic Decision Table -->
+                                <div class="overflow-x-auto mb-10">
+                                    <table class="w-full text-left border-collapse font-serif text-[13px] border-y-2 border-gold">
+                                        <thead>
+                                            <tr>
+                                                <th class="py-3 px-4 text-blood font-heading text-[10px] tracking-widest border-b border-gold bg-gold/10">If you want...</th>
+                                                <th class="py-3 px-4 text-blood font-heading text-[10px] tracking-widest border-b border-gold bg-gold/10">Pick</th>
+                                                <th class="py-3 px-4 border-b border-gold bg-gold/10 w-16 text-center">
+                                                    <button id="btn-add-decision" onclick="window.addDecisionRow()" class="hidden text-blood hover:text-red-700 transition-colors"><i class="fa-solid fa-plus"></i></button>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="decision-table-body">
+                                            <!-- Filled by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Dynamic Mini Cards (Marginalia Style) -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="decision-cards-container">
                                     <!-- Filled by JS -->
-                                </tbody>
-                            </table>
-                        </div>
+                                </div>
+                            </div>
 
-                        <!-- Dynamic Mini Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8" id="decision-cards-container">
-                            <!-- Filled by JS -->
-                        </div>
-                    </div>
+                            <div class="book-divider"><i class="fa-solid fa-gem book-divider-icon"></i><i class="fa-solid fa-gem book-divider-icon"></i></div>
 
-                    <!-- THE SUBCLASSES DEEP DIVES -->
-                    <div id="subclasses-deep-dives" class="space-y-12 mb-16">
-                        <!-- Iterated Subclasses Filled by JS -->
-                    </div>
+                            <!-- THE SUBCLASSES DEEP DIVES -->
+                            <div id="subclasses-deep-dives" class="mb-16">
+                                <!-- Iterated Subclasses Filled by JS -->
+                            </div>
 
-                    <!-- COMPARE ALL SUBCLASSES TABLE -->
-                    <div class="parchment-paper p-6 md:p-10 mt-12 mb-16 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                        <div class="text-center mb-8">
-                            <h2 class="font-heading text-2xl font-black text-ink mb-2">Compare All <span class="text-blood italic" id="compare-sub-label">Subclasses</span></h2>
-                            <p class="font-serif text-sm text-ink/70 italic">Same chassis, different mechanics. Use this table to spot the differences fast.</p>
-                        </div>
-                        <div class="overflow-x-auto custom-scrollbar pb-4">
-                            <table class="compare-table min-w-[800px]" id="compare-table">
-                                <!-- Filled by JS -->
-                            </table>
-                        </div>
-                        <div id="dm-compare-controls" class="hidden flex justify-center mt-4 pt-4 border-t border-gray-800 gap-4">
-                            <button onclick="window.addCompareRow()" class="fantasy-btn px-4 py-1.5 rounded text-[10px]">+ Add Trait Row</button>
+                            <div class="book-divider"><i class="fa-solid fa-gem book-divider-icon"></i></div>
+
+                            <!-- COMPARE ALL SUBCLASSES TABLE -->
+                            <div class="mb-8" id="compare-section">
+                                <div class="text-center mb-8">
+                                    <h2 class="font-heading text-2xl font-black text-ink mb-2">Compare All <span class="text-blood italic" id="compare-sub-label">Subclasses</span></h2>
+                                    <p class="font-serif text-sm text-ink/70 italic">Same chassis, different mechanics. Use this table to spot the differences fast.</p>
+                                </div>
+                                <div class="overflow-x-auto custom-scrollbar pb-4">
+                                    <table class="compare-table min-w-[800px]" id="compare-table">
+                                        <!-- Filled by JS -->
+                                    </table>
+                                </div>
+                                <div id="dm-compare-controls" class="hidden flex justify-center mt-4 pt-4 gap-4">
+                                    <button onclick="window.addCompareRow()" class="fantasy-btn-alt px-4 py-1.5 rounded text-[10px]">+ Add Trait Row</button>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -494,30 +533,33 @@
             const sourceLabel = vocation.source || campaignName || 'Core Rules';
             const headerTitle = `${campaignName.toUpperCase()} · ${termVoc.toUpperCase()} GUIDE`;
 
-            // Top Hero
-            document.getElementById('hero-section').innerHTML = `
-                ${vocation.heroArtUrl ? `<div class="w-full h-48 md:h-64 object-cover mb-6 rounded border-2 border-gold shadow-md overflow-hidden cursor-zoom-in"><img src="${vocation.heroArtUrl}" class="w-full h-full object-cover"></div>` : ''}
-                ${isDM ? `<div class="absolute top-4 right-4 opacity-0 group-hover/hero:opacity-100 transition-opacity z-10"><input type="text" class="text-[9px] bg-black/80 text-white border border-gold p-1 rounded" placeholder="Hero Banner URL" value="${vocation.heroArtUrl||''}" oninput="window.dbUp('heroArtUrl', this.value)"></div>` : ''}
-                <div class="flex flex-col md:flex-row gap-8 items-start">
-                    <div class="flex-grow">
-                        <p class="font-heading text-[10px] text-blood font-black uppercase tracking-[0.2em] mb-3 flex items-center justify-start dm-editable" contenteditable="false" id="hero-kicker">
-                            <i class="fa-solid fa-star text-[8px] mr-2"></i> ${headerTitle} <i class="fa-solid fa-star text-[8px] ml-2"></i>
-                        </p>
-                        <h1 class="font-heading text-5xl md:text-7xl font-bold text-ink mb-4 tracking-tight drop-shadow-sm flex flex-wrap items-baseline gap-x-3">
-                            <span class="text-ink">The</span>
-                            <span id="hero-voc-name" class="dm-editable" contenteditable="false">${vocation.name || 'Vocation'}</span> 
-                        </h1>
-                        <div class="font-serif text-sm text-ink/80 leading-relaxed max-w-2xl dm-editable" contenteditable="false" id="hero-intro" oninput="window.dbUp('subclassGuideIntro', this.innerText)">
-                            ${vocation.subclassGuideIntro || 'All subclasses share the core chassis, but each one completely changes how you play at the table. This is the complete deep-dive.'}
-                        </div>
-                    </div>
-                    <!-- Right side grid of pixel icons -->
-                    <div id="hero-icon-grid" class="flex-shrink-0 grid grid-cols-2 gap-2 border-2 border-gold p-2 bg-[rgba(139,90,43,0.1)] shadow-inner rounded">
-                        ${JSON.parse(vocation.subclasses || '[]').map(s => `
-                            <div class="aspect-square bg-[#e8e0cd] relative overflow-hidden border border-gold/30 w-16 h-16 md:w-24 md:h-24 shadow-sm">
-                                ${s.imgUrl ? `<img src="${s.imgUrl}" class="w-full h-full object-cover" style="image-rendering: pixelated;">` : `<div class="w-full h-full flex items-center justify-center text-[10px] text-ink/30 font-serif italic">N/A</div>`}
-                            </div>
-                        `).join('')}
+            // HERO BANNER CONTAINER (Bleed to edge)
+            const bannerContainer = document.getElementById('hero-banner-container');
+            if (vocation.heroArtUrl || isDM) {
+                bannerContainer.classList.remove('hidden');
+                bannerContainer.innerHTML = `
+                    ${vocation.heroArtUrl ? `<img src="${vocation.heroArtUrl}" class="w-full h-48 md:h-64 object-cover object-center opacity-90 border-b-4 border-gold shadow-md">` : `<div class="w-full h-32 bg-ink/5 border-b-4 border-gold border-dashed flex items-center justify-center font-serif italic text-ink/30">Add Hero Banner URL (Optional)</div>`}
+                    ${isDM ? `<div class="absolute top-4 right-4 z-20"><input type="text" class="text-[9px] bg-black/80 text-white border border-gold px-2 py-1 rounded shadow-lg focus:outline-none focus:border-blood" placeholder="Hero Banner URL" value="${vocation.heroArtUrl||''}" oninput="window.dbUp('heroArtUrl', this.value)"></div>` : ''}
+                `;
+            } else {
+                bannerContainer.classList.add('hidden');
+                bannerContainer.innerHTML = '';
+            }
+
+            // TOP HERO TEXT SECTION
+            let introHtml = vocation.subclassGuideIntro || 'All subclasses share the core chassis, but each one completely changes how you play at the table. This is the complete deep-dive.';
+            
+            document.getElementById('hero-text-section').innerHTML = `
+                <div class="flex flex-col gap-4">
+                    <p class="font-heading text-[10px] text-blood font-black uppercase tracking-[0.2em] flex items-center justify-start dm-editable" contenteditable="false" id="hero-kicker">
+                        <i class="fa-solid fa-star text-[8px] mr-2"></i> ${headerTitle} <i class="fa-solid fa-star text-[8px] ml-2"></i>
+                    </p>
+                    <h1 class="font-heading text-5xl md:text-7xl font-bold text-ink tracking-tight drop-shadow-sm flex flex-wrap items-baseline gap-x-3 leading-none">
+                        <span class="text-ink">The</span>
+                        <span id="hero-voc-name" class="dm-editable" contenteditable="false">${vocation.name || 'Vocation'}</span> 
+                    </h1>
+                    <div class="font-serif text-base text-ink/80 leading-relaxed max-w-3xl dm-editable drop-cap mt-4" contenteditable="false" id="hero-intro" oninput="window.dbUp('subclassGuideIntro', this.innerHTML)">
+                        ${introHtml}
                     </div>
                 </div>
             `;
@@ -530,95 +572,108 @@
             
             const decGuide = JSON.parse(vocation.subclassDecisionGuide || '[]');
             document.getElementById('decision-table-body').innerHTML = decGuide.map((dg, idx) => `
-                <tr class="border-b border-gold/10 hover:bg-gold/5 transition-colors group">
+                <tr class="border-b border-gold/40 hover:bg-gold/5 transition-colors group">
                     <td class="py-3 px-4 font-bold text-ink dm-editable" contenteditable="${isDM}" oninput="window.updateDecisionRow(${idx}, 'want', this.innerText)">${dg.want || 'Maximum damage per turn'}</td>
                     <td class="py-3 px-4">
-                        <span class="text-[10px] uppercase font-black tracking-widest px-2 py-0.5 rounded border dm-editable inline-block whitespace-nowrap" style="color: ${dg.color||'#7a1b1b'}; border-color: ${dg.color||'#7a1b1b'};" contenteditable="${isDM}" oninput="window.updateDecisionRow(${idx}, 'pick', this.innerText)">${dg.pick || 'PATH OF THE BERSERKER'}</span>
+                        <span class="text-[10px] uppercase font-black tracking-widest px-2 py-0.5 rounded border dm-editable inline-block whitespace-nowrap" style="color: ${dg.color||'#7a1b1b'}; border-color: ${dg.color||'#7a1b1b'}; background-color: ${dg.color ? dg.color+'15' : 'transparent'};" contenteditable="${isDM}" oninput="window.updateDecisionRow(${idx}, 'pick', this.innerText)">${dg.pick || 'PATH OF THE BERSERKER'}</span>
                     </td>
                     ${isDM ? `<td class="py-3 px-4 text-center"><button onclick="window.removeDecisionRow(${idx})" class="text-blood hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-trash"></i></button></td>` : '<td></td>'}
                 </tr>
             `).join('');
 
             document.getElementById('decision-cards-container').innerHTML = subs.map((s, idx) => `
-                <div class="bg-[rgba(139,90,43,0.05)] border border-gold/30 p-4 rounded hover:shadow-md transition-shadow flex flex-col cursor-pointer" onclick="document.getElementById('subclass-section-${idx}').scrollIntoView({behavior:'smooth'})">
+                <div class="border-l-4 border-gold/50 pl-4 py-2 hover:border-blood transition-colors cursor-pointer group flex flex-col h-full" onclick="document.getElementById('subclass-section-${idx}').scrollIntoView({behavior:'smooth', block:'start'})">
                     <div class="flex justify-between items-start mb-2 gap-2">
-                        <h4 class="font-heading font-black text-blood text-sm leading-tight">${s.name || 'Path'}</h4>
+                        <h4 class="font-heading font-black text-ink text-sm leading-tight group-hover:text-blood transition-colors">${s.name || 'Path'}</h4>
                         <span class="text-[8px] uppercase tracking-widest font-black text-white px-1.5 py-0.5 rounded flex-shrink-0" style="background-color: ${s.tagColor || '#4a5d23'}">${s.tag || 'BALANCED'}</span>
                     </div>
-                    <p class="font-serif text-[11px] text-ink/80 leading-relaxed mb-4 flex-grow line-clamp-4">${s.desc || '...'}</p>
-                    <div class="text-[9px] font-heading text-ink font-black uppercase tracking-widest border-t border-gold/30 pt-2 mt-auto text-right">View This Subclass &rarr;</div>
+                    <p class="font-serif text-[12px] text-ink/70 leading-relaxed mb-4 flex-grow line-clamp-4">${s.desc || '...'}</p>
+                    <div class="text-[9px] font-heading text-blood font-black uppercase tracking-widest mt-auto group-hover:underline decoration-blood underline-offset-4">Read The Path &rarr;</div>
                 </div>
             `).join('');
 
-            // Individual Subclass Deep Dives
+            // Individual Subclass Deep Dives (Storybook layout)
             document.getElementById('subclasses-deep-dives').innerHTML = subs.map((s, idx) => {
                 const feats = s.features || [];
                 const pairings = s.pairings || [];
                 
                 return `
-                <div class="parchment-paper overflow-hidden scroll-mt-20 shadow-[0_10px_30px_rgba(0,0,0,0.5)]" id="subclass-section-${idx}">
-                    ${s.bannerUrl ? `<div class="w-full h-32 md:h-48 border-b-2 border-gold/50 overflow-hidden"><img src="${s.bannerUrl}" class="w-full h-full object-cover"></div>` : ''}
+                <div class="subclass-chapter scroll-mt-24 ${idx !== subs.length-1 ? 'mb-24 pb-8 border-b-2 border-gold/30 border-dashed' : ''}" id="subclass-section-${idx}">
                     
-                    <!-- Subclass Header -->
-                    <div class="bg-[rgba(139,90,43,0.05)] border-b border-gold/20 p-6 md:p-8 flex flex-col md:flex-row gap-6 relative group">
-                        <div class="flex-shrink-0 w-24 h-24 md:w-32 md:h-32 bg-[rgba(255,255,255,0.5)] border-2 border-gold rounded shadow-lg overflow-hidden relative">
-                            ${s.imgUrl ? `<img src="${s.imgUrl}" class="w-full h-full object-cover" style="image-rendering: pixelated;">` : `<div class="w-full h-full flex items-center justify-center text-xs text-ink/30 italic font-serif">No Art</div>`}
-                            ${isDM ? `<div class="absolute inset-0 bg-black/80 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 gap-1">
-                                <input type="text" class="w-full text-[9px] bg-black text-white border border-gold p-1 text-center" value="${s.imgUrl||''}" placeholder="Portrait URL" oninput="window.updateSubclassData(${idx}, 'imgUrl', this.value)">
-                                <input type="text" class="w-full text-[9px] bg-black text-white border border-gold p-1 text-center" value="${s.bannerUrl||''}" placeholder="Banner URL" oninput="window.updateSubclassData(${idx}, 'bannerUrl', this.value)">
+                    <!-- Top Subclass Image/Banner -->
+                    <div class="relative w-full mb-8 group/subbanner">
+                        ${s.bannerUrl ? `<div class="w-full h-32 md:h-48 rounded overflow-hidden shadow-inner border border-gold"><img src="${s.bannerUrl}" class="w-full h-full object-cover"></div>` : `<div class="w-full h-8 border-t border-b border-gold/40"></div>`}
+                        ${isDM ? `
+                            <div class="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center z-10 rounded">
+                                <input type="text" class="w-1/2 text-[9px] bg-white text-ink border border-gold px-2 py-1 text-center shadow-lg" value="${s.bannerUrl||''}" placeholder="Banner Image URL" oninput="window.updateSubclassData(${idx}, 'bannerUrl', this.value)">
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Header & Portrait Block -->
+                    <div class="flex flex-col md:flex-row gap-8 items-start relative group/header mb-12">
+                        
+                        <!-- Portrait -->
+                        <div class="w-24 h-24 md:w-32 md:h-32 shrink-0 rounded-full border-4 border-gold shadow-lg overflow-hidden relative bg-white/50">
+                            ${s.imgUrl ? `<img src="${s.imgUrl}" class="w-full h-full object-cover" style="image-rendering: pixelated;">` : `<div class="w-full h-full flex items-center justify-center text-[10px] text-ink/30 italic font-serif">No Art</div>`}
+                            ${isDM ? `<div class="absolute inset-0 bg-black/70 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center p-1">
+                                <input type="text" class="w-full text-[8px] bg-transparent text-white border-b border-white text-center focus:outline-none" value="${s.imgUrl||''}" placeholder="Portrait URL" oninput="window.updateSubclassData(${idx}, 'imgUrl', this.value)">
                             </div>` : ''}
                         </div>
-                        <div class="flex-grow">
-                            <div class="flex flex-wrap items-baseline gap-3 mb-2">
-                                <h3 class="font-heading text-3xl md:text-4xl font-black text-ink dm-editable" contenteditable="${isDM}" oninput="window.updateSubclassData(${idx}, 'name', this.innerText)">${s.name || 'Subclass Name'}</h3>
-                                <span class="text-[10px] uppercase tracking-widest font-black text-white px-2 py-0.5 rounded dm-editable inline-block" style="background-color: ${s.tagColor || '#4a5d23'}; border: 1px solid ${s.tagColor || '#4a5d23'}" contenteditable="${isDM}" oninput="window.updateSubclassData(${idx}, 'tag', this.innerText)" title="Edit Text">${s.tag || 'BALANCED'}</span>
-                            </div>
-                            <div class="font-serif text-sm text-ink/80 leading-relaxed max-w-3xl dm-editable" contenteditable="${isDM}" oninput="window.updateSubclassData(${idx}, 'desc', this.innerText)">${s.desc || 'Detailed intro...'}</div>
-                        </div>
-                        ${isDM ? `
-                            <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onclick="window.addDeepItem(${idx}, 'features', {level: '3', title: 'New Feature', desc: 'Effect...'})" class="bg-indigo-900 text-white px-2 py-1 text-[10px] rounded hover:bg-indigo-700">+ Feat</button>
-                                <button onclick="window.addDeepItem(${idx}, 'pairings', {label: 'SPECIES', value: 'Any'})" class="bg-indigo-900 text-white px-2 py-1 text-[10px] rounded hover:bg-indigo-700">+ Pairing</button>
-                            </div>
-                        ` : ''}
-                    </div>
-
-                    <div class="p-6 md:p-8 bg-[rgba(255,255,255,0.4)]">
-                        <h4 class="font-heading text-xs font-black text-blood uppercase tracking-[0.2em] mb-6 border-b border-gold/30 pb-2">${s.name || 'Path'} Features</h4>
                         
-                        <!-- Features Grid -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                            ${feats.map((f, fIdx) => `
-                                <div class="flex bg-[rgba(255,255,255,0.6)] border border-[rgba(197,160,89,0.4)] shadow-sm rounded overflow-hidden relative group">
-                                    <div class="feat-lvl-box dm-editable" contenteditable="${isDM}" oninput="window.updateSubclassDeepData(${idx}, 'features', ${fIdx}, 'level', this.innerText)">
-                                        <span class="text-xl leading-none">${f.level || '?'}</span>
-                                        <span class="text-[8px] uppercase tracking-widest mt-1 opacity-70">Level</span>
-                                    </div>
-                                    <div class="p-4 flex-grow">
-                                        <h5 class="font-heading text-sm font-bold text-ink mb-1 dm-editable" contenteditable="${isDM}" oninput="window.updateSubclassDeepData(${idx}, 'features', ${fIdx}, 'title', this.innerText)">${f.title || 'Feature Title'}</h5>
-                                        <div class="font-serif text-[12px] text-ink/80 leading-relaxed dm-editable" contenteditable="${isDM}" oninput="window.updateSubclassDeepData(${idx}, 'features', ${fIdx}, 'desc', this.innerText)">${f.desc || 'Effect details...'}</div>
-                                    </div>
-                                    ${isDM ? `<button onclick="window.removeDeepItem(${idx}, 'features', ${fIdx})" class="absolute top-2 right-2 text-blood hover:text-red-500 opacity-0 group-hover:opacity-100 text-xs"><i class="fa-solid fa-trash"></i></button>` : ''}
-                                </div>
-                            `).join('')}
+                        <!-- Title & Intro -->
+                        <div class="flex-grow">
+                            <div class="flex flex-wrap items-baseline gap-3 mb-3">
+                                <h3 class="font-heading text-3xl md:text-4xl font-black text-ink dm-editable" contenteditable="${isDM}" oninput="window.updateSubclassData(${idx}, 'name', this.innerText)">${s.name || 'Subclass Name'}</h3>
+                                <span class="text-[10px] uppercase tracking-widest font-black text-white px-2 py-0.5 rounded dm-editable inline-block shadow-sm" style="background-color: ${s.tagColor || '#4a5d23'}; border: 1px solid ${s.tagColor || '#4a5d23'}" contenteditable="${isDM}" oninput="window.updateSubclassData(${idx}, 'tag', this.innerText)" title="Edit Tag">${s.tag || 'BALANCED'}</span>
+                                ${isDM ? `<input type="color" class="w-5 h-5 ml-2 cursor-pointer border-0 bg-transparent" value="${s.tagColor || '#4a5d23'}" onchange="window.updateSubclassData(${idx}, 'tagColor', this.value)" title="Change Tag Color">` : ''}
+                            </div>
+                            <div class="font-serif text-[15px] text-ink/80 leading-relaxed max-w-3xl dm-editable drop-cap" contenteditable="${isDM}" oninput="window.updateSubclassData(${idx}, 'desc', this.innerText)">${s.desc || 'Detailed intro...'}</div>
                         </div>
 
-                        <!-- Pairings Table -->
-                        ${pairings.length > 0 || isDM ? `
-                        <div class="bg-[rgba(139,90,43,0.05)] p-6 rounded border border-gold/30 relative group shadow-inner">
-                            <h4 class="font-heading text-[10px] font-black text-blood uppercase tracking-[0.2em] mb-4 border-b border-gold/30 pb-2">Best ${s.name || 'Path'} Pairings</h4>
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-0">
-                                ${pairings.map((p, pIdx) => `
-                                    <div class="flex border-b border-gold/20 py-2 relative hover:bg-[rgba(255,255,255,0.5)] group/row">
-                                        <div class="w-24 flex-shrink-0 font-heading text-[9px] font-black text-blood uppercase tracking-widest dm-editable flex items-center" contenteditable="${isDM}" oninput="window.updateSubclassDeepData(${idx}, 'pairings', ${pIdx}, 'label', this.innerText)">${p.label}</div>
-                                        <div class="flex-grow font-serif text-[12px] text-ink dm-editable leading-snug break-words pr-6" contenteditable="${isDM}" oninput="window.updateSubclassDeepData(${idx}, 'pairings', ${pIdx}, 'value', this.innerText)">${p.value}</div>
-                                        ${isDM ? `<button onclick="window.removeDeepItem(${idx}, 'pairings', ${pIdx})" class="absolute right-0 top-1/2 -translate-y-1/2 text-blood hover:text-red-700 opacity-0 group-hover/row:opacity-100"><i class="fa-solid fa-trash"></i></button>` : ''}
-                                    </div>
-                                `).join('')}
+                        ${isDM ? `
+                            <div class="absolute top-0 right-0 flex gap-2 opacity-0 group-hover/header:opacity-100 transition-opacity">
+                                <button onclick="window.addDeepItem(${idx}, 'features', {level: '3', title: 'New Feature', desc: 'Effect...'})" class="bg-indigo-900 text-white px-2 py-1 text-[10px] rounded hover:bg-indigo-700 shadow">+ Feat</button>
+                                <button onclick="window.addDeepItem(${idx}, 'pairings', {label: 'SPECIES', value: 'Any'})" class="bg-indigo-900 text-white px-2 py-1 text-[10px] rounded hover:bg-indigo-700 shadow">+ Pairing</button>
                             </div>
-                        </div>
                         ` : ''}
                     </div>
+
+                    <!-- Features Timeline -->
+                    <div class="relative before:absolute before:left-[1.35rem] before:top-2 before:bottom-2 before:w-px before:bg-gradient-to-b before:from-gold before:via-gold/40 before:to-transparent ml-2 md:ml-4">
+                        ${feats.map((f, fIdx) => `
+                            <div class="relative pl-12 md:pl-16 mb-10 group/feat">
+                                <div class="absolute left-0 top-0 w-11 h-11 rounded-full bg-parchment border-2 border-gold flex items-center justify-center font-heading font-black text-blood text-[16px] shadow-sm dm-editable" contenteditable="${isDM}" oninput="window.updateSubclassDeepData(${idx}, 'features', ${fIdx}, 'level', this.innerText)">
+                                    ${f.level || '?'}
+                                </div>
+                                
+                                <div>
+                                    <h4 class="font-heading text-lg font-bold text-ink mb-1 dm-editable" contenteditable="${isDM}" oninput="window.updateSubclassDeepData(${idx}, 'features', ${fIdx}, 'title', this.innerText)">${f.title || 'Feature Title'}</h4>
+                                    <div class="font-serif text-[14px] text-ink/80 leading-relaxed dm-editable" contenteditable="${isDM}" oninput="window.updateSubclassDeepData(${idx}, 'features', ${fIdx}, 'desc', this.innerText)">${f.desc || 'Effect details...'}</div>
+                                </div>
+                                
+                                ${isDM ? `<button onclick="window.removeDeepItem(${idx}, 'features', ${fIdx})" class="absolute right-0 top-2 text-blood hover:text-red-500 opacity-0 group-hover/feat:opacity-100 text-xs"><i class="fa-solid fa-trash"></i></button>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Pairings Appendix -->
+                    ${pairings.length > 0 || isDM ? `
+                    <div class="mt-8 ml-2 md:ml-16 bg-gold/5 p-6 rounded-sm border border-gold/30 relative group/pair">
+                        <h4 class="font-heading text-[10px] font-black text-blood uppercase tracking-[0.2em] mb-4 border-b border-gold/30 pb-2">Best ${s.name || 'Path'} Pairings</h4>
+                        <table class="pairing-table">
+                            <tbody>
+                                ${pairings.map((p, pIdx) => `
+                                    <tr class="group/row hover:bg-gold/10 transition-colors relative">
+                                        <td class="pt-label dm-editable" contenteditable="${isDM}" oninput="window.updateSubclassDeepData(${idx}, 'pairings', ${pIdx}, 'label', this.innerText)">${p.label}</td>
+                                        <td class="pt-val dm-editable" contenteditable="${isDM}" oninput="window.updateSubclassDeepData(${idx}, 'pairings', ${pIdx}, 'value', this.innerText)">${p.value}</td>
+                                        ${isDM ? `<td class="w-8 text-center"><button onclick="window.removeDeepItem(${idx}, 'pairings', ${pIdx})" class="text-blood hover:text-red-700 opacity-0 group-hover/row:opacity-100"><i class="fa-solid fa-trash"></i></button></td>` : ''}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    ` : ''}
                 </div>
                 `;
             }).join('');
@@ -633,12 +688,12 @@
             headersHtml += `</tr>`;
             
             let rowsHtml = compData.rows.map((r, rIdx) => {
-                let cellsHtml = `<td class="font-heading text-[10px] text-gold uppercase tracking-widest font-black dm-editable" contenteditable="${isDM}" oninput="window.updateCompareRow(${rIdx}, 0, this.innerText)">${r[0] || 'Trait'}</td>`;
+                let cellsHtml = `<td class="font-heading text-[10px] text-ink uppercase tracking-widest font-black dm-editable" contenteditable="${isDM}" oninput="window.updateCompareRow(${rIdx}, 0, this.innerText)">${r[0] || 'Trait'}</td>`;
                 subs.forEach((s, cIdx) => {
                     const cellVal = r[cIdx + 1] || '--';
-                    cellsHtml += `<td class="dm-editable" contenteditable="${isDM}" oninput="window.updateCompareRow(${rIdx}, ${cIdx + 1}, this.innerText)">${cellVal}</td>`;
+                    cellsHtml += `<td class="dm-editable text-ink/80" contenteditable="${isDM}" oninput="window.updateCompareRow(${rIdx}, ${cIdx + 1}, this.innerText)">${cellVal}</td>`;
                 });
-                return `<tr class="group relative">${cellsHtml} ${isDM ? `<td class="w-8 border-b border-gold/10 text-center"><button onclick="window.removeCompareRow(${rIdx})" class="text-red-900 hover:text-red-500 opacity-0 group-hover:opacity-100"><i class="fa-solid fa-trash"></i></button></td>` : ''}</tr>`;
+                return `<tr class="group relative">${cellsHtml} ${isDM ? `<td class="w-8 text-center"><button onclick="window.removeCompareRow(${rIdx})" class="text-blood hover:text-red-500 opacity-0 group-hover:opacity-100"><i class="fa-solid fa-trash"></i></button></td>` : ''}</tr>`;
             }).join('');
             
             document.getElementById('compare-table').innerHTML = `<thead>${headersHtml}</thead><tbody>${rowsHtml}</tbody>`;
@@ -764,7 +819,7 @@
                                 const targetId = `subclass-section-${subIdx}`;
                                 const target = document.getElementById(targetId);
                                 if (target) {
-                                    target.scrollIntoView({ behavior: 'smooth' });
+                                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                 }
                                 window.hasScrolled = true;
                             }, 500);

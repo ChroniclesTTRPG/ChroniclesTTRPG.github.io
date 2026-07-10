@@ -176,7 +176,7 @@
             <div id="content-body" class="w-full relative hidden">
                 
                 <!-- TOP HERO SECTION -->
-                <div class="mb-12 border-b border-gold/30 pb-8 relative group/hero" id="hero-section">
+                <div class="parchment-paper p-8 md:p-12 mb-16 shadow-[0_15px_40px_rgba(0,0,0,0.6)] relative group/hero" id="hero-section">
                     <!-- Dynamic Hero Content filled by JS -->
                 </div>
 
@@ -472,7 +472,7 @@
             // Top Hero
             document.getElementById('hero-section').innerHTML = `
                 ${vocation.heroArtUrl ? `<div class="w-full h-48 md:h-64 object-cover mb-6 rounded border-2 border-gold shadow-md overflow-hidden cursor-zoom-in"><img src="${vocation.heroArtUrl}" class="w-full h-full object-cover"></div>` : ''}
-                ${isDM ? `<div class="absolute top-2 right-2 opacity-0 group-hover/hero:opacity-100 transition-opacity z-10"><input type="text" class="text-[9px] bg-black/80 text-white border border-gold p-1 rounded" placeholder="Hero Banner URL" value="${vocation.heroArtUrl||''}" oninput="window.dbUp('heroArtUrl', this.value)"></div>` : ''}
+                ${isDM ? `<div class="absolute top-4 right-4 opacity-0 group-hover/hero:opacity-100 transition-opacity z-10"><input type="text" class="text-[9px] bg-black/80 text-white border border-gold p-1 rounded" placeholder="Hero Banner URL" value="${vocation.heroArtUrl||''}" oninput="window.dbUp('heroArtUrl', this.value)"></div>` : ''}
                 <div class="flex flex-col md:flex-row gap-8 items-start">
                     <div class="flex-grow">
                         <p class="font-heading text-[10px] text-blood font-black uppercase tracking-[0.2em] mb-3 flex items-center justify-start dm-editable" contenteditable="false" id="hero-kicker">
@@ -487,9 +487,9 @@
                         </div>
                     </div>
                     <!-- Right side grid of pixel icons -->
-                    <div id="hero-icon-grid" class="flex-shrink-0 grid grid-cols-2 gap-2 border-2 border-gold p-2 bg-[rgba(255,255,255,0.4)] shadow-md rounded">
+                    <div id="hero-icon-grid" class="flex-shrink-0 grid grid-cols-2 gap-2 border-2 border-gold p-2 bg-[rgba(139,90,43,0.1)] shadow-inner rounded">
                         ${JSON.parse(vocation.subclasses || '[]').map(s => `
-                            <div class="aspect-square bg-[#e8e0cd] relative overflow-hidden border border-gold/30 w-16 h-16 md:w-24 md:h-24">
+                            <div class="aspect-square bg-[#e8e0cd] relative overflow-hidden border border-gold/30 w-16 h-16 md:w-24 md:h-24 shadow-sm">
                                 ${s.imgUrl ? `<img src="${s.imgUrl}" class="w-full h-full object-cover" style="image-rendering: pixelated;">` : `<div class="w-full h-full flex items-center justify-center text-[10px] text-ink/30 font-serif italic">N/A</div>`}
                             </div>
                         `).join('')}
